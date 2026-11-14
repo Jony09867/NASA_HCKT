@@ -1,5 +1,5 @@
 // Verified NASA Microgravity Combustion Research Investigations
-// Source: NASA ISS Physical Sciences Research / Combustion Integrated Rack (CIR)
+// Sources: NASA Physical Science Informatics (PSI) Database / Combustion Integrated Rack (CIR) / Microgravity Science Glovebox (MSG)
 window.EXPERIMENTS = [
   {
     id: "bass-ii",
@@ -9,17 +9,27 @@ window.EXPERIMENTS = [
     oxygen: "16% - 21%",
     airflow: "0.05 - 0.55 m/s",
     measurements: "Flame spread rate, extinction air velocity, flame radiometry",
-    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=922"
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=922",
+    category: "Prevention & Flammability",
+    hardware: "Microgravity Science Glovebox (MSG)",
+    crewRelevance: ["Moon Base", "ISS", "Mars Rover"],
+    earthApplication: "Improves fire-retardant polymers and aircraft interior safety standards.",
+    siInterpretation: "Solid plastics burn with lower flame spread in microgravity, but low-speed forced ventilation sustains smoldering and hazardous toxic gas accumulation without buoyancy."
   },
   {
     id: "flex",
     name: "FLEX (Flame Extinguishment Experiment)",
-    objective: "Studies the combustion characteristics, burning rates, and spherical flame extinction of isolated liquid fuel droplets in microgravity.",
+    objective: "Studies the combustion characteristics, burning rates, and spherical flame extinction of isolated liquid fuel droplets in microgravity with inert suppressants.",
     fuel: "Heptane",
     oxygen: "15% - 21%",
     airflow: "Quiescent (0 m/s)",
     measurements: "Droplet burning rate, extinction diameter, soot volume",
-    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=144"
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=144",
+    category: "Suppression",
+    hardware: "Combustion Integrated Rack (CIR / MDCA)",
+    crewRelevance: ["ISS", "Moon Base", "Mars Rover"],
+    earthApplication: "Directly led to cleaner fuel-injection sprays and fine-water-mist fire suppressors.",
+    siInterpretation: "Revealed 'cool flames' burning invisibly below 1000 K after apparent radiative extinction. Fire suppression systems must account for chemical cool flame reignition."
   },
   {
     id: "acme-cfi",
@@ -29,7 +39,12 @@ window.EXPERIMENTS = [
     oxygen: "14% - 21%",
     airflow: "0.1 - 0.4 m/s",
     measurements: "Extinction limits, gas temperature, OH radical chemiluminescence",
-    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1626"
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1626",
+    category: "Prevention & Flammability",
+    hardware: "Combustion Integrated Rack (CIR / ACME)",
+    crewRelevance: ["ISS", "Spacesuit EVA"],
+    earthApplication: "Informs low-emission industrial burners and mine shaft gas explosion limits.",
+    siInterpretation: "Identifies exact limiting oxygen concentrations (LOC) where gaseous leaks cannot sustain ignition, critical for setting inert gas buffering inside spacecraft cabins."
   },
   {
     id: "saffire-i",
@@ -39,7 +54,12 @@ window.EXPERIMENTS = [
     oxygen: "21%",
     airflow: "0.2 m/s",
     measurements: "Flame front velocity, heat release rate, pyrolysis temperature",
-    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1738"
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1738",
+    category: "Prevention & Flammability",
+    hardware: "Cygnus Cargo Vehicle (Autonomous Module)",
+    crewRelevance: ["Moon Base", "ISS", "Mars Rover"],
+    earthApplication: "Revolutionized large-scale flame testing for aerospace and marine cargo holds.",
+    siInterpretation: "First realistic spacecraft-scale fire test (0.4m x 1m sample). Proved that slow cabin airflow provides sufficient continuous oxygen to sustain massive upward-spreading flames."
   },
   {
     id: "acme-s-flame",
@@ -49,6 +69,86 @@ window.EXPERIMENTS = [
     oxygen: "15% - 30%",
     airflow: "Quiescent (0 m/s)",
     measurements: "Flame radius, radiative emission, burning speed",
-    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1627"
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1627",
+    category: "Prevention & Flammability",
+    hardware: "Combustion Integrated Rack (CIR / ACME)",
+    crewRelevance: ["Spacesuit EVA", "Moon Base"],
+    earthApplication: "Assists terrestrial hydrogen fuel cell storage and hydrogen vehicle safety.",
+    siInterpretation: "Demonstrates that hydrogen's high molecular diffusivity creates ultra-wide spherical flammability envelopes even in near-still zero-g atmospheres."
+  },
+  {
+    id: "same-r",
+    name: "SAME-R (Smoke and Aerosol Measurement Experiment - Reflight)",
+    objective: "Characterizes the smoke particle size distribution and morphology produced by overheating spacecraft materials to improve fire detection.",
+    fuel: "Pyrolyzed Wire Insulation & Teflon",
+    oxygen: "21%",
+    airflow: "0.05 - 0.2 m/s",
+    measurements: "Particle diameter distribution, aerosol concentration, optical obscuration",
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=247",
+    category: "Detection",
+    hardware: "Microgravity Science Glovebox (MSG)",
+    crewRelevance: ["ISS", "Moon Base", "Mars Rover", "Spacesuit EVA"],
+    earthApplication: "Advanced early-warning particulate smoke alarms in commercial aviation and clean rooms.",
+    siInterpretation: "Microgravity smoke particles agglomerate into significantly larger clusters than on Earth due to lack of buoyant shedding, requiring tuned optical sensors to prevent false alarms."
+  },
+  {
+    id: "acme-cfig",
+    name: "ACME: CFI-G (Cool Flames Investigation with Gases)",
+    objective: "Burns gaseous fuels in atmospheres with oxygen concentrations up to 85% to examine non-premixed cool flame chemistry and inverted spherical flames.",
+    fuel: "Propane & High-O2 Mix",
+    oxygen: "21% - 85%",
+    airflow: "0.0 - 0.3 m/s",
+    measurements: "Cool flame temperature, reaction zone diameter, chemiluminescent radicals",
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=7585",
+    category: "Prevention & Flammability",
+    hardware: "Combustion Integrated Rack (CIR / ACME)",
+    crewRelevance: ["Moon Base", "Spacesuit EVA"],
+    earthApplication: "Catalytic combustion engines and high-efficiency oxy-fuel industrial furnaces.",
+    siInterpretation: "Critical for Moon Base (>30% O2) and spacesuits (100% O2). At elevated oxygen levels, low-temperature oxidation zones expand, causing spontaneous ignition at far lower energy thresholds."
+  },
+  {
+    id: "acme-bre",
+    name: "ACME: BRE (Burning Rate Emulator)",
+    objective: "Simulates the combustion and extinction of solid materials using a porous flat burner with gaseous fuels in quiescent spacecraft atmospheres.",
+    fuel: "Ethene & Porous Burner",
+    oxygen: "16% - 35%",
+    airflow: "Quiescent (0 m/s)",
+    measurements: "Mass burning flux, radiative heat feedback, extinction limit",
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=7584",
+    category: "Prevention & Flammability",
+    hardware: "Combustion Integrated Rack (CIR / ACME)",
+    crewRelevance: ["Moon Base", "ISS", "Mars Rover"],
+    earthApplication: "Building code flammability standard testing and UL fire safety ratings.",
+    siInterpretation: "Directly mimics solid materials without pyrolytic variations. Confirmed that in still atmospheres, radiation loss can extinguish flames without active suppression."
+  },
+  {
+    id: "acme-efield",
+    name: "ACME: E-FIELD Flames (Electric-Field Effects)",
+    objective: "Applies high-voltage electric fields to ionic species in microgravity flames to mimic partial-gravity buoyant forces and control soot formation.",
+    fuel: "Methane / Ionized Diluent",
+    oxygen: "21%",
+    airflow: "0.1 - 0.3 m/s",
+    measurements: "Ion current, soot volume fraction, flame deflection angle",
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1628",
+    category: "Partial Gravity Simulation",
+    hardware: "Combustion Integrated Rack (CIR / ACME)",
+    crewRelevance: ["Moon Base", "Mars Rover"],
+    earthApplication: "Electrostatic soot precipitation and smart burner flame stability control.",
+    siInterpretation: "Since NASA currently lacks direct partial-gravity (1/6g Lunar, 3/8g Martian) combustion data in PSI, E-FIELD provides the foundational physics bridge for bounding flame behavior."
+  },
+  {
+    id: "saffire-iii",
+    name: "Saffire-III (Spacecraft Fire Safety Demonstration - III)",
+    objective: "Evaluates the spread of fire over large-scale PMMA and Nomex composites under varying cabin ventilation flow rates after Cygnus unberthing.",
+    fuel: "PMMA & Nomex Composite",
+    oxygen: "21% - 25%",
+    airflow: "0.1 - 0.45 m/s",
+    measurements: "Heat release rate, toxic gas (CO/CO2) emission rates, video pyrometry",
+    sourceUrl: "https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=7449",
+    category: "Prevention & Flammability",
+    hardware: "Cygnus Cargo Vehicle (Autonomous Module)",
+    crewRelevance: ["Moon Base", "ISS", "Mars Rover"],
+    earthApplication: "Commercial airliner cabin fire safety and toxic combustion emissions modeling.",
+    siInterpretation: "Showed that forced airflow in habitable modules can transition an invisible smoldering fire into an explosive flashover when ventilation fans cycle on."
   }
 ];

@@ -3,17 +3,16 @@
   background: linear-gradient(
     110deg,
     var(--shiny-color, #ff8a58) 0%,
-    var(--shiny-color, #ff8a58) 35%,
+    var(--shiny-color, #ff8a58) 38%,
     var(--shiny-highlight, #ffffff) 50%,
-    var(--shiny-color, #ff8a58) 65%,
+    var(--shiny-color, #ff8a58) 62%,
     var(--shiny-color, #ff8a58) 100%
   );
-  background-size: 200% 100%;
+  background-size: 250% 100%;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shiny-sweep var(--shiny-speed, 2.5s) linear infinite;
-  text-shadow: 0 0 12px rgba(255, 138, 88, 0.25);
+  animation: shiny-sweep var(--shiny-speed, 3s) var(--shiny-delay, 0s) linear infinite;
 }
 
 .shiny-text-static {
