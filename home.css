@@ -55,10 +55,11 @@
   outline-offset: 4px;
 }
 
-/* 3D Art Stage */
+/* 3D Art Stage - Fixed & Fluid Scale */
 .art {
   position: relative;
-  min-height: 520px;
+  min-height: 560px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,8 +68,9 @@
 
 .art-3d-stage {
   position: relative;
-  width: 100%;
-  max-width: 520px;
+  width: 520px;
+  height: 520px;
+  max-width: 95%;
   aspect-ratio: 1;
   display: flex;
   align-items: center;
@@ -76,9 +78,10 @@
 }
 
 .saturn-wrap {
-  position: relative;
-  width: min(88%, 450px);
-  aspect-ratio: 1;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: 2;
   border-radius: 50%;
 }
@@ -86,10 +89,10 @@
 .saturn-wrap::before {
   content: '';
   position: absolute;
-  inset: -15%;
+  inset: -12%;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 80, 20, 0.24) 0%, rgba(220, 50, 15, 0.08) 45%, transparent 70%);
-  filter: blur(25px);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 75, 20, 0.35) 0%, rgba(220, 50, 15, 0.12) 42%, transparent 70%);
+  filter: blur(35px);
   pointer-events: none;
   z-index: 0;
 }
@@ -99,7 +102,7 @@
 }
 
 .orbit1 {
-  width: 88%;
+  width: 92%;
   aspect-ratio: 1;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 50%;
@@ -107,7 +110,7 @@
 }
 
 .orbit2 {
-  width: 108%;
+  width: 112%;
   aspect-ratio: 1;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 50%;
@@ -126,13 +129,13 @@
 
 .art-label {
   left: 0;
-  top: 22%;
+  top: 18%;
   color: #aeb5ad;
 }
 
 .art-note {
   right: 0;
-  bottom: 14%;
+  bottom: 12%;
   color: var(--orange, #ff6b39);
 }
 
@@ -162,19 +165,21 @@
     padding-bottom: 40px;
   }
   .art {
-    min-height: 420px;
+    min-height: 480px;
     margin-top: 30px;
   }
   .art-3d-stage {
-    max-width: 420px;
+    width: 440px;
+    height: 440px;
+    max-width: 92%;
   }
   .art-label {
     left: 2%;
-    top: 10%;
+    top: 8%;
   }
   .art-note {
     right: 2%;
-    bottom: 8%;
+    bottom: 6%;
   }
 }
 
@@ -183,8 +188,13 @@
     font-size: clamp(38px, 11vw, 54px);
     line-height: 1;
   }
+  .art {
+    min-height: 380px;
+  }
   .art-3d-stage {
-    max-width: 330px;
+    width: 330px;
+    height: 330px;
+    max-width: 95%;
   }
   .art-label,
   .art-note {

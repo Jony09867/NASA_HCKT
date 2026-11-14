@@ -8,16 +8,16 @@ import * as THREE from "three";
 const PERSPECTIVE = 0.15;
 const VIEW_SPAN = 6.4;
 const CORE_RADIUS = 1;
-const MAX_MOTES = 85000;
+const MAX_MOTES = 90000;
 const RING_THICKNESS = 0.012;
 const RING_MOTE_FACTOR = 1.35;
 
 const DEFAULTS = {
   coreColor: "#ff4414",
   ringColor: "#ffa855",
-  density: 19,
-  particleSize: 14,
-  glow: 25,
+  density: 20,
+  particleSize: 15,
+  glow: 26,
   tilt: 8,
   roll: 12,
   spinSpeed: 5,
@@ -29,7 +29,7 @@ const DEFAULTS = {
     orbitSpeed: 8,
   },
   dragSensitivity: 2.2,
-  sizePercent: 220,
+  sizePercent: 195,
 };
 
 function clamp(v, lo, hi, fallback) {
@@ -41,7 +41,7 @@ function settingsFor(cfg) {
   const ring = cfg.ringOptions ?? DEFAULTS.ringOptions;
   const density = clamp(cfg.density, 1, 20, DEFAULTS.density);
 
-  const baseMotes = 500 + density * density * 90;
+  const baseMotes = 600 + density * density * 95;
   const coreMotes = Math.min(MAX_MOTES, Math.round(baseMotes));
   const ringMotes = Math.min(MAX_MOTES, Math.round(baseMotes * RING_MOTE_FACTOR));
 
@@ -351,7 +351,7 @@ class SaturnScene {
     const h = Math.max(1, this.height);
     const aspect = w / h;
     const distance = 1 / PERSPECTIVE;
-    const sizePct = clamp(this.cfg.sizePercent, 20, 300, 220);
+    const sizePct = clamp(this.cfg.sizePercent, 20, 350, 195);
 
     const span = VIEW_SPAN * (100 / sizePct);
     const visibleHeight = aspect < 1 ? span / aspect : span;
@@ -453,15 +453,26 @@ export default function ParticleSaturn(props) {
       return;
     }
     sceneRef.current = scene;
-    scene.setSize(container.clientWidth, container.clientHeight);
+
+    const updateSize = () => {
+      const w = container.clientWidth || container.offsetWidth || 500;
+      const h = container.clientHeight || container.offsetHeight || 500;
+      scene.setSize(w, h);
+    };
+
+    updateSize();
     scene.start();
 
     const ro = new ResizeObserver(() => {
-      scene.setSize(container.clientWidth, container.clientHeight);
+      updateSize();
     });
     ro.observe(container);
 
+    // Also listen to window resize
+    window.addEventListener("resize", updateSize);
+
     return () => {
+      window.removeEventListener("resize", updateSize);
       ro.disconnect();
       scene.dispose();
       sceneRef.current = null;
@@ -474,11 +485,10 @@ export default function ParticleSaturn(props) {
       role="img"
       aria-label="3D Microgravity Combustion and Particle Orbit"
       style={{
-        position: "relative",
+        position: "absolute",
+        inset: 0,
         width: "100%",
         height: "100%",
-        minWidth: 140,
-        minHeight: 140,
         overflow: "hidden",
         ...style,
       }}

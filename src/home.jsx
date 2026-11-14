@@ -67,23 +67,23 @@ function initReactHome() {
           draggable={false}
           hoverTilt={0}
           fill={true}
-          repeat={1}
+          repeat={2}
           ring={false}
           fontWeight={500}
           color="#d7ba9e"
         />
         <div className="saturn-wrap">
           <ParticleSaturn
-            coreColor="#ff4d1a"
-            ringColor="#ffa24a"
-            density={18}
-            particleSize={13}
-            glow={22}
+            coreColor="#ff4414"
+            ringColor="#ffa855"
+            density={20}
+            particleSize={15}
+            glow={26}
             tilt={8}
             roll={12}
-            spinSpeed={6}
+            spinSpeed={5}
             dragSensitivity={2.2}
-            sizePercent={130}
+            sizePercent={210}
           />
         </div>
       </div>
