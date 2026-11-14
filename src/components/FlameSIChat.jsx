@@ -383,7 +383,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
         {messages.map((msg) => {
           if (msg.role === 'user') {
             return (
-              <FadeContent key={msg.id} duration={0.25}>
+              <FadeContent key={msg.id} effect="fade" trigger="mount" duration={0.25} once blur={false}>
                 <div className="chat-msg user">
                   <div className="bubble-user">{msg.text}</div>
                 </div>
@@ -394,7 +394,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
           const isTraceOpen = expandedTrace[msg.id] ?? false;
 
           return (
-            <FadeContent key={msg.id} duration={0.25}>
+            <FadeContent key={msg.id} effect="fade" trigger="mount" duration={0.25} once blur={false}>
               <div className="chat-msg assistant">
               <div className="assistant-container">
                 {/* 1. Reasoning / Chain-of-Thought Trace (collapsible) */}
