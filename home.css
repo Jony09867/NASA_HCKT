@@ -10,6 +10,10 @@
 .hero .button:focus-visible { outline:3px solid #fff; outline-offset:4px; }
 .art .text-orbit { position:absolute; width:min(94%,490px); aspect-ratio:1; overflow:visible; animation:home-orbit 40s linear infinite; color:#d7ba9e; opacity:.8; }
 .text-orbit text { fill:currentColor; font:600 10px 'DM Sans',sans-serif; letter-spacing:3.2px; }
+.hero .planet { position:relative; isolation:isolate; background:repeating-linear-gradient(105deg,rgba(255,87,20,.9) 0 3px,rgba(111,22,14,.9) 3px 7px),radial-gradient(circle at 50% 35%,#ff7b32 0,#c83720 38%,#351e1a 68%,#151819 100%); box-shadow:0 0 75px #b9461b88; }
+.hero .planet::before { content:""; position:absolute; inset:-13%; z-index:-1; border:8px solid #ff9a2f; border-left-color:#ff5b18; border-right-color:#ffcb61; border-radius:50%; transform:rotate(-18deg) scaleY(.32); box-shadow:0 0 18px #ff7b2c,0 0 36px #b9461b99; }
+.hero .planet::after { content:""; position:absolute; inset:-9%; z-index:-1; border:1px solid #ffb15e99; border-radius:50%; transform:rotate(28deg) scaleY(.55); }
+.hero .planet .flame { position:relative; z-index:1; text-shadow:0 0 18px #ffe4a8; }
 .about .reveal-line { display:block; transition:opacity .8s ease,filter .8s ease,transform .8s ease; }
 .home-motion .about .reveal-line { opacity:.18; filter:blur(3px); transform:translateY(12px); }
 .home-motion .about.is-visible .reveal-line { opacity:1; filter:none; transform:none; }
