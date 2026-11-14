@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Magnet from './Magnet';
 import FlameSIChat from './FlameSIChat';
 import SpotlightCard from './SpotlightCard';
 import AnimatedContent from './AnimatedContent';
@@ -193,20 +194,24 @@ export default function SIDashboard() {
 
       {/* View Switcher: Simulator vs AI Chat */}
       <div className="si-view-switcher">
-        <button
+        <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
           type="button"
           className={`si-view-btn ${viewMode === 'simulator' ? 'is-active' : ''}`}
           onClick={() => setViewMode('simulator')}
         >
           Mission Hazard Simulator & Rankings
         </button>
-        <button
+</Magnet>
+        <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
           type="button"
           className={`si-view-btn ${viewMode === 'chat' ? 'is-active' : ''}`}
           onClick={() => setViewMode('chat')}
         >
           Chat with FLAME-SI Co-Pilot (Chain-of-Thought)
         </button>
+</Magnet>
       </div>
 
       {viewMode === 'chat' ? (
@@ -370,20 +375,24 @@ export default function SIDashboard() {
                 </div>
 
                 <div className="si-rank-actions">
-                  <button
+                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
                     type="button"
                     className="si-action-btn primary"
                     onClick={() => handleInspectInExplorer(inv.id, inv.oxygen ? parseInt(inv.oxygen, 10) : oxygen)}
                   >
                     Inspect in Explorer ↗
                   </button>
-                  <button
+</Magnet>
+                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
                     type="button"
                     className="si-action-btn secondary"
                     onClick={() => setViewMode('chat')}
                   >
                     Ask FLAME-SI
                   </button>
+</Magnet>
                   {inv.sourceUrl && (
                     <a
                       href={inv.sourceUrl}
@@ -404,34 +413,42 @@ export default function SIDashboard() {
       {/* Pillars of Fire Safety & Terrestrial Impact Tabs */}
       <div className="si-pillars-container">
         <div className="si-tabs-nav">
-          <button
+          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
             type="button"
             className={`si-tab-btn ${activeTab === 'prevention' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('prevention')}
           >
             01. Prevention Protocols
           </button>
-          <button
+</Magnet>
+          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
             type="button"
             className={`si-tab-btn ${activeTab === 'detection' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('detection')}
           >
             02. Detection Dynamics
           </button>
-          <button
+</Magnet>
+          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
             type="button"
             className={`si-tab-btn ${activeTab === 'suppression' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('suppression')}
           >
             03. Suppression Architecture
           </button>
-          <button
+</Magnet>
+          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
             type="button"
             className={`si-tab-btn ${activeTab === 'earth' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('earth')}
           >
             04. Earth Applications
           </button>
+</Magnet>
         </div>
 
         <div className="si-tab-content-panel">
