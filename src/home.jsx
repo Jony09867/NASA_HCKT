@@ -15,19 +15,16 @@ function initReactHome() {
       <ShinyText
         text="MICROGRAVITY RESEARCH / 01"
         color="#ff8a58"
-        shineColor="#fff1df"
-        speed={3}
-        delay={3}
-        shineWidth={25}
+        shineColor="#ffffff"
+        speed={2.5}
+        shineWidth={35}
         softness={0.8}
         trigger="loop"
-        glow={0}
-        followPointer={false}
       />
     );
   }
 
-  // 2. Headline BlurText
+  // 2. Headline BlurText (Word-by-word staggered reveal)
   const headlineEl = document.getElementById('react-hero-headline');
   if (headlineEl) {
     const root = createRoot(headlineEl);
@@ -38,18 +35,13 @@ function initReactHome() {
         direction="bottom"
         staggerFrom="start"
         trigger="load"
-        delay={120}
-        stepDuration={0.35}
-        blur={8}
-        distance={18}
+        delay={150}
+        stepDuration={0.4}
+        blur={12}
+        distance={22}
         loop={false}
-        focusOnHover={false}
         as="h1"
-      >
-        <span className="hero-line">Fire behaves</span>
-        <span className="hero-line"><em className="hero-muted">differently</em></span>
-        <span className="hero-line">up here<span className="orange">.</span></span>
-      </BlurText>
+      />
     );
   }
 
@@ -90,7 +82,7 @@ function initReactHome() {
     );
   }
 
-  // 4. About ScrollReveal
+  // 4. About ScrollReveal (Word-by-word rotation & unblur on scroll)
   const aboutEl = document.getElementById('react-about-reveal');
   if (aboutEl) {
     const root = createRoot(aboutEl);
@@ -99,19 +91,15 @@ function initReactHome() {
         mode="enter"
         splitBy="words"
         effect="fade"
-        stagger={0.07}
+        stagger={0.08}
         duration={0.8}
-        baseOpacity={0.2}
-        baseRotation={0}
-        baseOffset={0}
+        baseOpacity={0.15}
+        baseRotation={2}
+        baseOffset={10}
         enableBlur={true}
-        blurStrength={3}
-        highlightColor=""
+        blurStrength={4}
         as="h2"
-      >
-        <span>Better knowledge.</span>
-        <em className="hero-muted">Safer exploration.</em>
-      </ScrollReveal>
+      />
     );
   }
 }

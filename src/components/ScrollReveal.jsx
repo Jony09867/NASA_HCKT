@@ -1,25 +1,25 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'motion/react';
 
 export default function ScrollReveal({
-  children,
   text = '',
+  lines = null,
   mode = 'enter',
   splitBy = 'words',
   effect = 'fade',
-  stagger = 0.07,
+  stagger = 0.08,
   duration = 0.8,
-  baseOpacity = 0.2,
-  baseRotation = 0,
-  baseOffset = 0,
+  baseOpacity = 0.15,
+  baseRotation = 2,
+  baseOffset = 10,
   enableBlur = true,
-  blurStrength = 3,
+  blurStrength = 4,
   highlightColor = '',
   className = '',
   as: Tag = 'h2',
 }) {
   const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, amount: 0.2 });
+  const isInView = useInView(containerRef, { once: true, amount: 0.25 });
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -30,18 +30,24 @@ export default function ScrollReveal({
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const items = useMemo(() => {
-    if (children) return null;
-    if (splitBy === 'words') {
-      return text.split(' ');
-    }
-    return [text];
-  }, [children, text, splitBy]);
+  const structuredLines = lines || [
+    [{ text: 'Better' }, { text: 'knowledge.' }],
+    [{ text: 'Safer', isEm: true }, { text: 'exploration.', isEm: true }],
+  ];
 
   if (prefersReducedMotion) {
     return (
       <Tag className={`scroll-reveal-static ${className}`.trim()}>
-        {children || text}
+        {structuredLines.map((lineWords, lineIdx) => (
+          <span key={lineIdx} style={{ display: 'block' }}>
+            {lineWords.map((w, wIdx) => (
+              <span key={wIdx} className={w.isEm ? 'hero-muted' : ''}>
+                {w.text}
+                {wIdx < lineWords.length - 1 ? ' ' : ''}
+              </span>
+            ))}
+          </span>
+        ))}
       </Tag>
     );
   }
@@ -55,7 +61,7 @@ export default function ScrollReveal({
     },
   };
 
-  const itemVariants = {
+  const wordVariants = {
     hidden: {
       opacity: baseOpacity,
       filter: enableBlur ? `blur(${blurStrength}px)` : 'none',
@@ -69,54 +75,35 @@ export default function ScrollReveal({
       rotate: 0,
       transition: {
         duration,
-        ease: [0.25, 0.1, 0.25, 1],
+        ease: [0.22, 1, 0.36, 1],
       },
     },
   };
 
-  if (children) {
-    return (
-      <Tag ref={containerRef} className={`scroll-reveal ${className}`.trim()}>
-        <motion.span
-          style={{ display: 'block' }}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          variants={containerVariants}
-        >
-          {React.Children.map(children, (child, idx) => (
-            <motion.span
-              key={idx}
-              variants={itemVariants}
-              style={{ display: 'block' }}
-            >
-              {child}
-            </motion.span>
-          ))}
-        </motion.span>
-      </Tag>
-    );
-  }
-
   return (
     <Tag ref={containerRef} className={`scroll-reveal ${className}`.trim()}>
       <motion.span
-        style={{ display: 'inline-block' }}
+        style={{ display: 'block' }}
         initial="hidden"
         animate={isInView ? 'visible' : 'hidden'}
         variants={containerVariants}
       >
-        {items.map((word, idx) => (
-          <motion.span
-            key={idx}
-            variants={itemVariants}
-            style={{
-              display: 'inline-block',
-              marginRight: '0.25em',
-              color: highlightColor || undefined,
-            }}
-          >
-            {word}
-          </motion.span>
+        {structuredLines.map((lineWords, lineIdx) => (
+          <span key={lineIdx} style={{ display: 'block' }}>
+            {lineWords.map((w, wIdx) => (
+              <motion.span
+                key={wIdx}
+                variants={wordVariants}
+                style={{
+                  display: 'inline-block',
+                  marginRight: wIdx < lineWords.length - 1 ? '0.28em' : '0',
+                }}
+                className={w.isEm ? 'hero-muted' : ''}
+              >
+                {w.text}
+              </motion.span>
+            ))}
+          </span>
         ))}
       </motion.span>
     </Tag>

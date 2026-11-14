@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 
 export default function BlurText({
+  wordsList = null,
   text = '',
   className = '',
   effect = 'blur',
@@ -11,12 +12,10 @@ export default function BlurText({
   trigger = 'load',
   delay = 120,
   stepDuration = 0.35,
-  blur = 8,
+  blur = 10,
   distance = 18,
   loop = false,
-  focusOnHover = false,
   as: Tag = 'h1',
-  children,
   onAnimationComplete,
 }) {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -29,37 +28,47 @@ export default function BlurText({
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  // If children provided, render children with styling
-  // Otherwise split text
-  const items = useMemo(() => {
-    if (children) return null;
-    if (animateBy === 'letters') {
-      return text.split('');
-    }
-    return text.split(' ');
-  }, [text, children, animateBy]);
-
   const offset = direction === 'top' ? -distance : distance;
+
+  // Default words if not custom list
+  const lines = wordsList || [
+    [{ text: 'Fire' }, { text: 'behaves' }],
+    [{ text: 'differently', className: 'hero-muted' }],
+    [{ text: 'up' }, { text: 'here', hasDot: true }],
+  ];
 
   if (prefersReducedMotion) {
     return (
       <Tag className={`blur-text ${className}`.trim()}>
-        {children || text}
+        {lines.map((lineWords, lineIdx) => (
+          <span key={lineIdx} className="hero-line">
+            {lineWords.map((w, wIdx) => (
+              <span key={wIdx} className={w.className || ''}>
+                {w.text}
+                {w.hasDot && <span className="orange">.</span>}
+                {wIdx < lineWords.length - 1 ? ' ' : ''}
+              </span>
+            ))}
+          </span>
+        ))}
       </Tag>
     );
   }
+
+  // Calculate flat index for stagger
+  let globalWordIndex = 0;
 
   const containerVariants = {
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: stepDuration,
+        staggerChildren: 0.12,
         delayChildren: delay / 1000,
       },
     },
   };
 
-  const itemVariants = {
+  const wordVariants = {
     hidden: {
       opacity: 0,
       filter: effect === 'blur' ? `blur(${blur}px)` : 'none',
@@ -76,47 +85,35 @@ export default function BlurText({
     },
   };
 
-  if (children) {
-    return (
-      <Tag className={`blur-text ${className}`.trim()}>
-        <motion.span
-          style={{ display: 'inline-block' }}
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-          onAnimationComplete={onAnimationComplete}
-        >
-          {React.Children.map(children, (child, idx) => (
-            <motion.span
-              key={idx}
-              variants={itemVariants}
-              style={{ display: 'block' }}
-            >
-              {child}
-            </motion.span>
-          ))}
-        </motion.span>
-      </Tag>
-    );
-  }
-
   return (
     <Tag className={`blur-text ${className}`.trim()}>
       <motion.span
-        style={{ display: 'inline-block' }}
+        style={{ display: 'block' }}
         initial="hidden"
         animate="visible"
         variants={containerVariants}
         onAnimationComplete={onAnimationComplete}
       >
-        {items.map((item, idx) => (
-          <motion.span
-            key={idx}
-            variants={itemVariants}
-            style={{ display: 'inline-block', marginRight: animateBy === 'words' ? '0.25em' : '0' }}
-          >
-            {item}
-          </motion.span>
+        {lines.map((lineWords, lineIdx) => (
+          <span key={lineIdx} className="hero-line" style={{ display: 'block' }}>
+            {lineWords.map((w, wIdx) => {
+              const currentIdx = globalWordIndex++;
+              return (
+                <motion.span
+                  key={wIdx}
+                  variants={wordVariants}
+                  style={{
+                    display: 'inline-block',
+                    marginRight: wIdx < lineWords.length - 1 ? '0.28em' : '0',
+                  }}
+                  className={w.className || ''}
+                >
+                  {w.text}
+                  {w.hasDot && <span className="orange">.</span>}
+                </motion.span>
+              );
+            })}
+          </span>
         ))}
       </motion.span>
     </Tag>
