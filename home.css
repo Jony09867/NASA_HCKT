@@ -1,0 +1,21 @@
+/* Home-page effects inspired by React Bits; Explore and Compare are independent. */
+.hero { position:relative; background:radial-gradient(ellipse at 75% 43%,#52271c 0%,#1a1b19 28%,#101516 60%); }
+.hero>div:first-child { position:relative; z-index:1; }
+.hero .eyebrow { display:inline-block; color:#ff9a6e; background:linear-gradient(110deg,#f88758 20%,#ffe7c8 48%,#f88758 70%); background-size:240% 100%; background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:home-shine 6s ease-in-out infinite; }
+.hero h1 .hero-line { display:block; animation:home-blur .85s both cubic-bezier(.2,.65,.2,1); }
+.hero h1 .hero-line:nth-child(2) { animation-delay:.16s; }
+.hero h1 .hero-line:nth-child(3) { animation-delay:.32s; }
+.hero .button { transition:transform .2s,background .2s; }
+.hero .button:hover { transform:translateY(-3px); background:#ff9169; }
+.hero .button:focus-visible { outline:3px solid #fff; outline-offset:4px; }
+.art .text-orbit { position:absolute; width:min(94%,490px); aspect-ratio:1; overflow:visible; animation:home-orbit 40s linear infinite; color:#d7ba9e; opacity:.8; }
+.text-orbit text { fill:currentColor; font:600 10px 'DM Sans',sans-serif; letter-spacing:3.2px; }
+.about .reveal-line { display:block; transition:opacity .8s ease,filter .8s ease,transform .8s ease; }
+.home-motion .about .reveal-line { opacity:.18; filter:blur(3px); transform:translateY(12px); }
+.home-motion .about.is-visible .reveal-line { opacity:1; filter:none; transform:none; }
+.about .reveal-line:nth-child(2) { transition-delay:.12s; }
+@keyframes home-blur { from { opacity:0; filter:blur(9px); transform:translateY(14px); } to { opacity:1; filter:blur(0); transform:none; } }
+@keyframes home-shine { to { background-position:-240% 0; } }
+@keyframes home-orbit { to { transform:rotate(360deg); } }
+@media(max-width:750px) { .hero .text-orbit { width:min(90%,340px); } .hero .art-label { left:0; } .hero .art-note { right:0; } }
+@media(prefers-reduced-motion:reduce) { .hero .eyebrow,.hero h1 .hero-line,.art .text-orbit { animation:none; } .about .reveal-line,.hero .button { transition:none; } .home-motion .about .reveal-line { opacity:1; filter:none; transform:none; } }
