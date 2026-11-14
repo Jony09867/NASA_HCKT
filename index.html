@@ -65,13 +65,13 @@
     <!-- Section: SI Fire Safety Intelligence Dashboard (NASA Space Apps Core Challenge) -->
     <div id="react-si-dashboard"></div>
 
-    <!-- Section 02: Explore (Teammate component: Search, Fuel & Oxygen Filters) -->
+    <!-- Section 02: Explore - Connected Experiment Finder -->
     <section class="explore" id="explore">
       <div class="section-head">
         <div>
           <span class="eyebrow">THE INVESTIGATION LIBRARY / 02</span>
           <h2><span id="explore-title">Explore the science</span><span class="orange">.</span></h2>
-          <p>Search the library and select two investigations to compare.</p>
+          <p>Search verified NASA microgravity combustion investigations. Filter by material, topic, platform, and documented environmental conditions.</p>
         </div>
         <div class="count">
           <strong id="count">00</strong>
@@ -80,39 +80,141 @@
       </div>
 
       <div class="notice">
-        <strong>Research in progress.</strong> The team is collecting and verifying NASA sources. Investigation details will appear here when available.
+        <strong>Research in progress.</strong> Verified NASA Physical Science Informatics (PSI) research data. Results reflect documented mission test envelopes.
       </div>
 
       <div class="filters-container">
-        <div class="filters">
+        <!-- Search & Sort Row -->
+        <div class="search-primary-row">
+          <div class="search-input-wrap">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input id="search" placeholder="Search by name, acronym, fuel, topic, platform, or objective..." type="search" autocomplete="off" spellcheck="false" aria-label="Search investigations">
+            <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Clear search input" hidden>✕</button>
+          </div>
+          <div class="sort-wrap">
+            <label for="sort-select">SORT BY</label>
+            <select id="sort-select" aria-label="Sort investigations">
+              <option value="relevant">Most relevant</option>
+              <option value="name">Name (A–Z)</option>
+              <option value="oxygen">Nearest Oxygen %</option>
+              <option value="platform">Platform</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Primary Filters Grid -->
+        <div class="filters-primary-grid">
           <label>
-            <span>SEARCH INVESTIGATIONS</span>
-            <input id="search" placeholder="Search by name or objective..." type="search" autocomplete="off" spellcheck="false" aria-label="Search investigations by name or objective">
-          </label>
-          <label>
-            <span>FUEL TYPE</span>
+            <span>MATERIAL / FUEL</span>
             <div class="select-wrapper">
-              <select id="fuel" aria-label="Filter by fuel type">
-                <option value="">All fuel types</option>
+              <select id="fuel" aria-label="Filter by material or fuel">
+                <option value="">All materials</option>
               </select>
             </div>
           </label>
+
           <label>
-            <span>TARGET OXYGEN (%)</span>
+            <span>RESEARCH TOPIC</span>
+            <div class="select-wrapper">
+              <select id="topic" aria-label="Filter by research topic">
+                <option value="">All topics</option>
+              </select>
+            </div>
+          </label>
+
+          <label>
+            <span>PLATFORM</span>
+            <div class="select-wrapper">
+              <select id="platform" aria-label="Filter by platform">
+                <option value="">All platforms</option>
+              </select>
+            </div>
+          </label>
+
+          <label>
+            <span>TARGET O₂ (%)</span>
             <div class="oxygen-input-wrapper">
-              <input id="oxygen" type="number" min="0" max="100" step="1" placeholder="e.g. 21" aria-label="Target oxygen percentage">
+              <input id="oxygen" type="number" min="0" max="100" step="0.5" placeholder="e.g. 21" aria-label="Target oxygen percentage">
               <span class="input-suffix">%</span>
             </div>
           </label>
-          <button id="clear" class="clear specular-button" type="button">Clear filters ↗</button>
         </div>
 
+        <!-- Toolbar with Advanced Filters Toggle & Clear Button -->
+        <div class="filters-actions-bar">
+          <button type="button" id="toggle-advanced" class="toggle-advanced-btn" aria-expanded="false" aria-controls="advanced-filters-panel">
+            <span class="adv-icon">⚙</span> Advanced filters <span id="adv-arrow" class="adv-arrow">▾</span>
+          </button>
+          <div class="filter-feedback" id="filter-feedback">
+            Showing <b id="match-number">0</b> investigations
+          </div>
+          <button id="clear" class="clear specular-button" type="button">Clear all filters ↗</button>
+        </div>
+
+        <!-- Expandable Advanced Filters Panel -->
+        <div id="advanced-filters-panel" class="advanced-filters-panel" hidden>
+          <div class="advanced-grid">
+            <label>
+              <span>FACILITY</span>
+              <div class="select-wrapper">
+                <select id="facility-filter" aria-label="Filter by facility">
+                  <option value="">All facilities</option>
+                </select>
+              </div>
+            </label>
+
+            <label>
+              <span>GRAVITY CONDITION</span>
+              <div class="select-wrapper">
+                <select id="gravity-filter" aria-label="Filter by gravity condition">
+                  <option value="">All gravity levels</option>
+                </select>
+              </div>
+            </label>
+
+            <label>
+              <span>FUEL GEOMETRY</span>
+              <div class="select-wrapper">
+                <select id="geometry-filter" aria-label="Filter by fuel geometry">
+                  <option value="">All geometries</option>
+                </select>
+              </div>
+            </label>
+
+            <label>
+              <span>AIRFLOW CONDITION</span>
+              <div class="select-wrapper">
+                <select id="airflow-filter" aria-label="Filter by airflow">
+                  <option value="">All airflow speeds</option>
+                </select>
+              </div>
+            </label>
+
+            <label>
+              <span>CHAMBER PRESSURE</span>
+              <div class="select-wrapper">
+                <select id="pressure-filter" aria-label="Filter by pressure">
+                  <option value="">All pressure ranges</option>
+                </select>
+              </div>
+            </label>
+          </div>
+
+          <div class="oxygen-audit-note">
+            <span class="info-mark">ℹ</span>
+            <div>
+              <strong>Oxygen Matching Audit:</strong> A target falling within a documented range (e.g., 16%–21% vol O₂ in N₂) indicates the overall experimental test matrix operated across those conditions, not that this exact point was an isolated discrete test. Measurement basis: vol% at ambient test pressure. Oxygen levels are presented for scientific comparison, not as a simplified fire-risk score.
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Filter Chips -->
         <div id="active-filters" class="active-filters-bar" hidden></div>
       </div>
 
       <div id="cards" class="cards"></div>
 
-      <div id="empty" class="empty">
+      <div id="empty" class="empty" hidden>
         <span class="empty-mark">✳</span>
         <h3>No investigations to show yet</h3>
         <p>Verified experiment data will appear here. Try clearing your filters or check back later.</p>
@@ -121,16 +223,23 @@
       <div id="toast-container" aria-live="polite"></div>
     </section>
 
-    <!-- Section 03: Compare (Teammate component: Side-by-side comparison) -->
+    <!-- Section 03: Compare - Side-by-Side Evidence Table -->
     <section class="compare" id="compare">
-      <div>
-        <span class="eyebrow">SIDE BY SIDE / 03</span>
-        <h2>Compare the<br>conditions<span class="orange">.</span></h2>
-        <p>Select up to two investigations from the library to see their objectives, fuels, conditions, and measurements together.</p>
+      <div class="compare-head-row">
+        <div>
+          <span class="eyebrow">SIDE BY SIDE / 03</span>
+          <h2>Evidence Comparison<span class="orange">.</span></h2>
+          <p>Select up to two investigations from the library to analyze their experimental setups, conditions, observations, and findings side by side.</p>
+        </div>
+        <div class="compare-toolbar" id="compare-toolbar" hidden>
+          <button type="button" id="btn-swap-columns" class="btn-swap-columns">⇄ Swap columns</button>
+          <button type="button" id="btn-clear-compare" class="btn-clear-compare">Clear comparison</button>
+          <a href="#explore" class="specular-button">Explore more ↗</a>
+        </div>
       </div>
-      <div id="comparison" class="comparison">
-        <div class="slot">01 <span>SELECT AN INVESTIGATION ABOVE ↗</span></div>
-        <div class="slot">02 <span>SELECT AN INVESTIGATION ABOVE ↗</span></div>
+
+      <div id="comparison-container" class="compare-container">
+        <!-- Rendered evidence table or guidance -->
       </div>
     </section>
 
