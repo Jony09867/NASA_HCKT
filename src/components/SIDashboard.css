@@ -217,6 +217,16 @@
   margin: 0;
 }
 
+.si-hazard-demo-badge {
+  display: block;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: #8c8880;
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
 .si-hazard-score-container {
   text-align: center;
   padding: 1rem 0;

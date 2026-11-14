@@ -15,7 +15,8 @@ import {
   SparklesIcon,
   RouteIcon,
 } from 'lucide-react';
-import Magnet from './Magnet';
+import ShinyText from './ShinyText';
+import FadeContent from './FadeContent';
 import './FlameSIChat.css';
 
 // Curated NASA PSI Knowledge Base Responses for the Challenge
@@ -345,7 +346,15 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
           <div className="flame-chat-avatar">🔥</div>
           <div className="flame-chat-title">
             <h3>
-              FLAME-SI Co-Pilot
+              <ShinyText
+                text="FLAME-SI"
+                color="#f7f3ed"
+                shineColor="#ff8a58"
+                speed={3.2}
+                shineWidth={30}
+                softness={0.8}
+              />{' '}
+              Co-Pilot
               <span className="flame-model-pill">
                 <SparklesIcon size={12} />
                 NASA PSI Fine-Tuned
@@ -372,16 +381,19 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
         {messages.map((msg) => {
           if (msg.role === 'user') {
             return (
-              <div key={msg.id} className="chat-msg user">
-                <div className="bubble-user">{msg.text}</div>
-              </div>
+              <FadeContent key={msg.id} duration={0.25}>
+                <div className="chat-msg user">
+                  <div className="bubble-user">{msg.text}</div>
+                </div>
+              </FadeContent>
             );
           }
 
           const isTraceOpen = expandedTrace[msg.id] ?? false;
 
           return (
-            <div key={msg.id} className="chat-msg assistant">
+            <FadeContent key={msg.id} duration={0.25}>
+              <div className="chat-msg assistant">
               <div className="assistant-container">
                 {/* 1. Reasoning / Chain-of-Thought Trace (collapsible) */}
                 {msg.reasoning && (
@@ -503,6 +515,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
                 </div>
               </div>
             </div>
+            </FadeContent>
           );
         })}
       </div>
@@ -562,20 +575,18 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
               </select>
             </div>
 
-            <Magnet padding={50} magnetStrength={2.5}>
-              <button
-                type="button"
-                className="chat-send-btn"
-                disabled={!input.trim() || isStreaming}
-                onClick={() => handleSend()}
-              >
-                {isStreaming ? (
-                  <LoaderCircleIcon size={16} className="animate-spin" />
-                ) : (
-                  <ArrowUpIcon size={18} />
-                )}
-              </button>
-            </Magnet>
+            <button
+              type="button"
+              className="chat-send-btn"
+              disabled={!input.trim() || isStreaming}
+              onClick={() => handleSend()}
+            >
+              {isStreaming ? (
+                <LoaderCircleIcon size={16} className="animate-spin" />
+              ) : (
+                <ArrowUpIcon size={18} />
+              )}
+            </button>
           </div>
         </div>
       </div>

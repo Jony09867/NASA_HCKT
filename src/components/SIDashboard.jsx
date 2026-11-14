@@ -1,5 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import FlameSIChat from './FlameSIChat';
+import SpotlightCard from './SpotlightCard';
+import AnimatedContent from './AnimatedContent';
+import CountUp from './CountUp';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -218,11 +221,13 @@ export default function SIDashboard() {
           <span className="si-preset-label">Select Mission Profile or Atmospheric Condition:</span>
       <div className="si-presets-grid">
         {Object.entries(PRESETS).map(([key, p]) => (
-          <button
+          <SpotlightCard
             key={key}
-            type="button"
-            className={`si-preset-card ${activePreset === key ? 'is-active' : ''}`}
+            isActive={activePreset === key}
             onClick={() => handlePresetSelect(key)}
+            spotlightColor="rgba(255, 138, 88, 0.22)"
+            spotlightSize={260}
+            className="si-preset-card"
           >
             <div className="si-preset-title">
               <span>{p.icon}</span>
@@ -230,7 +235,7 @@ export default function SIDashboard() {
             </div>
             <div className="si-preset-specs">{p.specs}</div>
             <p className="si-preset-desc">{p.desc}</p>
-          </button>
+          </SpotlightCard>
         ))}
       </div>
 
@@ -239,7 +244,10 @@ export default function SIDashboard() {
         {/* Left: Hazard Gauge & Atmosphere Controls */}
         <div className="si-gauge-panel">
           <div className="si-gauge-header">
-            <h3>Fire Hazard Index</h3>
+            <div>
+              <h3>Fire Hazard Index</h3>
+              <span className="si-hazard-demo-badge">Demo Estimate · Relative Scale</span>
+            </div>
             <span className={`si-hazard-score-label ${metrics.statusClass}`}>
               {metrics.statusLabel}
             </span>
@@ -333,54 +341,58 @@ export default function SIDashboard() {
             </div>
           </div>
 
-          {rankedInvestigations.map((inv, idx) => (
-            <div key={inv.id} className={`si-rank-card ${idx === 0 ? 'top-rank' : ''}`}>
-              <div className="si-rank-badge-row">
-                <span className="si-rank-num">RANK #{idx + 1} · {inv.category || 'NASA RESEARCH'}</span>
-                <span className="si-rank-match">Relevance: {inv.matchPercent}%</span>
-              </div>
+          <AnimatedContent distance={14} duration={0.6} stagger={0.07}>
+            {rankedInvestigations.map((inv, idx) => (
+              <div key={inv.id} className={`si-rank-card ${idx === 0 ? 'top-rank' : ''}`}>
+                <div className="si-rank-badge-row">
+                  <span className="si-rank-num">RANK #{idx + 1} · {inv.category || 'NASA RESEARCH'}</span>
+                  <span className="si-rank-match">
+                    Relevance: <CountUp to={inv.matchPercent} suffix="%" duration={0.8} />
+                  </span>
+                </div>
 
-              <h4>{inv.name}</h4>
+                <h4>{inv.name}</h4>
 
-              <div className="si-rank-tags">
-                <span className="si-tag">Fuel: {inv.fuel}</span>
-                <span className="si-tag">O₂: {inv.oxygen}</span>
-                <span className="si-tag">Hardware: {inv.hardware || 'CIR'}</span>
-              </div>
+                <div className="si-rank-tags">
+                  <span className="si-tag">Fuel: {inv.fuel}</span>
+                  <span className="si-tag">O₂: {inv.oxygen}</span>
+                  <span className="si-tag">Hardware: {inv.hardware || 'CIR'}</span>
+                </div>
 
-              <div className="si-rank-insight">
-                <strong>SI Scientific Takeaway & Safety Directive:</strong>
-                {inv.siInterpretation || inv.objective}
-              </div>
+                <div className="si-rank-insight">
+                  <strong>SI Scientific Takeaway & Safety Directive:</strong>
+                  {inv.siInterpretation || inv.objective}
+                </div>
 
-              <div className="si-rank-actions">
-                <button
-                  type="button"
-                  className="si-action-btn primary"
-                  onClick={() => handleInspectInExplorer(inv.id, inv.oxygen ? parseInt(inv.oxygen, 10) : oxygen)}
-                >
-                  Inspect in Explorer ↗
-                </button>
-                <button
-                  type="button"
-                  className="si-action-btn secondary"
-                  onClick={() => setViewMode('chat')}
-                >
-                  Ask FLAME-SI 💬
-                </button>
-                {inv.sourceUrl && (
-                  <a
-                    href={inv.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="si-action-btn secondary"
+                <div className="si-rank-actions">
+                  <button
+                    type="button"
+                    className="si-action-btn primary"
+                    onClick={() => handleInspectInExplorer(inv.id, inv.oxygen ? parseInt(inv.oxygen, 10) : oxygen)}
                   >
-                    NASA PSI Source ↗
-                  </a>
-                )}
+                    Inspect in Explorer ↗
+                  </button>
+                  <button
+                    type="button"
+                    className="si-action-btn secondary"
+                    onClick={() => setViewMode('chat')}
+                  >
+                    Ask FLAME-SI 💬
+                  </button>
+                  {inv.sourceUrl && (
+                    <a
+                      href={inv.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="si-action-btn secondary"
+                    >
+                      NASA PSI Source ↗
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </AnimatedContent>
         </div>
       </div>
 
