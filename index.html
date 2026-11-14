@@ -23,23 +23,29 @@
   <main id="top">
     <section class="hero">
       <div>
-        <span class="eyebrow">MICROGRAVITY RESEARCH / 01</span>
-        <h1><span class="hero-line">Fire behaves</span><span class="hero-line"><em>differently</em></span><span class="hero-line">up here<span class="orange">.</span></span></h1>
+        <div id="react-hero-eyebrow">
+          <span class="eyebrow">MICROGRAVITY RESEARCH / 01</span>
+        </div>
+        <div id="react-hero-headline">
+          <h1>
+            <span class="hero-line">Fire behaves</span>
+            <span class="hero-line"><em class="hero-muted">differently</em></span>
+            <span class="hero-line">up here<span class="orange">.</span></span>
+          </h1>
+        </div>
         <p>Explore the experiments helping us understand combustion beyond Earth. Discover the questions, conditions, and measurements behind the science.</p>
-        <a class="button" href="#explore">Explore investigations <span>↗</span></a>
+        <div id="react-hero-cta">
+          <a class="button" href="#explore">Explore investigations <span>↗</span></a>
+        </div>
         <div class="hero-foot">
           <span>↓ SCROLL TO EXPLORE</span>
           <span>BUILT FOR CURIOUS MINDS</span>
         </div>
       </div>
       <div class="art" aria-hidden="true">
-        <svg class="text-orbit" viewBox="0 0 500 500" aria-hidden="true">
-          <defs><path id="home-ring" d="M 250,250 m -225,0 a 225,225 0 1,1 450,0 a 225,225 0 1,1 -450,0" /></defs>
-          <text><textPath href="#home-ring">MICROGRAVITY · COMBUSTION · RESEARCH · MICROGRAVITY · COMBUSTION · RESEARCH · </textPath></text>
-        </svg>
+        <div id="react-hero-art"></div>
         <div class="orbit orbit1"></div>
         <div class="orbit orbit2"></div>
-        <div class="planet"><div class="flame">✦</div></div>
         <span class="art-label">MICROGRAVITY<br><b>0G / COMBUSTION</b></span>
         <span class="art-note">A DIFFERENT<br>WAY TO BURN ↗</span>
       </div>
@@ -114,9 +120,13 @@
 
     <section class="about" id="about">
       <span class="eyebrow">WHY IT MATTERS / 04</span>
-      <h2><span class="reveal-line">Better knowledge.</span><em class="reveal-line">Safer exploration.</em></h2>
+      <div id="react-about-reveal">
+        <h2>Better knowledge.<br><em>Safer exploration.</em></h2>
+      </div>
       <p>Understanding combustion in microgravity helps researchers study fire safety for future space missions. This independent hackathon project aims to make research easier to explore.</p>
-      <a href="https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/?tab=details" target="_blank" rel="noopener">VIEW THE CHALLENGE ↗</a>
+      <div id="react-about-cta">
+        <a href="https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/?tab=details" target="_blank" rel="noopener">VIEW THE CHALLENGE ↗</a>
+      </div>
     </section>
   </main>
 
@@ -125,10 +135,12 @@
       <span class="mark">✳</span> FREEFALL <small>EXPLORER</small>
     </div>
     <span>AN INDEPENDENT SPACE APPS PROJECT</span>
-    <a href="#top">BACK TO TOP ↑</a>
+    <div id="react-back-to-top">
+      <a href="#top">BACK TO TOP ↑</a>
+    </div>
   </footer>
 
-  <script src="home.js"></script>
+  <script type="module" src="/src/home.jsx"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
