@@ -367,7 +367,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
         </div>
 
         <div className="flame-chat-controls">
-          <button
+          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
             type="button"
             className="flame-reset-btn"
             onClick={handleReset}
@@ -375,6 +376,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
           >
             <RotateCwIcon size={16} />
           </button>
+</Magnet>
         </div>
       </div>
 
@@ -400,7 +402,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
                 {/* 1. Reasoning / Chain-of-Thought Trace (collapsible) */}
                 {msg.reasoning && (
                   <div className="trace-card">
-                    <button
+                    <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1} style={{ width: '100%' }}>
+<button
                       type="button"
                       className="trace-trigger"
                       onClick={() =>
@@ -424,6 +427,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
                       </div>
                       {isTraceOpen ? <ChevronDownIcon size={15} /> : <ChevronRightIcon size={15} />}
                     </button>
+</Magnet>
 
                     {isTraceOpen && (
                       <div className="trace-content">
@@ -490,7 +494,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
 
                 {/* 5. Message Footer Actions */}
                 <div className="msg-footer">
-                  <button
+                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
                     type="button"
                     className="msg-action-btn"
                     title="Copy response"
@@ -498,7 +503,9 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
                   >
                     {copiedId === msg.id ? <CheckIcon size={14} style={{ color: '#34d399' }} /> : <CopyIcon size={14} />}
                   </button>
-                  <button
+</Magnet>
+                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
                     type="button"
                     className={`msg-action-btn ${feedback[msg.id] === 'up' ? 'active' : ''}`}
                     title="Helpful insight"
@@ -506,7 +513,9 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
                   >
                     <ThumbsUpIcon size={14} />
                   </button>
-                  <button
+</Magnet>
+                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
                     type="button"
                     className={`msg-action-btn ${feedback[msg.id] === 'down' ? 'active' : ''}`}
                     title="Needs refinement"
@@ -514,6 +523,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
                   >
                     <ThumbsDownIcon size={14} />
                   </button>
+</Magnet>
                 </div>
               </div>
             </div>
@@ -527,14 +537,16 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
         <span className="suggestions-label">Explore Mission Scenarios:</span>
         <div className="suggestions-scroll">
           {SUGGESTIONS.map((s, idx) => (
-            <button
-              key={idx}
+            <Magnet key={idx} wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<button
+             
               type="button"
               className="suggestion-pill"
               onClick={() => handleSend(s.label)}
             >
               {s.label}
             </button>
+</Magnet>
           ))}
         </div>
       </div>
