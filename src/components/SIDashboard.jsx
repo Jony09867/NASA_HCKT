@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import FlameSIChat from './FlameSIChat';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -53,6 +54,7 @@ const PRESETS = {
 };
 
 export default function SIDashboard() {
+  const [viewMode, setViewMode] = useState('simulator');
   const [activePreset, setActivePreset] = useState('moon');
   const [oxygen, setOxygen] = useState(34);
   const [pressure, setPressure] = useState(10.2);
@@ -190,8 +192,30 @@ export default function SIDashboard() {
         </p>
       </div>
 
-      {/* Preset Environments */}
-      <span className="si-preset-label">Select Mission Profile or Atmospheric Condition:</span>
+      {/* View Switcher: Simulator vs AI Chat */}
+      <div className="si-view-switcher">
+        <button
+          type="button"
+          className={`si-view-btn ${viewMode === 'simulator' ? 'is-active' : ''}`}
+          onClick={() => setViewMode('simulator')}
+        >
+          ⚡ Mission Hazard Simulator & Rankings
+        </button>
+        <button
+          type="button"
+          className={`si-view-btn ${viewMode === 'chat' ? 'is-active' : ''}`}
+          onClick={() => setViewMode('chat')}
+        >
+          🤖 Chat with FLAME-SI Co-Pilot (Chain-of-Thought)
+        </button>
+      </div>
+
+      {viewMode === 'chat' ? (
+        <FlameSIChat />
+      ) : (
+        <>
+          {/* Preset Environments */}
+          <span className="si-preset-label">Select Mission Profile or Atmospheric Condition:</span>
       <div className="si-presets-grid">
         {Object.entries(PRESETS).map(([key, p]) => (
           <button
@@ -337,6 +361,13 @@ export default function SIDashboard() {
                 >
                   Inspect in Explorer ↗
                 </button>
+                <button
+                  type="button"
+                  className="si-action-btn secondary"
+                  onClick={() => setViewMode('chat')}
+                >
+                  Ask FLAME-SI 💬
+                </button>
                 {inv.sourceUrl && (
                   <a
                     href={inv.sourceUrl}
@@ -472,6 +503,8 @@ export default function SIDashboard() {
           )}
         </div>
       </div>
+        </>
+      )}
     </section>
   );
 }

@@ -67,6 +67,44 @@
   margin: 0;
 }
 
+/* --- View Mode Switcher --- */
+.si-view-switcher {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.35rem;
+  border-radius: 12px;
+  gap: 0.35rem;
+  margin-bottom: 2.5rem;
+}
+
+.si-view-btn {
+  background: transparent;
+  border: none;
+  color: #9f9b94;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.si-view-btn:hover {
+  color: #f7f3ed;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.si-view-btn.is-active {
+  background: #ff8a58;
+  color: #0d0c0a;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(255, 138, 88, 0.25);
+}
+
 /* --- Environment Selector Grid --- */
 .si-preset-label {
   font-family: var(--font-mono, monospace);
