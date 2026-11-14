@@ -1,0 +1,312 @@
+/* ==========================================================================
+   Interactive Flame Lab: In-Chat Microgravity Physics Visualizer
+   Matches NASA Space Apps Dark Glass Aesthetics
+   ========================================================================== */
+
+.flame-lab-container {
+  background: rgba(10, 10, 14, 0.75);
+  border: 1px solid rgba(255, 138, 88, 0.28);
+  border-radius: 14px;
+  padding: 1.15rem;
+  margin: 1rem 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 138, 88, 0.05);
+}
+
+.flame-lab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.flame-lab-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.flame-lab-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #ff8a58;
+  background: rgba(255, 138, 88, 0.14);
+  border: 1px solid rgba(255, 138, 88, 0.3);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.flame-lab-title h4 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #f7f3ed;
+  margin: 0;
+}
+
+.flame-lab-regime-tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Visual Chamber */
+.flame-lab-chamber {
+  position: relative;
+  height: 160px;
+  background: radial-gradient(circle at 50% 60%, rgba(20, 24, 35, 0.9), rgba(5, 5, 8, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+}
+
+.flame-chamber-grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.flame-flow-vectors {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: #fb923c;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px dashed rgba(251, 146, 60, 0.4);
+}
+
+.flame-render-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 120px;
+}
+
+/* Spherical Diffusion Flame (0g) */
+.flame-sphere-glow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #7dd3fc 35%, #0284c7 70%, transparent 100%);
+  position: relative;
+  animation: sphere-pulse 3s infinite ease-in-out;
+  transition: transform 0.3s ease;
+}
+
+@keyframes sphere-pulse {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Elongated Convection Flame (0g + airflow) */
+.flame-elongated-glow {
+  width: 72px;
+  height: 38px;
+  border-radius: 50% 15% 15% 50%;
+  background: linear-gradient(90deg, #ffffff 0%, #fb923c 45%, #ef4444 85%, transparent 100%);
+  position: relative;
+  animation: flicker-stretch 0.12s infinite alternate ease-in-out;
+}
+
+@keyframes flicker-stretch {
+  0% { transform: scaleX(1) scaleY(1); }
+  100% { transform: scaleX(1.06) scaleY(0.96); }
+}
+
+/* Teardrop Flame (1g) */
+.flame-teardrop-glow {
+  width: 32px;
+  height: 52px;
+  border-radius: 50% 50% 35% 35% / 70% 70% 30% 30%;
+  background: radial-gradient(ellipse at 50% 80%, #ffffff 0%, #facc15 30%, #f97316 65%, #dc2626 95%);
+  box-shadow: 0 0 24px rgba(249, 115, 22, 0.6);
+  animation: teardrop-flicker 0.15s infinite alternate ease-in-out;
+}
+
+@keyframes teardrop-flicker {
+  0% { transform: scaleY(1) skewX(0.5deg); }
+  100% { transform: scaleY(1.08) skewX(-0.5deg); }
+}
+
+/* Hybrid (1/6g Moon) */
+.flame-hybrid-glow {
+  width: 42px;
+  height: 48px;
+  border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+  background: radial-gradient(ellipse at 50% 65%, #ffffff 0%, #c084fc 35%, #e11d48 75%, transparent 100%);
+  box-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
+}
+
+.flame-core-droplet {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px #ffffff;
+}
+
+.flame-burner-mount {
+  margin-top: 6px;
+  border-top: 2px solid #57534e;
+  padding-top: 2px;
+}
+
+.flame-fuel-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  color: #a8a29e;
+}
+
+/* Alert Callout */
+.flame-lab-alert {
+  position: absolute;
+  bottom: 6px;
+  left: 10px;
+  right: 10px;
+  background: rgba(220, 38, 38, 0.85);
+  color: #ffffff;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  line-height: 1.35;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Controls */
+.flame-lab-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.flame-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.flame-control-row label {
+  font-size: 0.8rem;
+  color: #a8a29e;
+  font-family: var(--font-mono, monospace);
+}
+
+.flame-btn-group {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.flame-g-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #d7ba9e;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flame-g-btn:hover {
+  color: #f7f3ed;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.flame-g-btn.active {
+  background: #ff8a58;
+  color: #0d0c0a;
+  border-color: #ff8a58;
+  font-weight: 600;
+}
+
+.flame-sliders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.flame-slider-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.slider-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  font-family: var(--font-mono, monospace);
+  color: #d7ba9e;
+}
+
+.flame-slider-item input[type="range"] {
+  accent-color: #ff8a58;
+  cursor: pointer;
+}
+
+/* Action Buttons */
+.flame-lab-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.flame-action-btn {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.flame-action-btn.primary {
+  background: #ff8a58;
+  color: #0d0c0a;
+  font-weight: 600;
+}
+
+.flame-action-btn.primary:hover {
+  background: #ffa87d;
+  box-shadow: 0 0 16px rgba(255, 138, 88, 0.4);
+}
+
+.flame-action-btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #d7ba9e;
+}
+
+.flame-action-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f7f3ed;
+  border-color: #ff8a58;
+}

@@ -117,6 +117,7 @@
 .flame-chat-body::-webkit-scrollbar {
   width: 6px;
 }
+
 .flame-chat-body::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 3px;
@@ -132,8 +133,15 @@
 }
 
 @keyframes chat-fade-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .chat-msg.user {
@@ -582,4 +590,85 @@
   background: rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.3);
   cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Co-Pilot Interactive Action Cards (Argon 4 Style Controller)
+   ========================================================================== */
+.copilot-action-cards-strip {
+  margin: 0.85rem 0 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 138, 88, 0.06);
+  border: 1px solid rgba(255, 138, 88, 0.22);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.copilot-action-strip-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: #ff8a58;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.copilot-action-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.copilot-action-pill {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f7f3ed;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.copilot-action-pill:hover {
+  background: rgba(255, 138, 88, 0.2);
+  border-color: #ff8a58;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 138, 88, 0.2);
+}
+
+.copilot-action-pill.primary {
+  background: #ff8a58;
+  color: #0d0c0a;
+  border-color: #ff8a58;
+  font-weight: 600;
+}
+
+.copilot-action-pill.primary:hover {
+  background: #ffa87d;
+  color: #000000;
+}
+
+.copilot-toast-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.76rem;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #34d399;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
 }

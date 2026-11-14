@@ -210,7 +210,23 @@ export default function SIDashboard() {
       </div>
 
       {viewMode === 'chat' ? (
-        <FlameSIChat />
+        <FlameSIChat
+          activePreset={activePreset}
+          oxygen={oxygen}
+          pressure={pressure}
+          gravity={gravity}
+          activeTab={activeTab}
+          onApplyPreset={handlePresetSelect}
+          onSetAtmosphere={({ oxygen: newO2, pressure: newP, gravity: newG }) => {
+            if (newO2 !== undefined) setOxygen(newO2);
+            if (newP !== undefined) setPressure(newP);
+            if (newG !== undefined) setGravity(newG);
+            setActivePreset('custom');
+          }}
+          onSwitchTab={(tab) => setActiveTab(tab)}
+          onSwitchView={(mode) => setViewMode(mode)}
+          onInspectInExplorer={handleInspectInExplorer}
+        />
       ) : (
         <>
           {/* Preset Environments */}
