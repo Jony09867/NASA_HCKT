@@ -7,6 +7,7 @@ import ScrollReveal from './components/ScrollReveal';
 import ParticleSaturn from './components/ParticleSaturn';
 import Magnet, { magnetizeAllPageButtons } from './components/Magnet';
 import SIDashboard from './components/SIDashboard';
+import AnimatedContent from './components/AnimatedContent';
 
 function initReactHome() {
   // 1. Eyebrow ShinyText
@@ -194,6 +195,18 @@ function initReactHome() {
 
   // 8. Global Magnetizer: magnetizes all buttons, nav links, and dynamic cards across the entire page!
   magnetizeAllPageButtons();
+
+  // Animate existing static layout nodes without reparenting the vanilla Explore UI.
+  // Text effects and dynamic library cards keep their own existing animations.
+  const entranceTargets = document.querySelectorAll(
+    '.hero > div:first-child > p, #react-hero-cta, .hero-foot, .art, ' +
+    '#explore .section-head, #explore .notice, #explore .filters-container, ' +
+    '#compare > div:first-child, #comparison, #about > .eyebrow, #react-about-cta, footer'
+  );
+  const animationRoot = createRoot(document.createElement('div'));
+  animationRoot.render(<>{Array.from(entranceTargets, (element, index) => (
+    <AnimatedContent key={index} targetElement={element} />
+  ))}</>);
 }
 
 if (document.readyState === 'loading') {
