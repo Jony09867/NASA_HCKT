@@ -61,7 +61,7 @@ function initReactHome() {
           spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
         >
           <a className="button" href="#si-intelligence">
-            SI Safety Dashboard <span>⚡</span>
+            SI Safety Dashboard
           </a>
         </Magnet>
         <Magnet

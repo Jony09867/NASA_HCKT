@@ -9,7 +9,6 @@ const PRESETS = {
   moon: {
     id: 'moon',
     title: 'Lunar Surface Base',
-    icon: '🌕',
     oxygen: 34,
     pressure: 10.2,
     gravity: '0.166g (Lunar)',
@@ -21,7 +20,6 @@ const PRESETS = {
   eva: {
     id: 'eva',
     title: 'Spacesuit EVA',
-    icon: '🧑‍🚀',
     oxygen: 100,
     pressure: 4.3,
     gravity: '0g (Microgravity)',
@@ -33,7 +31,6 @@ const PRESETS = {
   iss: {
     id: 'iss',
     title: 'ISS Cabin Habitat',
-    icon: '🛰️',
     oxygen: 21,
     pressure: 14.7,
     gravity: '0g (Microgravity)',
@@ -45,7 +42,6 @@ const PRESETS = {
   mars: {
     id: 'mars',
     title: 'Pressurized Mars Rover',
-    icon: '🚜',
     oxygen: 28,
     pressure: 10.0,
     gravity: '0.38g (Martian)',
@@ -202,14 +198,14 @@ export default function SIDashboard() {
           className={`si-view-btn ${viewMode === 'simulator' ? 'is-active' : ''}`}
           onClick={() => setViewMode('simulator')}
         >
-          ⚡ Mission Hazard Simulator & Rankings
+          Mission Hazard Simulator & Rankings
         </button>
         <button
           type="button"
           className={`si-view-btn ${viewMode === 'chat' ? 'is-active' : ''}`}
           onClick={() => setViewMode('chat')}
         >
-          🤖 Chat with FLAME-SI Co-Pilot (Chain-of-Thought)
+          Chat with FLAME-SI Co-Pilot (Chain-of-Thought)
         </button>
       </div>
 
@@ -230,7 +226,6 @@ export default function SIDashboard() {
             className="si-preset-card"
           >
             <div className="si-preset-title">
-              <span>{p.icon}</span>
               <span>{p.title}</span>
             </div>
             <div className="si-preset-specs">{p.specs}</div>
@@ -377,7 +372,7 @@ export default function SIDashboard() {
                     className="si-action-btn secondary"
                     onClick={() => setViewMode('chat')}
                   >
-                    Ask FLAME-SI 💬
+                    Ask FLAME-SI
                   </button>
                   {inv.sourceUrl && (
                     <a
@@ -404,28 +399,28 @@ export default function SIDashboard() {
             className={`si-tab-btn ${activeTab === 'prevention' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('prevention')}
           >
-            🛡️ 01. Prevention Protocols
+            01. Prevention Protocols
           </button>
           <button
             type="button"
             className={`si-tab-btn ${activeTab === 'detection' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('detection')}
           >
-            🚨 02. Detection Dynamics
+            02. Detection Dynamics
           </button>
           <button
             type="button"
             className={`si-tab-btn ${activeTab === 'suppression' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('suppression')}
           >
-            🧯 03. Suppression Architecture
+            03. Suppression Architecture
           </button>
           <button
             type="button"
             className={`si-tab-btn ${activeTab === 'earth' ? 'is-active' : ''}`}
             onClick={() => setActiveTab('earth')}
           >
-            🌍 04. Earth Applications
+            04. Earth Applications
           </button>
         </div>
 

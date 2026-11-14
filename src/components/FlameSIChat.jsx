@@ -47,7 +47,7 @@ const KNOWLEDGE_BASE = {
       { title: 'NASA ISS CIR: BASS-II Investigation', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=922' },
       { title: 'NASA Saffire Spacecraft Fire Safety Reports', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1738' },
     ],
-    reply: `### 🔥 Lunar Surface Base (34% O₂ · 10.2 psi · 1/6 g) Fire Hazard Directive
+    reply: `### Lunar Surface Base (34% O₂ · 10.2 psi · 1/6 g) Fire Hazard Directive
 
 Under the planned **Artemis Lunar Base Camp** atmospheric baseline, materials are substantially more flammable than on Earth:
 
@@ -77,7 +77,7 @@ Under the planned **Artemis Lunar Base Camp** atmospheric baseline, materials ar
       { title: 'NASA Apollo 1 Fire Investigation Records', url: 'https://www.nasa.gov/' },
       { title: 'NASA PSI: ACME s-Flame Spherical Combustion', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1627' },
     ],
-    reply: `### 🧑‍🚀 Spacesuit EVA (100% O₂ · 4.3 psi) Critical Ignition Envelope
+    reply: `### Spacesuit EVA (100% O₂ · 4.3 psi) Critical Ignition Envelope
 
 Spacesuits utilize **100% pure oxygen at 4.3 psi** to allow astronauts to bend glove fingers and joint bearings without fighting internal pressure. However, pure oxygen introduces extreme fire hazards:
 
@@ -106,7 +106,7 @@ Spacesuits utilize **100% pure oxygen at 4.3 psi** to allow astronauts to bend g
       { title: 'NASA PSI: SAME-R Smoke & Aerosol Investigation', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=247' },
       { title: 'NASA ISS DAFT Dust Measurement Study', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html' },
     ],
-    reply: `### 🚨 Why Terrestrial Smoke Detectors Fail in Microgravity
+    reply: `### Why Terrestrial Smoke Detectors Fail in Microgravity
 
 Standard home and building smoke alarms rely on hot air rising to the ceiling. In space, fire detection requires a completely different physics model:
 
@@ -135,7 +135,7 @@ Standard home and building smoke alarms rely on hot air rising to the ceiling. I
       { title: 'NASA Glenn: FLEX Droplet Extinguishment Experiment', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=144' },
       { title: 'Combustion Integrated Rack (CIR) Multi-user Droplet Apparatus', url: 'https://www.nasa.gov/' },
     ],
-    reply: `### 🧯 Cool Flames Discovery (<span class="inv-action-tag" data-inv="flex">FLEX ↗</span>) & Extinguishment Protocols
+    reply: `### Cool Flames Discovery (<span class="inv-action-tag" data-inv="flex">FLEX ↗</span>) & Extinguishment Protocols
 
 One of the most profound discoveries from NASA’s Combustion Integrated Rack was the phenomenon of **Cool Flames**:
 
@@ -162,7 +162,7 @@ One of the most profound discoveries from NASA’s Combustion Integrated Rack wa
       { title: 'NASA Spinoff: Space Station Fire Technology on Earth', url: 'https://spinoff.nasa.gov/' },
       { title: 'NFPA Standards for Water-Mist Fire Suppression', url: 'https://www.nfpa.org/' },
     ],
-    reply: `### 🌍 From Orbit to Earth: How NASA Fire Science Protects Us Daily
+    reply: `### From Orbit to Earth: How NASA Fire Science Protects Us Daily
 
 NASA’s microgravity combustion research directly powers everyday life-safety technologies across the globe:
 
@@ -176,11 +176,11 @@ NASA’s microgravity combustion research directly powers everyday life-safety t
 };
 
 const SUGGESTIONS = [
-  { label: '🌕 Evaluate Lunar Base Fire Hazard (34% O2)', key: 'lunar' },
-  { label: '🧑‍🚀 Why is 100% O2 in spacesuits dangerous?', key: 'spacesuit' },
-  { label: '🚨 Why do smoke detectors fail in 0g?', key: 'smoke' },
-  { label: '🧯 What is a cool flame and how to extinguish it?', key: 'coolflames' },
-  { label: '🌍 How does NASA fire research help Earth?', key: 'earth' },
+  { label: 'Evaluate Lunar Base Fire Hazard (34% O2)', key: 'lunar' },
+  { label: 'Why is 100% O2 in spacesuits dangerous?', key: 'spacesuit' },
+  { label: 'Why do smoke detectors fail in 0g?', key: 'smoke' },
+  { label: 'What is a cool flame and how to extinguish it?', key: 'coolflames' },
+  { label: 'How does NASA fire research help Earth?', key: 'earth' },
 ];
 
 export default function FlameSIChat() {
@@ -280,7 +280,7 @@ Pick a quick mission scenario below or ask me any question!`,
           { title: 'NASA Physical Science Informatics (PSI) Database', url: 'https://psi.nasa.gov/' },
           { title: 'NASA Glenn Research Center Combustion Integrated Rack', url: 'https://www.nasa.gov/' },
         ],
-        reply: `### 🔬 NASA SI Fire Safety Analysis
+        reply: `### NASA SI Fire Safety Analysis
 
 Regarding **"${query}"**:
 
@@ -344,7 +344,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
       {/* Header */}
       <div className="flame-chat-header">
         <div className="flame-chat-title-group">
-          <div className="flame-chat-avatar">🔥</div>
+          <div className="flame-chat-avatar">SI</div>
           <div className="flame-chat-title">
             <h3>
               <ShinyText
