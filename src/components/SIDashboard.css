@@ -124,7 +124,13 @@
   margin-bottom: 2.5rem;
 }
 
-.si-preset-card {
+.si-preset-card.rb-spotlight-card {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font: inherit;
+  min-width: 0;
+  width: 100%;
   padding: 1.25rem;
   text-align: left;
   cursor: pointer;
@@ -134,12 +140,24 @@
   gap: 0.5rem;
 }
 
-.si-preset-card:hover {
-  /* hover styling is handled by SpotlightCard inline styles */
+.si-preset-card.rb-spotlight-card {
+  background-color: #151a1a;
+  box-shadow: none;
 }
 
 .si-preset-card.is-active {
-  /* active styling is handled by SpotlightCard inline styles */
+  border-color: #ff8a58;
+  background-color: #211b18;
+  box-shadow: 0 0 24px rgba(255, 138, 88, 0.1);
+}
+
+.si-preset-card:focus-visible {
+  outline: 2px solid #ffe0bd;
+  outline-offset: 4px;
+}
+
+.si-preset-card > .si-preset-desc {
+  display: block;
 }
 
 .si-preset-title {

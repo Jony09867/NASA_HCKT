@@ -219,17 +219,27 @@ export default function SIDashboard() {
         {Object.entries(PRESETS).map(([key, p]) => (
           <SpotlightCard
             key={key}
-            isActive={activePreset === key}
+            as="button"
+            type="button"
+            aria-pressed={activePreset === key}
             onClick={() => handlePresetSelect(key)}
-            spotlightColor="rgba(255, 138, 88, 0.22)"
-            spotlightSize={260}
-            className="si-preset-card"
+            theme="dark"
+            spotlightColor="#ff8a58"
+            intensity={0.15}
+            spotlightSize={240}
+            softness={0.7}
+            shape="circle"
+            borderGlow={0.6}
+            proximity={80}
+            smoothing={0.3}
+            grain={0}
+            ambient={false}
+            flare
+            className={`si-preset-card ${activePreset === key ? 'is-active' : ''}`}
           >
-            <div className="si-preset-title">
-              <span>{p.title}</span>
-            </div>
-            <div className="si-preset-specs">{p.specs}</div>
-            <p className="si-preset-desc">{p.desc}</p>
+            <span className="si-preset-title">{p.title}</span>
+            <span className="si-preset-specs">{p.specs}</span>
+            <span className="si-preset-desc">{p.desc}</span>
           </SpotlightCard>
         ))}
       </div>
