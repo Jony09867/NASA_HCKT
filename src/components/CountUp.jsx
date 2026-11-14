@@ -11,16 +11,18 @@ export default function CountUp({
   style = {},
 }) {
   const [current, setCurrent] = useState(from);
-  const prevToRef = useRef(from);
   const animRef = useRef(null);
+  const prevValRef = useRef(from);
 
   useEffect(() => {
-    const startVal = prevToRef.current;
+    // Cancel any running animation
+    if (animRef.current) cancelAnimationFrame(animRef.current);
+
+    const startVal = prevValRef.current;
     const endVal = Number(to) || 0;
-    prevToRef.current = endVal;
 
     const startTime = performance.now();
-    const durationMs = duration * 1000;
+    const durationMs = Math.max(300, duration * 1000);
 
     const tick = (now) => {
       const elapsed = now - startTime;
@@ -33,6 +35,8 @@ export default function CountUp({
 
       if (progress < 1) {
         animRef.current = requestAnimationFrame(tick);
+      } else {
+        prevValRef.current = endVal;
       }
     };
 

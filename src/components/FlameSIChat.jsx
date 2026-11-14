@@ -350,9 +350,10 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
               <ShinyText
                 text="FLAME-SI"
                 color="#f7f3ed"
-                shineColor="#ff8a58"
-                speed={3.2}
-                shineWidth={30}
+                shineColor="#ffd7a8"
+                speed={4.5}
+                delay={1}
+                shineWidth={28}
                 softness={0.8}
               />{' '}
               Co-Pilot

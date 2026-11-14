@@ -341,7 +341,7 @@ export default function SIDashboard() {
             </div>
           </div>
 
-          <AnimatedContent distance={14} duration={0.6} stagger={0.07}>
+          <AnimatedContent distance={14} duration={0.6} stagger={0.07} animateKey={activePreset}>
             {rankedInvestigations.map((inv, idx) => (
               <div key={inv.id} className={`si-rank-card ${idx === 0 ? 'top-rank' : ''}`}>
                 <div className="si-rank-badge-row">
