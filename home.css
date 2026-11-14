@@ -1,0 +1,202 @@
+/* Home Section Animations and 3D Particle Stage */
+
+.hero {
+  position: relative;
+  background: radial-gradient(ellipse at 75% 43%, #421e14 0%, #171a1a 32%, #101516 65%);
+}
+
+.hero > div:first-child {
+  position: relative;
+  z-index: 3;
+}
+
+#react-hero-eyebrow {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  margin-bottom: 8px;
+}
+
+#react-hero-headline {
+  margin: 20px 0 24px;
+}
+
+#react-hero-headline h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.045em;
+  font-size: clamp(52px, 7.2vw, 105px);
+  line-height: 0.94;
+  margin: 0;
+  color: var(--ink, #e9e7df);
+}
+
+.hero-line {
+  display: block;
+}
+
+.hero-muted {
+  font-style: normal;
+  color: #a8ada6;
+}
+
+.hero .button {
+  transition: transform 0.2s cubic-bezier(0.2, 0.65, 0.2, 1), background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero .button:hover {
+  transform: translateY(-3px);
+  background-color: #ff8555;
+  box-shadow: 0 10px 25px rgba(255, 107, 57, 0.35);
+}
+
+.hero .button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 4px;
+}
+
+/* 3D Art Stage */
+.art {
+  position: relative;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.art-3d-stage {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.saturn-wrap {
+  position: relative;
+  width: min(88%, 450px);
+  aspect-ratio: 1;
+  z-index: 2;
+  border-radius: 50%;
+}
+
+.saturn-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -15%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 80, 20, 0.24) 0%, rgba(220, 50, 15, 0.08) 45%, transparent 70%);
+  filter: blur(25px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orbit {
+  pointer-events: none;
+}
+
+.orbit1 {
+  width: 88%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  transform: rotate(-25deg) scaleY(0.65);
+}
+
+.orbit2 {
+  width: 108%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  transform: rotate(30deg) scaleY(0.63);
+}
+
+.art-label,
+.art-note {
+  position: absolute;
+  font-size: 9px;
+  line-height: 1.8;
+  letter-spacing: 0.15em;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.art-label {
+  left: 0;
+  top: 22%;
+  color: #aeb5ad;
+}
+
+.art-note {
+  right: 0;
+  bottom: 14%;
+  color: var(--orange, #ff6b39);
+}
+
+/* About Section ScrollReveal */
+#react-about-reveal {
+  margin: 20px 0 24px;
+}
+
+#react-about-reveal h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.045em;
+  font-size: clamp(44px, 5vw, 70px);
+  line-height: 1.03;
+  margin: 0;
+}
+
+#react-about-reveal em {
+  font-style: normal;
+  color: #758975;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 60px;
+    padding-bottom: 40px;
+  }
+  .art {
+    min-height: 420px;
+    margin-top: 30px;
+  }
+  .art-3d-stage {
+    max-width: 420px;
+  }
+  .art-label {
+    left: 2%;
+    top: 10%;
+  }
+  .art-note {
+    right: 2%;
+    bottom: 8%;
+  }
+}
+
+@media (max-width: 480px) {
+  #react-hero-headline h1 {
+    font-size: clamp(38px, 11vw, 54px);
+    line-height: 1;
+  }
+  .art-3d-stage {
+    max-width: 330px;
+  }
+  .art-label,
+  .art-note {
+    font-size: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .button {
+    transition: none;
+  }
+  .hero .button:hover {
+    transform: none;
+  }
+}

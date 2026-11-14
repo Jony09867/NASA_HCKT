@@ -1,0 +1,30 @@
+.shiny-text {
+  display: inline-block;
+  background: linear-gradient(
+    115deg,
+    var(--shiny-color) 0%,
+    var(--shiny-color) calc(50% - var(--shiny-width) / 2),
+    var(--shiny-highlight) 50%,
+    var(--shiny-color) calc(50% + var(--shiny-width) / 2),
+    var(--shiny-color) 100%
+  );
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shiny-sweep var(--shiny-speed, 3s) ease-in-out infinite;
+  animation-delay: var(--shiny-delay, 3s);
+}
+
+.shiny-text-static {
+  display: inline-block;
+}
+
+@keyframes shiny-sweep {
+  0% {
+    background-position: 120% 0;
+  }
+  50%, 100% {
+    background-position: -120% 0;
+  }
+}

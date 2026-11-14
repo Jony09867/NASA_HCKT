@@ -1,1 +1,133 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Explore microgravity combustion investigations."><title>Flame in Freefall Explorer</title><link rel="stylesheet" href="style.css"></head><body><header><a class="brand" href="#top"><span class="mark">✳</span> FREEFALL <small>EXPLORER</small></a><nav><a href="#explore">Explore</a><a href="#compare">Compare</a><a href="#about">About</a></nav><span class="badge">NASA SPACE APPS · PROJECT</span></header><main id="top"><section class="hero"><div><span class="eyebrow">MICROGRAVITY RESEARCH / 01</span><h1>Fire behaves<br><em>differently</em><br>up here<span class="orange">.</span></h1><p>Explore the experiments helping us understand combustion beyond Earth. Discover the questions, conditions, and measurements behind the science.</p><a class="button" href="#explore">Explore investigations <span>↗</span></a><div class="hero-foot"><span>↓ SCROLL TO EXPLORE</span><span>BUILT FOR CURIOUS MINDS</span></div></div><div class="art" aria-hidden="true"><div class="orbit orbit1"></div><div class="orbit orbit2"></div><div class="planet"><div class="flame">✦</div></div><span class="art-label">MICROGRAVITY<br><b>0G / COMBUSTION</b></span><span class="art-note">A DIFFERENT<br>WAY TO BURN ↗</span></div></section><section class="explore" id="explore"><div class="section-head"><div><span class="eyebrow">THE INVESTIGATION LIBRARY / 02</span><h2>Explore the science<span class="orange">.</span></h2><p>Search the library and select two investigations to compare.</p></div><div class="count"><strong id="count">00</strong><span>INVESTIGATIONS<br>AVAILABLE</span></div></div><div class="notice"><strong>Research in progress.</strong> The team is collecting and verifying NASA sources. Investigation details will appear here when available.</div><div class="filters"><label><span>SEARCH INVESTIGATIONS</span><input id="search" placeholder="Search by name or objective..." type="search"></label><label><span>FUEL TYPE</span><select id="fuel"><option value="">All fuel types</option></select></label><button id="clear" class="clear">Clear filters ↗</button></div><div id="cards" class="cards"></div><div id="empty" class="empty"><span>✳</span><h3>No investigations to show yet</h3><p>Verified experiment data will appear here. Try clearing your filters or check back later.</p></div></section><section class="compare" id="compare"><div><span class="eyebrow">SIDE BY SIDE / 03</span><h2>Compare the<br>conditions<span class="orange">.</span></h2><p>Select up to two investigations from the library to see their objectives, fuels, conditions, and measurements together.</p></div><div id="comparison" class="comparison"><div class="slot">01 <span>SELECT AN INVESTIGATION ABOVE ↗</span></div><div class="slot">02 <span>SELECT AN INVESTIGATION ABOVE ↗</span></div></div></section><section class="about" id="about"><span class="eyebrow">WHY IT MATTERS / 04</span><h2>Better knowledge.<br><em>Safer exploration.</em></h2><p>Understanding combustion in microgravity helps researchers study fire safety for future space missions. This independent hackathon project aims to make research easier to explore.</p><a href="https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/?tab=details" target="_blank" rel="noopener">VIEW THE CHALLENGE ↗</a></section></main><footer><div class="brand"><span class="mark">✳</span> FREEFALL <small>EXPLORER</small></div><span>AN INDEPENDENT SPACE APPS PROJECT</span><a href="#top">BACK TO TOP ↑</a></footer><script src="data.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore microgravity combustion investigations.">
+  <title>Flame in Freefall Explorer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="#top"><span class="mark">✳</span> FREEFALL <small>EXPLORER</small></a>
+    <nav>
+      <a href="#explore">Explore</a>
+      <a href="#compare">Compare</a>
+      <a href="#about">About</a>
+    </nav>
+    <span class="badge">NASA SPACE APPS · PROJECT</span>
+  </header>
+
+  <main id="top">
+    <!-- Section 01: Hero / Home -->
+    <section class="hero">
+      <div>
+        <div id="react-hero-eyebrow">
+          <span class="eyebrow">MICROGRAVITY RESEARCH / 01</span>
+        </div>
+
+        <div id="react-hero-headline">
+          <h1>
+            <span class="hero-line">Fire behaves</span>
+            <span class="hero-line"><em class="hero-muted">differently</em></span>
+            <span class="hero-line">up here<span class="orange">.</span></span>
+          </h1>
+        </div>
+
+        <p>Explore the experiments helping us understand combustion beyond Earth. Discover the questions, conditions, and measurements behind the science.</p>
+        <a class="button" href="#explore">Explore investigations <span>↗</span></a>
+
+        <div class="hero-foot">
+          <span>↓ SCROLL TO EXPLORE</span>
+          <span>BUILT FOR CURIOUS MINDS</span>
+        </div>
+      </div>
+
+      <div class="art" aria-hidden="true">
+        <div id="react-hero-art">
+          <div class="orbit orbit1"></div>
+          <div class="orbit orbit2"></div>
+          <div class="planet"><div class="flame">✦</div></div>
+        </div>
+        <div class="orbit orbit1"></div>
+        <div class="orbit orbit2"></div>
+        <span class="art-label">MICROGRAVITY<br><b>0G / COMBUSTION</b></span>
+        <span class="art-note">A DIFFERENT<br>WAY TO BURN ↗</span>
+      </div>
+    </section>
+
+    <!-- Section 02: Explore (Teammate component - untouched) -->
+    <section class="explore" id="explore">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">THE INVESTIGATION LIBRARY / 02</span>
+          <h2>Explore the science<span class="orange">.</span></h2>
+          <p>Search the library and select two investigations to compare.</p>
+        </div>
+        <div class="count">
+          <strong id="count">00</strong>
+          <span>INVESTIGATIONS<br>AVAILABLE</span>
+        </div>
+      </div>
+      <div class="notice">
+        <strong>Research in progress.</strong> The team is collecting and verifying NASA sources. Investigation details will appear here when available.
+      </div>
+      <div class="filters">
+        <label>
+          <span>SEARCH INVESTIGATIONS</span>
+          <input id="search" placeholder="Search by name or objective..." type="search">
+        </label>
+        <label>
+          <span>FUEL TYPE</span>
+          <select id="fuel">
+            <option value="">All fuel types</option>
+          </select>
+        </label>
+        <button id="clear" class="clear">Clear filters ↗</button>
+      </div>
+      <div id="cards" class="cards"></div>
+      <div id="empty" class="empty">
+        <span>✳</span>
+        <h3>No investigations to show yet</h3>
+        <p>Verified experiment data will appear here. Try clearing your filters or check back later.</p>
+      </div>
+    </section>
+
+    <!-- Section 03: Compare (Teammate component - untouched) -->
+    <section class="compare" id="compare">
+      <div>
+        <span class="eyebrow">SIDE BY SIDE / 03</span>
+        <h2>Compare the<br>conditions<span class="orange">.</span></h2>
+        <p>Select up to two investigations from the library to see their objectives, fuels, conditions, and measurements together.</p>
+      </div>
+      <div id="comparison" class="comparison">
+        <div class="slot">01 <span>SELECT AN INVESTIGATION ABOVE ↗</span></div>
+        <div class="slot">02 <span>SELECT AN INVESTIGATION ABOVE ↗</span></div>
+      </div>
+    </section>
+
+    <!-- Section 04: About (ScrollReveal) -->
+    <section class="about" id="about">
+      <span class="eyebrow">WHY IT MATTERS / 04</span>
+      <div id="react-about-reveal">
+        <h2>Better knowledge.<br><em>Safer exploration.</em></h2>
+      </div>
+      <p>Understanding combustion in microgravity helps researchers study fire safety for future space missions. This independent hackathon project aims to make research easier to explore.</p>
+      <a href="https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/?tab=details" target="_blank" rel="noopener">VIEW THE CHALLENGE ↗</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand"><span class="mark">✳</span> FREEFALL <small>EXPLORER</small></div>
+    <span>AN INDEPENDENT SPACE APPS PROJECT</span>
+    <a href="#top">BACK TO TOP ↑</a>
+  </footer>
+
+  <!-- React Bits Homepage Mount -->
+  <script type="module" src="/src/home.jsx"></script>
+  <!-- Teammate Scripts (Preserved in original order) -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
