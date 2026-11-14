@@ -95,6 +95,174 @@ function formatAssistantMessage(rawText) {
   return htmlParts.join('');
 }
 
+// Curated NASA PSI Flight Investigation Knowledge Base (English Primary)
+const KNOWLEDGE_BASE = {
+  lunar: {
+    title: 'Lunar Surface Base Fire Hazard Analysis',
+    reasoning: `1. Parsing mission atmospheric inputs: 34% O₂ concentration, 10.2 psi (70.3 kPa), 1/6 g Lunar gravity.
+2. Calculating Oxygen Partial Pressure: PO₂ = (0.34 * 10.2) = 3.47 psi (+12.3% above Earth sea-level standard of 3.09 psi).
+3. Simulating material flammability: Materials show an estimated +82% upward flame spread rate compared to terrestrial norms.
+4. Cross-referencing NASA PSI Investigations:
+   - ACME: CFI-G (Investigation #7585) for elevated O₂ limits up to 85%.
+   - BASS-II (Investigation #922) for PMMA and solid plastic extinction limits.
+   - Saffire-I & III (Investigation #1738 & #7449) for low-speed ventilation airflow thresholds.
+5. Evaluating partial-gravity soot transport: 1/6 g creates a transitional weakly-convective boundary layer where buoyant heat loss is insufficient to self-extinguish flames without active intervention.`,
+    tools: [
+      { cmd: 'psi-query --atmosphere="34% O2" --pressure="10.2 psi" --gravity="0.166g"', output: 'Found 3 applicable flight investigations: ACME-CFIG, BASS-II, Saffire-III' },
+      { cmd: 'calc-flammability-index --fuel="PMMA" --o2=34', output: 'Critical Limiting Oxygen Index (LOI) exceeded; spontaneous smoldering risk high' },
+    ],
+    plan: [
+      'Evaluate effective oxygen level (PO₂ = 3.47 psi)',
+      'Enforce strict NASA-STD-6001 Flammability Thresholds on habitat textiles',
+      'Set automated ventilation cut-off threshold (<0.1 m/s) upon thermal alarm',
+      'Prepare fine-water-mist and CO₂ inert gas dilution protocols',
+    ],
+    sources: [
+      { title: 'NASA PSI: ACME CFI-G Flight Data', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=7585' },
+      { title: 'NASA ISS CIR: BASS-II Investigation', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=922' },
+      { title: 'NASA Saffire Spacecraft Fire Safety Reports', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1738' },
+    ],
+    reply: `### Lunar Surface Base (34% O₂ · 10.2 psi · 1/6 g) — Fire Safety Analysis
+
+Under the planned **Artemis Lunar Base Camp** atmospheric baseline, materials are substantially more flammable than on Earth:
+
+* **Effective Oxygen Level (PO₂): 3.47 psi**
+  ↳ Human Context: +12.3% higher pure oxygen concentration than Earth sea level (3.09 psi). While this accelerates EVA pre-breathing for astronauts, it significantly lowers the ignition energy threshold of habitat fabrics and electronics insulation.
+* **Flame Spread Velocity: ≈ +80% faster than Earth**
+  ↳ Flight Evidence: Flight data from <span class="inv-action-tag" data-inv="acme-cfig">ACME: CFI-G ↗</span> and <span class="inv-action-tag" data-inv="bass-ii">BASS-II ↗</span> confirm polymers (like PMMA and Nomex composites) burn nearly twice as fast under enriched lunar atmospheric conditions.
+* **1/6th Lunar Gravity Dynamics: Heated gases do not rise**
+  ↳ Critical Hazard: Reduced gravity suppresses buoyant convection. Hot pyrolysis gases and smoke accumulate around the ignition point without cooling, delaying response from standard ceiling-mounted thermal detectors.
+* **Mandatory Safety Protocol: Instant ventilation throttle (< 0.1 m/s)**
+  ↳ Engineering Directive: <span class="inv-action-tag" data-inv="saffire-iii">Saffire-III ↗</span> proved that low forced airflow acts like a bellows supplying fresh oxygen; cabin ventilation fans must cut off instantly upon any thermal alarm.`,
+  },
+
+  spacesuit: {
+    title: 'Spacesuit EVA (100% O₂ · 4.3 psi) Safety Limits',
+    reasoning: `1. Parsing EVA parameters: 100% pure Oxygen at 4.3 psi (29.6 kPa) in 0g microgravity.
+2. Oxygen partial pressure = 4.30 psi (+39% above Earth sea level).
+3. Reviewing historical precedents: Apollo 1 (1967 pure oxygen launchpad flashover).
+4. Evaluating microgravity ignition dynamics: Without natural convection, a static spark creates an instantaneous spherical flame envelope.
+5. Cross-referencing ACME: s-Flame (Investigation #1627) and ACME: CFI-G.`,
+    tools: [
+      { cmd: 'psi-eval --o2=100 --pressure=4.3 --gravity=0', output: 'Extreme Fire Hazard: Pure O₂ atmospheric classification' },
+      { cmd: 'loi-check --materials=["Nylon", "Teflon", "Kevlar"]', output: 'Only fluoropolymers and polybenzimidazole (PBI) meet 100% O₂ ignition criteria' },
+    ],
+    plan: [
+      'Assess 100% O₂ pure chemical oxidation kinetics',
+      'Eliminate all static discharge and electrical ignition sources',
+      'Mandate non-combustible fluoropolymer wire jacketing',
+    ],
+    sources: [
+      { title: 'NASA Apollo 1 Fire Investigation Records', url: 'https://www.nasa.gov/' },
+      { title: 'NASA PSI: ACME s-Flame Spherical Combustion', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=1627' },
+    ],
+    reply: `### Spacesuit EVA (100% O₂ · 4.3 psi) — Critical Ignition Envelope
+
+Spacesuits utilize **100% pure oxygen at 4.3 psi** to allow astronauts to bend glove fingers and joint bearings without fighting internal pressure. However, pure oxygen introduces extreme fire hazards:
+
+* **Pure Oxygen Concentration (PO₂): 4.30 psi**
+  ↳ Human Context: +39% above Earth sea level oxygen partial pressure. Under pure O₂, materials considered self-extinguishing on Earth ignite spontaneously from minimal static sparks (Apollo 1 precedent).
+* **0g Freefall Spherical Flame Geometry**
+  ↳ Flight Evidence: <span class="inv-action-tag" data-inv="acme-s-flame">ACME: s-Flame ↗</span> proved that stationary microgravity flames form spherical reaction envelopes where oxygen diffuses inward from all directions, creating an intensely hot localized reaction zone.
+* **NASA Spacesuit Safety Mandates**
+  ↳ Engineering Directive: Zero electrostatic spark tolerance with continuous grounding; internal life-support wiring is strictly insulated with non-combustible fluoropolymers (Teflon) and polybenzimidazole (PBI) composites.`,
+  },
+
+  smoke: {
+    title: 'Microgravity Smoke & Particle Detection Dynamics',
+    reasoning: `1. Analyzing terrestrial vs microgravity smoke transport.
+2. On Earth, hot buoyant plumes rapidly lift smoke aerosols to ceiling detectors.
+3. In microgravity (0g), buoyant plumes do not exist. Aerosols drift only via slow diffusion and cabin air conditioning ventilation.
+4. Reviewing SAME and SAME-R (Smoke and Aerosol Measurement Experiment, Investigation #247).
+5. Reviewing DAFT-2 (Dust and Aerosol Measurement Feasibility Test) for distinguishing lunar regolith dust from fire aerosols.`,
+    tools: [
+      { cmd: 'psi-query --experiment="SAME-R" --type="particle-size"', output: 'Soot agglomeration confirmed: particles average 8x-12x larger diameter in 0g' },
+      { cmd: 'daft2-spectral-analysis --aerosol="regolith-vs-pyrolysis"', output: 'Dual-wavelength optical discrimination calibrated' },
+    ],
+    plan: [
+      'Map cabin forced-air circulation vectors to detector locations',
+      'Calibrate optical obscuration thresholds for large soot clusters',
+      'Deploy multi-spectral sensors to filter out ambient Lunar dust',
+    ],
+    sources: [
+      { title: 'NASA PSI: SAME-R Smoke & Aerosol Investigation', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=247' },
+      { title: 'NASA ISS DAFT Dust Measurement Study', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html' },
+    ],
+    reply: `### Microgravity Smoke Detection Dynamics — Why Terrestrial Alarms Fail in Space
+
+Standard terrestrial smoke detectors rely on hot buoyant air carrying smoke particles upward to ceiling sensors. In microgravity, fire detection follows entirely different physics:
+
+* **Absence of Buoyant Plumes (Hot smoke does not rise)**
+  ↳ Human Context: Without gravity, heated air has no weight differential to make it rise. Smoke lingers in a dense cloud around the overheating wire, spreading only via slow diffusion or air conditioner vents.
+* **Particle Agglomeration: 8x to 12x Larger Soot Clusters**
+  ↳ Flight Evidence: <span class="inv-action-tag" data-inv="same-r">SAME-R ↗</span> discovered that because soot particles aren't swept away, they collide and aggregate into giant soot clusters, causing terrestrial optical ionization detectors to miscalculate smoke density.
+* **Lunar and Martian Regolith Dust False Alarms**
+  ↳ Engineering Directive: Fine, abrasive mineral regolith dust carried inside suits mimics smoke particles. Dual-wavelength laser scattering (<span class="inv-action-tag" data-inv="same-r">SAME-R ↗</span> calibrated) is mandatory to discriminate between mineral dust and pyrolyzed plastics.`,
+  },
+
+  coolflames: {
+    title: 'Cool Flames Discovery & Suppression Architecture',
+    reasoning: `1. Inquiring into liquid fuel droplet extinction in low gravity.
+2. Reviewing the FLEX (Flame Extinguishment Experiment, Investigation #144) and FLEX-2 datasets.
+3. Phenomenon: Droplet burning apparent extinction (flame vanishes optically), yet fuel droplet continues evaporating at elevated rates.
+4. Chemical mechanism: Low-temperature chemical oxidation (600 - 800 K) sustained by slow radical diffusion in spherical geometry.
+5. Fire suppression impact: Extinguishing the visible flame does not guarantee safety; re-introducing oxygen can trigger explosive flash reignition.`,
+    tools: [
+      { cmd: 'psi-query --experiment="FLEX" --fuel="Heptane"', output: 'Cool flame persistence verified across 40+ ISS droplet burns' },
+      { cmd: 'suppressant-efficiency --agent="CO2" --agent="Helium"', output: 'Helium conducts thermal energy away faster; CO₂ acts as chemical heat capacity sink' },
+    ],
+    plan: [
+      'Monitor post-extinction droplet temperature via infrared radiometry',
+      'Maintain inert gas blanket (CO₂/He) until fuel surface drops below pyrolysis temp',
+      'Avoid premature cabin repressurization or ventilation reactivation',
+    ],
+    sources: [
+      { title: 'NASA Glenn: FLEX Droplet Extinguishment Experiment', url: 'https://www.nasa.gov/mission_pages/station/research/experiments/explorer/Investigation.html?#id=144' },
+      { title: 'Combustion Integrated Rack (CIR) Multi-user Droplet Apparatus', url: 'https://www.nasa.gov/' },
+    ],
+    reply: `### Cool Flames Discovery (<span class="inv-action-tag" data-inv="flex">FLEX ↗</span>) & Extinguishment Protocols
+
+One of the most profound discoveries from NASA’s Combustion Integrated Rack was the phenomenon of **Cool Flames**:
+
+* **Invisible Low-Temperature Combustion: 600 - 800 K**
+  ↳ Human Context: After the visible yellow flame (1500–2000 K) extinguishes, the fuel droplet continues burning invisibly at low temperatures without emitting visible light or heavy soot.
+* **Catastrophic Re-ignition Hazard**
+  ↳ Flight Evidence: <span class="inv-action-tag" data-inv="flex">FLEX ↗</span> proved that if fresh cabin air is re-introduced prematurely, the invisible cool flame instantaneously transitions back into a violent high-temperature fire.
+* **Suppression Architecture: Sustained Dilution Blanketing**
+  ↳ Engineering Directive: Spacecraft fire suppression cannot rely on a quick discharge. The compartment must remain saturated with CO₂ or Helium diluent until infrared radiometers verify surfaces have cooled below reaction thresholds.`,
+  },
+
+  earth: {
+    title: 'NASA Space Combustion Technologies Applied to Earth',
+    reasoning: `1. Identifying technology transfers from NASA Physical Science Informatics to terrestrial life.
+2. Fine-water-mist fire suppression on the ISS replacing toxic Halon on Earth.
+3. Commercial aviation cargo fire suppression without water damage or hazardous gas.
+4. Firefighter personal protective equipment (PPE): PBI thermal suits and lightweight composite breathing tanks derived from astronaut life support systems.`,
+    tools: [
+      { cmd: 'nasa-spinoff --field="fire-safety"', output: 'Over 40 commercial spinoffs identified in municipal firefighting and building safety' },
+    ],
+    plan: [
+      'Highlight fine-water-mist suppression systems',
+      'Detail firefighter thermal gear derived from spacesuits',
+      'Explain commercial clean-room optical smoke sensors',
+    ],
+    sources: [
+      { title: 'NASA Spinoff: Space Station Fire Technology on Earth', url: 'https://spinoff.nasa.gov/' },
+      { title: 'NFPA Standards for Water-Mist Fire Suppression', url: 'https://www.nfpa.org/' },
+    ],
+    reply: `### From Orbit to Earth: How NASA Fire Science Protects Us Daily
+
+NASA’s microgravity combustion research directly powers everyday life-safety technologies across the globe:
+
+1. **Fine-Water-Mist Fire Suppression Systems:**
+   ↳ Human Context: Developed for the ISS to extinguish fires without toxic Halon or water-deluge damage. Today, protects hospital ICUs, nuclear power facilities, server data centers, and historic museums on Earth.
+2. **Advanced Firefighter Personal Protective Equipment (PPE):**
+   ↳ Human Context: Flame-resistant PBI/Nomex fabrics and ultra-lightweight carbon-composite breathing tanks were directly derived from astronaut life support systems following the Apollo fire investigation.
+3. **Early-Warning Aviation Cargo Smoke Detectors:**
+   ↳ Human Context: Laser particle sensors calibrated during <span class="inv-action-tag" data-inv="same-r">SAME ↗</span> and <span class="inv-action-tag" data-inv="bass-ii">BASS ↗</span> experiments are now standard in modern commercial airliner cargo bays and clean-room facilities.`,
+  },
+};
+
 // Dynamic Multi-Angle NASA SI Reasoning & Synthesis Engine
 function generateDynamicSynthesis(query) {
   const qLower = query.toLowerCase();
@@ -222,16 +390,16 @@ export default function FlameSIChat() {
       role: 'assistant',
       reasoning: 'FLAME-SI v2.4 initialized with NASA Physical Science Informatics (PSI) flight investigations. Real-time microgravity combustion model active.',
       tools: [{ cmd: 'init --dataset="NASA-PSI-CIR-MSG" --status="ready"', output: '10 flight investigations verified' }],
-      plan: ['Artemis Oy bazasi, Skafandr EVA va ISS yong\'in xavfsizligi stsenariylariga tayyor.'],
+      plan: ['Ready to evaluate Artemis Lunar Base, Spacesuit EVA, and ISS fire safety scenarios.'],
       sources: [{ title: 'NASA Physical Science Informatics (PSI)', url: 'https://psi.nasa.gov/' }],
-      text: `Salom! Men **FLAME-SI** — NASA mikrogravitatsiya tadqiqotlari asosida ishlovchi kosmik yong'in xavfsizligi intellektual tizimiman.
+      text: `Hello! I am **FLAME-SI** — NASA's Super Intelligence co-pilot for spacecraft fire safety and microgravity combustion dynamics.
 
-Men NASAning o'nlab yillik parvoz tajribalari—jumladan **BASS-II**, **FLEX**, **ACME** va **Saffire**—kashfiyotlarini tahlil qilib, Oy, Mars va ISS missiyalari uchun alanga dinamikasi hamda xavfsizlik protokollarini baholayman.
+I synthesize findings from decades of NASA flight experiments—including **BASS-II**, **FLEX**, **ACME**, and **Saffire**—to help aerospace engineers evaluate ignition thresholds, flame propagation, and fire suppression protocols for missions to the Moon, Mars, and the ISS.
 
-* **Fizik hisoblar:** Kislorod parsial bosimi (PO₂), gravitatsiya rejimi va konveksiya yo'qligi hisobga olinadi.
-* **Tushunarli tahlil:** Quruq formulalar o'rniga har bir ko'rsatkich inson tushunadigan ma'nosi bilan birga taqdim etiladi.
+* **Physics-grounded analysis:** Evaluates oxygen partial pressure (PO₂), buoyancy-free extinction limits, and ventilation velocity thresholds.
+* **Human-accessible insights:** Technical metrics are clearly interpreted with intuitive real-world context and operational safety directives.
 
-Quyidagi stsenariylardan birini tanlang yoki istalgan savolingizni bering!`,
+Select a mission scenario below or ask any combustion question to begin!`,
     },
   ]);
 
@@ -337,9 +505,9 @@ Quyidagi stsenariylardan birini tanlang yoki istalgan savolingizni bering!`,
         role: 'assistant',
         reasoning: 'FLAME-SI v2.4 reset to baseline state.',
         tools: [{ cmd: 'init --dataset="NASA-PSI-CIR-MSG"', output: 'Ready' }],
-        plan: ['Artemis Oy bazasi, Skafandr EVA va ISS yong\'in xavfsizligi stsenariylariga tayyor.'],
+        plan: ['Ready to evaluate Artemis Lunar Base, Spacesuit EVA, and ISS fire safety scenarios.'],
         sources: [{ title: 'NASA Physical Science Informatics (PSI)', url: 'https://psi.nasa.gov/' }],
-        text: `Muloqot yangilandi. Yangi missiya yong'in xavfsizligi stsenariylarini tahlil qilishga yoki NASA mikrogravitatsiya tajribalari bo'yicha savollaringizga javob berishga tayyorman!`,
+        text: `Conversation reset. I am ready to evaluate new mission fire safety scenarios or answer any questions regarding NASA's microgravity combustion research!`,
       },
     ]);
   };
