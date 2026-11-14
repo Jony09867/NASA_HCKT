@@ -672,3 +672,127 @@
   border-radius: 6px;
   margin-top: 0.5rem;
 }
+
+/* Gemini API Key Configuration Modal & Button */
+.flame-key-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #a7a29a;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.flame-key-btn:hover {
+  background: rgba(255, 138, 88, 0.15);
+  border-color: rgba(255, 138, 88, 0.4);
+  color: #f7f3ed;
+}
+
+.flame-key-btn.has-key {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.35);
+  background: rgba(52, 211, 153, 0.08);
+}
+
+.flame-key-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.flame-key-modal {
+  background: #141419;
+  border: 1px solid rgba(255, 138, 88, 0.3);
+  border-radius: 14px;
+  max-width: 480px;
+  width: 100%;
+  padding: 1.5rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.flame-key-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.flame-key-modal-header h4 {
+  font-size: 0.95rem;
+  color: #f7f3ed;
+  margin: 0;
+  font-weight: 600;
+}
+
+.flame-key-close-btn {
+  background: transparent;
+  border: none;
+  color: #8c8880;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.flame-key-desc {
+  font-size: 0.8rem;
+  color: #a7a29a;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.flame-key-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  color: #f7f3ed;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  outline: none;
+  margin-bottom: 1.25rem;
+  box-sizing: border-box;
+}
+
+.flame-key-input:focus {
+  border-color: #ff8a58;
+}
+
+.flame-key-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.flame-key-clear-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #a7a29a;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.flame-key-save-btn {
+  background: #ff8a58;
+  color: #0d0c0a;
+  border: none;
+  font-weight: 600;
+  padding: 0.45rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}

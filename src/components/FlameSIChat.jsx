@@ -14,12 +14,18 @@ import {
   ThumbsDownIcon,
   SparklesIcon,
   RouteIcon,
+  KeyIcon,
 } from 'lucide-react';
 import ShinyText from './ShinyText';
 import FadeContent from './FadeContent';
 import { Magnet } from './Magnet';
 import InteractiveFlameLab from './InteractiveFlameLab';
 import { SiteController } from '../lib/siteController';
+import {
+  resolveUniversalQuery,
+  solveOpenDomainQuery,
+  callGeminiLiveAPI,
+} from '../lib/universalAI';
 import './FlameSIChat.css';
 
 // Intelligent Markdown and Scientific Formula Formatter
@@ -466,6 +472,8 @@ Select a mission scenario below, ask any combustion question, or issue direct co
   const [isStreaming, setIsStreaming] = useState(false);
   const [model, setModel] = useState('flame-si-v2.4');
   const [effort, setEffort] = useState('deep');
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('flame_gemini_key') || '');
+  const [showKeyModal, setShowKeyModal] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
   const [feedback, setFeedback] = useState({});
   const [expandedTrace, setExpandedTrace] = useState({ init: false });
@@ -701,42 +709,90 @@ Select a mission scenario below, ask any combustion question, or issue direct co
     }
 
     // =========================================================================
-    // Standard Question Handler (Knowledge Base or Dynamic Synthesis)
+    // Multi-Tier Scientific & Universal Intelligence Dispatcher
     // =========================================================================
-    let matched = null;
-    if (qLower.includes('lunar') || qLower.includes('oy') || qLower.includes('moon') || qLower.includes('34%')) {
-      matched = KNOWLEDGE_BASE.lunar;
-    } else if (qLower.includes('spacesuit') || qLower.includes('skafandr') || qLower.includes('eva') || qLower.includes('100%')) {
-      matched = KNOWLEDGE_BASE.spacesuit;
-    } else if (qLower.includes('smoke') || qLower.includes('tutun') || qLower.includes('detector') || qLower.includes('datchik') || qLower.includes('same')) {
-      matched = KNOWLEDGE_BASE.smoke;
-    } else if (qLower.includes('cool') || qLower.includes('flex') || qLower.includes('suppress') || qLower.includes("o'chirish") || qLower.includes('droplet')) {
-      matched = KNOWLEDGE_BASE.coolflames;
-    } else if (qLower.includes('earth') || qLower.includes('yer') || qLower.includes('firefighter') || qLower.includes('spinoff')) {
-      matched = KNOWLEDGE_BASE.earth;
-    } else {
-      matched = generateDynamicSynthesis(query);
-    }
 
-    const assistantMsgId = `asst-${Date.now()}`;
-    const partialAssistantMsg = {
-      id: assistantMsgId,
-      role: 'assistant',
-      reasoning: matched.reasoning,
-      tools: matched.tools,
-      plan: matched.plan,
-      sources: matched.sources,
-      text: matched.reply,
-      actions: matched.actions || [],
+    const dispatchLocalIntelligence = (q) => {
+      // Tier 1: Check Universal Math, Unit Conversion, General Science & Astronomy
+      const universalMatch = resolveUniversalQuery(q);
+      let matched = universalMatch;
+
+      // Tier 2: Check Specialized NASA Fire Safety Knowledge Base
+      if (!matched) {
+        if (qLower.includes('lunar') || qLower.includes('oy') || qLower.includes('moon') || (qLower.includes('34%') && !q.includes('='))) {
+          matched = KNOWLEDGE_BASE.lunar;
+        } else if (qLower.includes('spacesuit') || qLower.includes('skafandr') || qLower.includes('eva') || (qLower.includes('100%') && !q.includes('='))) {
+          matched = KNOWLEDGE_BASE.spacesuit;
+        } else if (qLower.includes('smoke') || qLower.includes('tutun') || qLower.includes('detector') || qLower.includes('datchik') || qLower.includes('same')) {
+          matched = KNOWLEDGE_BASE.smoke;
+        } else if (qLower.includes('cool') || qLower.includes('flex') || qLower.includes('suppress') || qLower.includes("o'chirish") || qLower.includes('droplet')) {
+          matched = KNOWLEDGE_BASE.coolflames;
+        } else if (qLower.includes('earth') || qLower.includes('yer') || qLower.includes('firefighter') || qLower.includes('spinoff')) {
+          matched = KNOWLEDGE_BASE.earth;
+        }
+      }
+
+      // Tier 3: If still not matched, check if it's fire/combustion related, else open-domain general reasoning
+      if (!matched) {
+        const isFireRelated = /\b(fire|flame|combust|burn|ignition|extinguish|o2|oxygen|kislorod|olov|alanga|yonish|tutun|smoke|material|pmma|saffire|bass|cir|psi|droplet|hazard|xavf)\b/i.test(q);
+        if (isFireRelated) {
+          matched = generateDynamicSynthesis(q);
+        } else {
+          matched = solveOpenDomainQuery(q);
+        }
+      }
+
+      const assistantMsgId = `asst-${Date.now()}`;
+      const partialAssistantMsg = {
+        id: assistantMsgId,
+        role: 'assistant',
+        reasoning: matched.reasoning,
+        tools: matched.tools,
+        plan: matched.plan,
+        sources: matched.sources,
+        text: matched.reply,
+        actions: matched.actions || [],
+      };
+
+      setExpandedTrace((prev) => ({ ...prev, [assistantMsgId]: true }));
+
+      setTimeout(() => {
+        setMessages((prev) => [...prev, partialAssistantMsg]);
+        setIsStreaming(false);
+      }, 600);
     };
 
-    // Expand reasoning trace for the new message
-    setExpandedTrace((prev) => ({ ...prev, [assistantMsgId]: true }));
+    // Optional: Cloud LLM via Google Gemini 1.5 Live API
+    if (model === 'gemini-live' && apiKey.trim()) {
+      callGeminiLiveAPI(apiKey.trim(), query, messages)
+        .then((liveResponse) => {
+          const assistantMsgId = `asst-${Date.now()}`;
+          const liveMsg = {
+            id: assistantMsgId,
+            role: 'assistant',
+            reasoning: `1. Google Gemini 1.5 Live API inference.\n2. Ingested conversation history and query: "${query}".\n3. Generated real-time multi-disciplinary response.`,
+            tools: [{ cmd: 'gemini-1.5-flash:generateContent', output: 'HTTP 200 OK (Cloud inference)' }],
+            plan: ['Streamed response from Google Gemini API', 'Parsed scientific reasoning & formatted directives'],
+            sources: [{ title: 'Google Gemini 1.5 Flash Model', url: 'https://ai.google.dev/' }],
+            text: liveResponse,
+            actions: [
+              { label: 'Open Interactive Flame Lab', type: 'toggle_flame_lab', primary: true },
+              { label: 'Apply Lunar Parameters to Simulator', type: 'apply_preset', preset: 'moon' },
+              { label: 'Browse NASA Flight Library', type: 'scroll_section', section: 'explore' },
+            ],
+          };
+          setExpandedTrace((prev) => ({ ...prev, [assistantMsgId]: true }));
+          setMessages((prev) => [...prev, liveMsg]);
+          setIsStreaming(false);
+        })
+        .catch((err) => {
+          console.warn('Gemini Live API error, falling back to Universal Engine:', err);
+          dispatchLocalIntelligence(query);
+        });
+      return;
+    }
 
-    setTimeout(() => {
-      setMessages((prev) => [...prev, partialAssistantMsg]);
-      setIsStreaming(false);
-    }, 700);
+    dispatchLocalIntelligence(query);
   };
 
   const handleCopy = (id, text) => {
@@ -1037,11 +1093,28 @@ Select a mission scenario below, ask any combustion question, or issue direct co
               <select
                 className="chat-option-select"
                 value={model}
-                onChange={(e) => setModel(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setModel(val);
+                  if (val === 'gemini-live' && !apiKey) {
+                    setShowKeyModal(true);
+                  }
+                }}
               >
-                <option value="flame-si-v2.4">FLAME-SI v2.4 (NASA PSI)</option>
+                <option value="flame-si-v2.4">FLAME-SI v2.4 (NASA PSI + Universal Core)</option>
                 <option value="artemis-safety">Artemis Safety Model</option>
+                <option value="gemini-live">Gemini 1.5 Live API (Cloud LLM)</option>
               </select>
+
+              <button
+                type="button"
+                className={`flame-key-btn ${apiKey ? 'has-key' : ''}`}
+                onClick={() => setShowKeyModal(true)}
+                title={apiKey ? 'Gemini API Key configured' : 'Configure Gemini API Key'}
+              >
+                <KeyIcon size={12} />
+                <span>{apiKey ? 'API Key Set' : 'API Key'}</span>
+              </button>
 
               <select
                 className="chat-option-select"
@@ -1070,6 +1143,58 @@ Select a mission scenario below, ask any combustion question, or issue direct co
           </div>
         </div>
       </div>
+
+      {/* Gemini Live API Key Configuration Modal */}
+      {showKeyModal && (
+        <div className="flame-key-modal-backdrop" onClick={() => setShowKeyModal(false)}>
+          <div className="flame-key-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="flame-key-modal-header">
+              <h4>Google Gemini Live API Configuration</h4>
+              <button
+                type="button"
+                onClick={() => setShowKeyModal(false)}
+                className="flame-key-close-btn"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="flame-key-desc">
+              Connect Google Gemini 1.5 Flash for unrestricted live cloud intelligence across all domains. When no key is entered, FLAME-SI operates automatically using its built-in Universal Scientific Reasoning Engine.
+            </p>
+            <input
+              type="password"
+              className="flame-key-input"
+              placeholder="Enter your Gemini API Key (AIzaSy...)"
+              value={apiKey}
+              onChange={(e) => {
+                setApiKey(e.target.value);
+                localStorage.setItem('flame_gemini_key', e.target.value);
+              }}
+            />
+            <div className="flame-key-modal-actions">
+              {apiKey && (
+                <button
+                  type="button"
+                  className="flame-key-clear-btn"
+                  onClick={() => {
+                    setApiKey('');
+                    localStorage.removeItem('flame_gemini_key');
+                  }}
+                >
+                  Clear Key
+                </button>
+              )}
+              <button
+                type="button"
+                className="flame-key-save-btn"
+                onClick={() => setShowKeyModal(false)}
+              >
+                Save & Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
