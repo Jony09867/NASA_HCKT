@@ -5,6 +5,7 @@ import ShinyText from './components/ShinyText';
 import CircularText from './components/CircularText';
 import ScrollReveal from './components/ScrollReveal';
 import ParticleSaturn from './components/ParticleSaturn';
+import Magnet from './components/Magnet';
 
 function initReactHome() {
   // 1. Eyebrow ShinyText
@@ -45,7 +46,26 @@ function initReactHome() {
     );
   }
 
-  // 3. Hero 3D Particle Art + CircularText
+  // 3. Hero CTA Magnet Button
+  const heroCtaEl = document.getElementById('react-hero-cta');
+  if (heroCtaEl) {
+    const root = createRoot(heroCtaEl);
+    root.render(
+      <Magnet
+        padding={90}
+        magnetStrength={2.2}
+        tilt={6}
+        scale={1.03}
+        spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
+      >
+        <a className="button" href="#explore">
+          Explore investigations <span>↗</span>
+        </a>
+      </Magnet>
+    );
+  }
+
+  // 4. Hero 3D Particle Art + CircularText
   const artEl = document.getElementById('react-hero-art');
   if (artEl) {
     const root = createRoot(artEl);
@@ -82,7 +102,7 @@ function initReactHome() {
     );
   }
 
-  // 4. About ScrollReveal (Word-by-word rotation & unblur on scroll)
+  // 5. About ScrollReveal (Word-by-word rotation & unblur on scroll)
   const aboutEl = document.getElementById('react-about-reveal');
   if (aboutEl) {
     const root = createRoot(aboutEl);
@@ -100,6 +120,46 @@ function initReactHome() {
         blurStrength={4}
         as="h2"
       />
+    );
+  }
+
+  // 6. About Challenge Magnet Link
+  const aboutCtaEl = document.getElementById('react-about-cta');
+  if (aboutCtaEl) {
+    const root = createRoot(aboutCtaEl);
+    root.render(
+      <Magnet
+        padding={70}
+        magnetStrength={2.5}
+        tilt={5}
+        scale={1.04}
+        spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
+      >
+        <a
+          href="https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/?tab=details"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          VIEW THE CHALLENGE ↗
+        </a>
+      </Magnet>
+    );
+  }
+
+  // 7. Footer Back to Top Magnet
+  const backToTopEl = document.getElementById('react-back-to-top');
+  if (backToTopEl) {
+    const root = createRoot(backToTopEl);
+    root.render(
+      <Magnet
+        padding={60}
+        magnetStrength={2.5}
+        tilt={4}
+        scale={1.05}
+        spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
+      >
+        <a href="#top">BACK TO TOP ↑</a>
+      </Magnet>
     );
   }
 }

@@ -40,6 +40,24 @@
   color: #a8ada6;
 }
 
+#react-hero-cta {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+#react-hero-cta .button {
+  margin-top: 0;
+}
+
+#react-about-cta {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+#react-back-to-top {
+  display: inline-block;
+}
+
 .hero .button {
   transition: transform 0.2s cubic-bezier(0.2, 0.65, 0.2, 1), background-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -204,7 +222,25 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero .button {
+  #react-hero-cta {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+#react-hero-cta .button {
+  margin-top: 0;
+}
+
+#react-about-cta {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+#react-back-to-top {
+  display: inline-block;
+}
+
+.hero .button {
     transition: none;
   }
   .hero .button:hover {
