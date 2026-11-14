@@ -178,7 +178,7 @@ export default function SIDashboard() {
 
   return (
     <section className="si-dashboard-section" id="si-intelligence">
-      <div className="si-header">
+      <AnimatedContent className="si-header" stagger={0.14}>
         <div className="si-eyebrow-badge">
           <span className="pulse-dot"></span>
           Super Intelligence (SI) · Mission Fire Safety Engine
@@ -190,10 +190,10 @@ export default function SIDashboard() {
           Simulating microgravity and partial-gravity combustion dynamics across Moon, Mars, and ISS mission profiles.
           Powered by data synthesized from NASA's Physical Science Informatics (PSI) repository.
         </p>
-      </div>
+      </AnimatedContent>
 
       {/* View Switcher: Simulator vs AI Chat */}
-      <div className="si-view-switcher">
+      <AnimatedContent className="si-view-switcher" >
         <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
 <button
           type="button"
@@ -212,15 +212,15 @@ export default function SIDashboard() {
           Chat with FLAME-SI Co-Pilot (Chain-of-Thought)
         </button>
 </Magnet>
-      </div>
+      </AnimatedContent>
 
       {viewMode === 'chat' ? (
-        <FlameSIChat />
+        <AnimatedContent><FlameSIChat /></AnimatedContent>
       ) : (
         <>
           {/* Preset Environments */}
           <span className="si-preset-label">Select Mission Profile or Atmospheric Condition:</span>
-      <div className="si-presets-grid">
+      <AnimatedContent className="si-presets-grid" stagger={0.14}>
         {Object.entries(PRESETS).map(([key, p]) => (
           <SpotlightCard
             key={key}
@@ -247,12 +247,12 @@ export default function SIDashboard() {
             <span className="si-preset-desc">{p.desc}</span>
           </SpotlightCard>
         ))}
-      </div>
+      </AnimatedContent>
 
       {/* Console: Hazard Meter on Left, SI Rankings on Right */}
       <div className="si-console-grid">
         {/* Left: Hazard Gauge & Atmosphere Controls */}
-        <div className="si-gauge-panel">
+        <AnimatedContent className="si-gauge-panel" >
           <div className="si-gauge-header">
             <div>
               <h3>Fire Hazard Index</h3>
@@ -340,18 +340,18 @@ export default function SIDashboard() {
               />
             </div>
           </div>
-        </div>
+        </AnimatedContent>
 
         {/* Right: SI Intelligent Investigation Rankings */}
         <div className="si-rankings-panel">
-          <div className="si-rankings-header">
+          <AnimatedContent className="si-rankings-header" >
             <div>
               <h3>SI Priority Investigation Rankings</h3>
               <p>Top NASA PSI research investigations mapped to your mission's flammability criteria.</p>
             </div>
-          </div>
+          </AnimatedContent>
 
-          <AnimatedContent distance={14} duration={0.6} stagger={0.07} animateKey={activePreset}>
+          <AnimatedContent stagger={0.14} animateKey={activePreset}>
             {rankedInvestigations.map((inv, idx) => (
               <div key={inv.id} className={`si-rank-card ${idx === 0 ? 'top-rank' : ''}`}>
                 <div className="si-rank-badge-row">
@@ -414,7 +414,7 @@ export default function SIDashboard() {
 
       {/* Pillars of Fire Safety & Terrestrial Impact Tabs */}
       <div className="si-pillars-container">
-        <div className="si-tabs-nav">
+        <AnimatedContent className="si-tabs-nav" >
           <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
 <button
             type="button"
@@ -451,9 +451,9 @@ export default function SIDashboard() {
             04. Earth Applications
           </button>
 </Magnet>
-        </div>
+        </AnimatedContent>
 
-        <div className="si-tab-content-panel">
+        <AnimatedContent className="si-tab-content-panel" animateKey={activeTab} stagger={0.14}>
           {activeTab === 'prevention' && (
             <>
               <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
@@ -553,7 +553,7 @@ export default function SIDashboard() {
 </Magnet>
             </>
           )}
-        </div>
+        </AnimatedContent>
       </div>
         </>
       )}
