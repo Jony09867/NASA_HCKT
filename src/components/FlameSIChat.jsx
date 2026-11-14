@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import ShinyText from './ShinyText';
 import FadeContent from './FadeContent';
+import { Magnet } from './Magnet';
 import './FlameSIChat.css';
 
 // Curated NASA PSI Knowledge Base Responses for the Challenge
@@ -575,18 +576,20 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
               </select>
             </div>
 
-            <button
-              type="button"
-              className="chat-send-btn"
-              disabled={!input.trim() || isStreaming}
-              onClick={() => handleSend()}
-            >
-              {isStreaming ? (
-                <LoaderCircleIcon size={16} className="animate-spin" />
-              ) : (
-                <ArrowUpIcon size={18} />
-              )}
-            </button>
+            <Magnet padding={60} magnetStrength={2.5} tilt={8} scale={1.08}>
+              <button
+                type="button"
+                className="chat-send-btn"
+                disabled={!input.trim() || isStreaming}
+                onClick={() => handleSend()}
+              >
+                {isStreaming ? (
+                  <LoaderCircleIcon size={16} className="animate-spin" />
+                ) : (
+                  <ArrowUpIcon size={18} />
+                )}
+              </button>
+            </Magnet>
           </div>
         </div>
       </div>

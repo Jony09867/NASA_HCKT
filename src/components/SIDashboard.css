@@ -103,6 +103,7 @@
   color: #0d0c0a;
   font-weight: 600;
   box-shadow: 0 4px 16px rgba(255, 138, 88, 0.25);
+  transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
 /* --- Environment Selector Grid --- */
@@ -124,13 +125,9 @@
 }
 
 .si-preset-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
   padding: 1.25rem;
   text-align: left;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   color: inherit;
   display: flex;
   flex-direction: column;
@@ -138,15 +135,11 @@
 }
 
 .si-preset-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 138, 88, 0.3);
-  transform: translateY(-2px);
+  /* hover styling is handled by SpotlightCard inline styles */
 }
 
 .si-preset-card.is-active {
-  background: rgba(255, 138, 88, 0.08);
-  border-color: #ff8a58;
-  box-shadow: 0 0 24px rgba(255, 138, 88, 0.15);
+  /* active styling is handled by SpotlightCard inline styles */
 }
 
 .si-preset-title {
@@ -525,6 +518,7 @@
   color: #ff8a58;
   background: rgba(255, 138, 88, 0.12);
   border-color: rgba(255, 138, 88, 0.3);
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
 }
 
 .si-tab-content-panel {
