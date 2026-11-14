@@ -1,0 +1,519 @@
+/* ==========================================================================
+   SI Fire Safety Intelligence Dashboard - NASA Space Apps Challenge
+   ========================================================================== */
+
+.si-dashboard-section {
+  padding: 6rem 1.5rem 5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.si-header {
+  margin-bottom: 3rem;
+  text-align: left;
+}
+
+.si-eyebrow-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #ff8a58;
+  text-transform: uppercase;
+  background: rgba(255, 138, 88, 0.12);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 138, 88, 0.25);
+  margin-bottom: 1rem;
+}
+
+.si-eyebrow-badge .pulse-dot {
+  width: 6px;
+  height: 6px;
+  background: #ff8a58;
+  border-radius: 50%;
+  animation: si-pulse 2s infinite ease-in-out;
+}
+
+@keyframes si-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.si-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  line-height: 1.15;
+  color: #f7f3ed;
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+}
+
+.si-header h2 strong {
+  font-weight: 600;
+  color: #ff8a58;
+}
+
+.si-header p {
+  max-width: 760px;
+  color: #9f9b94;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* --- Environment Selector Grid --- */
+.si-preset-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: #8c8880;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.si-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.si-preset-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.si-preset-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 138, 88, 0.3);
+  transform: translateY(-2px);
+}
+
+.si-preset-card.is-active {
+  background: rgba(255, 138, 88, 0.08);
+  border-color: #ff8a58;
+  box-shadow: 0 0 24px rgba(255, 138, 88, 0.15);
+}
+
+.si-preset-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f7f3ed;
+}
+
+.si-preset-specs {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  color: #d7ba9e;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.si-preset-desc {
+  font-size: 0.82rem;
+  color: #8c8880;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* --- SI Analysis Console (2-column layout) --- */
+.si-console-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 2rem;
+  margin-bottom: 3.5rem;
+}
+
+@media (max-width: 1024px) {
+  .si-console-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Left: Hazard Predictor Meter --- */
+.si-gauge-panel {
+  background: rgba(18, 18, 22, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  backdrop-filter: blur(12px);
+}
+
+.si-gauge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 1rem;
+}
+
+.si-gauge-header h3 {
+  font-size: 0.9rem;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9f9b94;
+  margin: 0;
+}
+
+.si-hazard-score-container {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.si-hazard-score-value {
+  font-size: clamp(3.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: -0.04em;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+.si-hazard-score-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: var(--font-mono, monospace);
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* Status colors */
+.status-low { color: #34d399; }
+.status-moderate { color: #fbbf24; }
+.status-elevated { color: #fb923c; }
+.status-critical { color: #ef4444; }
+
+.si-meter-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.si-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease;
+}
+
+.si-metrics-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 1rem;
+}
+
+.si-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.si-metric-row span:first-child {
+  color: #8c8880;
+}
+
+.si-metric-row span:last-child {
+  font-family: var(--font-mono, monospace);
+  color: #f7f3ed;
+  font-weight: 600;
+}
+
+.si-custom-controls {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.si-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.si-control-group label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-family: var(--font-mono, monospace);
+  color: #9f9b94;
+}
+
+.si-control-group input[type="range"] {
+  width: 100%;
+  accent-color: #ff8a58;
+  cursor: pointer;
+}
+
+/* --- Right: SI Intelligent Rankings --- */
+.si-rankings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.si-rankings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.si-rankings-header h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #f7f3ed;
+  margin: 0 0 0.25rem;
+}
+
+.si-rankings-header p {
+  font-size: 0.85rem;
+  color: #8c8880;
+  margin: 0;
+}
+
+.si-rank-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.si-rank-card:hover {
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(255, 138, 88, 0.3);
+}
+
+.si-rank-card.top-rank {
+  border-left: 3px solid #ff8a58;
+  background: linear-gradient(90deg, rgba(255, 138, 88, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+.si-rank-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.si-rank-num {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #ff8a58;
+  background: rgba(255, 138, 88, 0.15);
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+}
+
+.si-rank-match {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: #34d399;
+}
+
+.si-rank-card h4 {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #f7f3ed;
+  margin: 0;
+}
+
+.si-rank-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.si-tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: #a7a29a;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.si-rank-insight {
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 2px solid rgba(255, 138, 88, 0.6);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #d7ba9e;
+  margin: 0;
+}
+
+.si-rank-insight strong {
+  color: #ff8a58;
+  display: block;
+  font-size: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.si-rank-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.si-action-btn {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+
+.si-action-btn.primary {
+  background: #ff8a58;
+  color: #0d0c0a;
+  border: 1px solid #ff8a58;
+}
+
+.si-action-btn.primary:hover {
+  background: #ffa073;
+}
+
+.si-action-btn.secondary {
+  background: transparent;
+  color: #d7ba9e;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.si-action-btn.secondary:hover {
+  border-color: #ff8a58;
+  color: #f7f3ed;
+}
+
+/* --- Safety Pillars & Earth Impact Tabs --- */
+.si-pillars-container {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 1rem;
+}
+
+.si-tabs-nav {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.si-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #8c8880;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.si-tab-btn:hover {
+  color: #f7f3ed;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.si-tab-btn.is-active {
+  color: #ff8a58;
+  background: rgba(255, 138, 88, 0.12);
+  border-color: rgba(255, 138, 88, 0.3);
+}
+
+.si-tab-content-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.si-pillar-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.si-pillar-card h4 {
+  font-size: 1rem;
+  color: #f7f3ed;
+  margin: 0 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.si-pillar-card p {
+  font-size: 0.85rem;
+  color: #a7a29a;
+  line-height: 1.5;
+  margin: 0 0 0.75rem;
+}
+
+.si-pillar-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  color: #ff8a58;
+  background: rgba(255, 138, 88, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
