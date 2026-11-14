@@ -178,7 +178,7 @@ export default function SIDashboard() {
 
   return (
     <section className="si-dashboard-section" id="si-intelligence">
-      <AnimatedContent className="si-header" stagger={0.14}>
+      <AnimatedContent className="si-header">
         <div className="si-eyebrow-badge">
           <span className="pulse-dot"></span>
           Super Intelligence (SI) · Mission Fire Safety Engine
@@ -193,7 +193,7 @@ export default function SIDashboard() {
       </AnimatedContent>
 
       {/* View Switcher: Simulator vs AI Chat */}
-      <AnimatedContent className="si-view-switcher" >
+      <div className="si-view-switcher">
         <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
 <button
           type="button"
@@ -212,15 +212,15 @@ export default function SIDashboard() {
           Chat with FLAME-SI Co-Pilot (Chain-of-Thought)
         </button>
 </Magnet>
-      </AnimatedContent>
+      </div>
 
       {viewMode === 'chat' ? (
-        <AnimatedContent><FlameSIChat /></AnimatedContent>
+        <AnimatedContent trigger="mount" distance={0} duration={0.2}><FlameSIChat /></AnimatedContent>
       ) : (
         <>
           {/* Preset Environments */}
           <span className="si-preset-label">Select Mission Profile or Atmospheric Condition:</span>
-      <AnimatedContent className="si-presets-grid" stagger={0.14}>
+      <AnimatedContent className="si-presets-grid">
         {Object.entries(PRESETS).map(([key, p]) => (
           <SpotlightCard
             key={key}
@@ -343,15 +343,15 @@ export default function SIDashboard() {
         </AnimatedContent>
 
         {/* Right: SI Intelligent Investigation Rankings */}
-        <div className="si-rankings-panel">
-          <AnimatedContent className="si-rankings-header" >
+        <AnimatedContent className="si-rankings-panel">
+          <div className="si-rankings-header">
             <div>
               <h3>SI Priority Investigation Rankings</h3>
               <p>Top NASA PSI research investigations mapped to your mission's flammability criteria.</p>
             </div>
-          </AnimatedContent>
+          </div>
 
-          <AnimatedContent stagger={0.14} animateKey={activePreset}>
+          <div>
             {rankedInvestigations.map((inv, idx) => (
               <div key={inv.id} className={`si-rank-card ${idx === 0 ? 'top-rank' : ''}`}>
                 <div className="si-rank-badge-row">
@@ -408,8 +408,8 @@ export default function SIDashboard() {
                 </div>
               </div>
             ))}
-          </AnimatedContent>
-        </div>
+          </div>
+        </AnimatedContent>
       </div>
 
       {/* Pillars of Fire Safety & Terrestrial Impact Tabs */}
@@ -453,7 +453,7 @@ export default function SIDashboard() {
 </Magnet>
         </AnimatedContent>
 
-        <AnimatedContent className="si-tab-content-panel" animateKey={activeTab} stagger={0.14}>
+        <AnimatedContent className="si-tab-content-panel" animateKey={activeTab} trigger="mount" distance={0} duration={0.2}>
           {activeTab === 'prevention' && (
             <>
               <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>

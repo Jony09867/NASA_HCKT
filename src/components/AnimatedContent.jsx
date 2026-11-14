@@ -22,10 +22,10 @@ const AnimatedContent = ({
   targetElement,
   animateKey,
   container,
-  distance = 140,
+  distance = 20,
   direction = 'vertical',
   reverse = false,
-  duration = 3,
+  duration = 0.55,
   ease = 'power3.out',
   initialOpacity = 0,
   animateOpacity = true,
@@ -34,7 +34,7 @@ const AnimatedContent = ({
   rotate = 0,
   tilt = 0,
   wipe = 'none',
-  threshold = 0.25,
+  threshold = 0.08,
   delay = 0,
   stagger = 0,
   staggerFrom = 'start',
@@ -64,6 +64,7 @@ const AnimatedContent = ({
 
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
+    let entrance;
     const ctx = gsap.context(() => {
       const targets = stagger > 0 && el.children.length ? Array.from(el.children) : [el];
       const horizontal = direction === 'horizontal';
@@ -143,6 +144,7 @@ const AnimatedContent = ({
           if (once && !scrub) disappear();
         }
       });
+      entrance = tl;
       tl.fromTo(targets, from, to, scrub ? 0 : Math.max(delay, 0));
 
       if (trigger === 'mount') {
@@ -179,8 +181,20 @@ const AnimatedContent = ({
       });
     }, el);
 
-    return () => ctx.revert();
+    // Keyboard navigation must never land on a still-hidden control.
+    const revealOnFocus = () => entrance?.progress(1);
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const stopMotion = () => { if (motionPreference.matches) ctx.revert(); };
+    el.addEventListener('focusin', revealOnFocus);
+    motionPreference.addEventListener('change', stopMotion);
+    return () => {
+      el.removeEventListener('focusin', revealOnFocus);
+      motionPreference.removeEventListener('change', stopMotion);
+      ctx.revert();
+    };
   }, [
+    targetElement,
+    animateKey,
     container,
     distance,
     direction,
@@ -205,6 +219,8 @@ const AnimatedContent = ({
     disappearDuration,
     disappearEase
   ]);
+
+  if (targetElement) return null;
 
   return (
     <div ref={ref} className={className} style={style} {...props}>
