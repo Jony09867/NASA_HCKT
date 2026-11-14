@@ -394,7 +394,8 @@ export default function SIDashboard() {
                   </button>
 </Magnet>
                   {inv.sourceUrl && (
-                    <a
+                    <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+<a
                       href={inv.sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -402,6 +403,7 @@ export default function SIDashboard() {
                     >
                       NASA PSI Source ↗
                     </a>
+</Magnet>
                   )}
                 </div>
               </div>
@@ -454,7 +456,8 @@ export default function SIDashboard() {
         <div className="si-tab-content-panel">
           {activeTab === 'prevention' && (
             <>
-              <div className="si-pillar-card">
+              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+<div className="si-pillar-card">
                 <h4>NASA-STD-6001 Compliance</h4>
                 <p>
                   Materials that pass upward flame spread on Earth at 21% O₂ can ignite explosively under Lunar Base 
@@ -462,7 +465,9 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by BASS-II & ACME-BRE</span>
               </div>
-              <div className="si-pillar-card">
+</Magnet>
+              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+<div className="si-pillar-card">
                 <h4>Ventilation Velocity Thresholds</h4>
                 <p>
                   In still air, solid flames self-extinguish through radiant heat loss. Cabin ventilation must stay 
@@ -470,12 +475,14 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by Saffire-I & III</span>
               </div>
+</Magnet>
             </>
           )}
 
           {activeTab === 'detection' && (
             <>
-              <div className="si-pillar-card">
+              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+<div className="si-pillar-card">
                 <h4>Soot Particle Agglomeration</h4>
                 <p>
                   Without buoyancy to sweep soot away, smoke particles cluster into much larger agglomerates than on Earth. 
@@ -483,7 +490,9 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by SAME & SAME-R</span>
               </div>
-              <div className="si-pillar-card">
+</Magnet>
+              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+<div className="si-pillar-card">
                 <h4>Dust Discrimination (DAFT-2)</h4>
                 <p>
                   Lunar and Martian habitat air contains abrasive regolith dust. Dual-wavelength optical sensors must 
@@ -491,12 +500,14 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by DAFT / DAFT-2</span>
               </div>
+</Magnet>
             </>
           )}
 
           {activeTab === 'suppression' && (
             <>
-              <div className="si-pillar-card">
+              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+<div className="si-pillar-card">
                 <h4>Cool-Flame Reignition Hazards</h4>
                 <p>
                   FLEX experiments discovered low-temperature (600 - 800 K) 'cool flames' burning invisibly after apparent 
@@ -504,7 +515,9 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by FLEX & FLEX-2</span>
               </div>
-              <div className="si-pillar-card">
+</Magnet>
+              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+<div className="si-pillar-card">
                 <h4>Inert Dilution Limits (CO₂ & He)</h4>
                 <p>
                   Diluting closed habitats with carbon dioxide or helium effectively depresses flame temperatures without 
@@ -512,12 +525,14 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by ACME CFI & CIR</span>
               </div>
+</Magnet>
             </>
           )}
 
           {activeTab === 'earth' && (
             <>
-              <div className="si-pillar-card">
+              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+<div className="si-pillar-card">
                 <h4>Fine-Water-Mist Suppression</h4>
                 <p>
                   Water-mist extinguishers engineered for the ISS avoid chemical toxicity and water damage. Today, 
@@ -525,7 +540,9 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Terrestrial Fire Technology</span>
               </div>
-              <div className="si-pillar-card">
+</Magnet>
+              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+<div className="si-pillar-card">
                 <h4>Firefighter Protective Gear</h4>
                 <p>
                   High-temperature thermal barrier fabrics and lightweight composite oxygen breathing tanks originally 
@@ -533,6 +550,7 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Global Firefighter Safety</span>
               </div>
+</Magnet>
             </>
           )}
         </div>
