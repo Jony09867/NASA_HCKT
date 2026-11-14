@@ -5,7 +5,7 @@ import ShinyText from './components/ShinyText';
 import CircularText from './components/CircularText';
 import ScrollReveal from './components/ScrollReveal';
 import ParticleSaturn from './components/ParticleSaturn';
-import Magnet from './components/Magnet';
+import Magnet, { magnetizeAllPageButtons } from './components/Magnet';
 
 function initReactHome() {
   // 1. Eyebrow ShinyText
@@ -162,6 +162,9 @@ function initReactHome() {
       </Magnet>
     );
   }
+
+  // 8. Global Magnetizer: magnetizes all buttons, nav links, and dynamic cards across the entire page!
+  magnetizeAllPageButtons();
 }
 
 if (document.readyState === 'loading') {
