@@ -37,3 +37,26 @@ section.explore{background:#151b1b;color:#e9e7df;padding:105px 6%;border-top:1px
 @media(max-width:900px){.explore .cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:750px){.explore .section-head{align-items:flex-start;flex-direction:column}.explore .count{padding-left:15px}.explore .count strong{font-size:40px}.explore .filters{grid-template-columns:1fr;padding:18px}.explore .clear{width:100%}.explore .cards{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.explore .card.reveal{animation:none}.explore .card::before{display:none}}
+
+/* Interactive Explore enhancements, inspired by React Bits patterns. */
+section.explore{background-color:#151b1b;background-image:radial-gradient(ellipse at 80% 8%,rgba(185,91,54,.12),transparent 40%),linear-gradient(rgba(211,224,211,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(211,224,211,.035) 1px,transparent 1px);background-size:auto,64px 64px,64px 64px}
+.explore .section-head h2{animation:explore-heading .8s ease both}
+@keyframes explore-heading{from{opacity:.35;letter-spacing:.035em}to{opacity:1;letter-spacing:-.045em}}
+.explore .filters{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto}
+.explore .fuel-filter{min-width:0}
+.explore .fuel-filter label span{display:block;font-size:9px;font-weight:700;letter-spacing:.12em;color:#c0c9c2;margin-bottom:10px}
+.explore .fuel-filter select[hidden],.explore .fuel-pills[hidden],.explore .active-filters[hidden],.explore .suggestions[hidden]{display:none}
+.explore .fuel-pills,.explore .active-filters,.explore .suggestions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.explore .fuel-pills{min-height:52px}
+.explore .fuel-pill,.explore .filter-chip,.explore .suggestion{border:1px solid #52605a;background:#151e1c;color:#e4e9e1;border-radius:999px;padding:10px 14px;font:600 12px 'DM Sans',sans-serif;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.explore .fuel-pill[aria-pressed="true"]{border-color:#ff986f;background:#f08b62;color:#17201d}
+.explore .active-filters{margin-top:16px}
+.explore .filter-chip{color:#ffd0b9;border-color:#805d4f}
+.explore .suggestions{justify-content:center;margin-top:25px}
+.explore .suggestions span{width:100%;color:#aebbb0;font-size:10px;font-weight:700;letter-spacing:.12em}
+.explore .suggestion:hover,.explore .fuel-pill:hover,.explore .filter-chip:hover{border-color:#ff986f}
+.explore .clear{position:relative;overflow:hidden;background-image:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.3) 50%,transparent 65%);background-size:220% 100%;background-position:100% 0;transition:background-position .45s}
+.explore .clear:hover{background-position:0 0}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){.explore .card{transform:perspective(900px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));transition:transform .18s ease,border-color .18s ease}.explore .card:hover{border-color:#91634f}}
+@media(max-width:750px){.explore .filters{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.explore .section-head h2{animation:none}.explore .fuel-pill,.explore .filter-chip,.explore .suggestion,.explore .clear{transition:none}}
