@@ -59,7 +59,7 @@
 
 .flame-chat-title p {
   font-size: 0.78rem;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   color: #8c8880;
   margin: 0.15rem 0 0;
 }
@@ -71,7 +71,7 @@
 }
 
 .flame-model-pill {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.72rem;
   color: #ff8a58;
   background: rgba(255, 138, 88, 0.12);
@@ -184,7 +184,7 @@
   justify-content: space-between;
   cursor: pointer;
   color: #a7a29a;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem;
   text-align: left;
 }
@@ -221,7 +221,7 @@
 }
 
 .trace-step-item {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.75rem;
   color: #d7ba9e;
   display: flex;
@@ -241,7 +241,7 @@
 }
 
 .plan-title {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem;
   font-weight: 700;
   color: #ff8a58;
@@ -273,7 +273,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.72rem;
   color: #d7ba9e;
   background: rgba(255, 255, 255, 0.04);
@@ -331,7 +331,7 @@
   border: 1px solid rgba(255, 138, 88, 0.3);
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem;
   cursor: pointer;
   margin: 0 0.2rem;
@@ -381,7 +381,7 @@
 }
 
 .suggestions-label {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.7rem;
   color: #8c8880;
   letter-spacing: 0.08em;
@@ -480,7 +480,7 @@
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #a7a29a;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.72rem;
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
@@ -516,4 +516,18 @@
   background: rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.3);
   cursor: not-allowed;
+}
+
+/* Match the homepage typography; keep numeric columns stable. */
+.flame-chat-container,
+.flame-chat-container button,
+.flame-chat-container input,
+.flame-chat-container textarea,
+.flame-chat-container select {
+  font-family: 'DM Sans', sans-serif;
+}
+.flame-chat-container h2,
+.flame-chat-container h3,
+.flame-chat-container h4 {
+  font-family: 'Space Grotesk', sans-serif;
 }
