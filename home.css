@@ -55,10 +55,10 @@
   outline-offset: 4px;
 }
 
-/* 3D Art Stage - Fixed & Fluid Scale */
+/* 3D Art Stage - Slightly Enlarged & Perfectly Proportionate */
 .art {
   position: relative;
-  min-height: 560px;
+  min-height: 600px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -68,9 +68,9 @@
 
 .art-3d-stage {
   position: relative;
-  width: 520px;
-  height: 520px;
-  max-width: 95%;
+  width: 580px;
+  height: 580px;
+  max-width: 98%;
   aspect-ratio: 1;
   display: flex;
   align-items: center;
@@ -84,15 +84,16 @@
   height: 100%;
   z-index: 2;
   border-radius: 50%;
+  overflow: visible;
 }
 
 .saturn-wrap::before {
   content: '';
   position: absolute;
-  inset: -12%;
+  inset: -10%;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 75, 20, 0.35) 0%, rgba(220, 50, 15, 0.12) 42%, transparent 70%);
-  filter: blur(35px);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 75, 20, 0.32) 0%, rgba(220, 50, 15, 0.10) 44%, transparent 70%);
+  filter: blur(40px);
   pointer-events: none;
   z-index: 0;
 }
@@ -102,7 +103,7 @@
 }
 
 .orbit1 {
-  width: 92%;
+  width: 95%;
   aspect-ratio: 1;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 50%;
@@ -110,7 +111,7 @@
 }
 
 .orbit2 {
-  width: 112%;
+  width: 115%;
   aspect-ratio: 1;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 50%;
@@ -129,13 +130,13 @@
 
 .art-label {
   left: 0;
-  top: 18%;
+  top: 16%;
   color: #aeb5ad;
 }
 
 .art-note {
   right: 0;
-  bottom: 12%;
+  bottom: 10%;
   color: var(--orange, #ff6b39);
 }
 
@@ -165,21 +166,21 @@
     padding-bottom: 40px;
   }
   .art {
-    min-height: 480px;
+    min-height: 500px;
     margin-top: 30px;
   }
   .art-3d-stage {
-    width: 440px;
-    height: 440px;
-    max-width: 92%;
+    width: 460px;
+    height: 460px;
+    max-width: 94%;
   }
   .art-label {
     left: 2%;
-    top: 8%;
+    top: 6%;
   }
   .art-note {
     right: 2%;
-    bottom: 6%;
+    bottom: 4%;
   }
 }
 
@@ -192,9 +193,9 @@
     min-height: 380px;
   }
   .art-3d-stage {
-    width: 330px;
-    height: 330px;
-    max-width: 95%;
+    width: 340px;
+    height: 340px;
+    max-width: 96%;
   }
   .art-label,
   .art-note {

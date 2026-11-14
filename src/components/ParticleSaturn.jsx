@@ -22,14 +22,14 @@ const DEFAULTS = {
   roll: 12,
   spinSpeed: 5,
   ringOptions: {
-    defaultValue: { gaps: 1, orbitSpeed: 14, innerRadius: 115, outerRadius: 185 },
+    defaultValue: { gaps: 1, orbitSpeed: 14, innerRadius: 115, outerRadius: 180 },
     innerRadius: 115,
-    outerRadius: 185,
+    outerRadius: 180,
     gaps: 2,
     orbitSpeed: 8,
   },
   dragSensitivity: 2.2,
-  sizePercent: 155,
+  sizePercent: 165,
 };
 
 function clamp(v, lo, hi, fallback) {

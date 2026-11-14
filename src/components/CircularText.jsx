@@ -55,14 +55,14 @@ export default function CircularText({
         <defs>
           <path
             id="circular-text-path"
-            d="M 250, 250 m -215, 0 a 215,215 0 1,1 430,0 a 215,215 0 1,1 -430,0"
+            d="M 250, 250 m -220, 0 a 220,220 0 1,1 440,0 a 220,220 0 1,1 -440,0"
           />
         </defs>
         {ring && (
           <circle
             cx="250"
             cy="250"
-            r="215"
+            r="220"
             fill="none"
             stroke="currentColor"
             strokeWidth="1"
@@ -71,7 +71,7 @@ export default function CircularText({
         )}
         <text
           fill="currentColor"
-          textLength={fill ? '1350' : undefined}
+          textLength={fill ? '1382' : undefined}
           lengthAdjust={fill ? 'spacing' : undefined}
         >
           <textPath href="#circular-text-path" startOffset="0%">

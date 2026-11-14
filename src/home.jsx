@@ -83,7 +83,7 @@ function initReactHome() {
             roll={12}
             spinSpeed={5}
             dragSensitivity={2.2}
-            sizePercent={155}
+            sizePercent={165}
           />
         </div>
       </div>
