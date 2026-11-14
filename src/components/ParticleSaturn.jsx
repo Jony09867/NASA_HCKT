@@ -22,14 +22,14 @@ const DEFAULTS = {
   roll: 12,
   spinSpeed: 5,
   ringOptions: {
-    defaultValue: { gaps: 1, orbitSpeed: 14, innerRadius: 118, outerRadius: 250 },
-    innerRadius: 125,
-    outerRadius: 250,
+    defaultValue: { gaps: 1, orbitSpeed: 14, innerRadius: 115, outerRadius: 185 },
+    innerRadius: 115,
+    outerRadius: 185,
     gaps: 2,
     orbitSpeed: 8,
   },
   dragSensitivity: 2.2,
-  sizePercent: 195,
+  sizePercent: 155,
 };
 
 function clamp(v, lo, hi, fallback) {
@@ -45,8 +45,8 @@ function settingsFor(cfg) {
   const coreMotes = Math.min(MAX_MOTES, Math.round(baseMotes));
   const ringMotes = Math.min(MAX_MOTES, Math.round(baseMotes * RING_MOTE_FACTOR));
 
-  const innerFraction = clamp(ring.innerRadius, 105, 200, DEFAULTS.ringOptions.innerRadius) / 100;
-  const outerFraction = clamp(ring.outerRadius, 110, 300, DEFAULTS.ringOptions.outerRadius) / 100;
+  const innerFraction = clamp(ring.innerRadius, 105, 150, DEFAULTS.ringOptions.innerRadius) / 100;
+  const outerFraction = clamp(ring.outerRadius, 120, 220, DEFAULTS.ringOptions.outerRadius) / 100;
 
   return {
     coreMotes,
@@ -351,7 +351,7 @@ class SaturnScene {
     const h = Math.max(1, this.height);
     const aspect = w / h;
     const distance = 1 / PERSPECTIVE;
-    const sizePct = clamp(this.cfg.sizePercent, 20, 350, 195);
+    const sizePct = clamp(this.cfg.sizePercent, 20, 350, 155);
 
     const span = VIEW_SPAN * (100 / sizePct);
     const visibleHeight = aspect < 1 ? span / aspect : span;
@@ -455,8 +455,8 @@ export default function ParticleSaturn(props) {
     sceneRef.current = scene;
 
     const updateSize = () => {
-      const w = container.clientWidth || container.offsetWidth || 500;
-      const h = container.clientHeight || container.offsetHeight || 500;
+      const w = container.clientWidth || container.offsetWidth || 540;
+      const h = container.clientHeight || container.offsetHeight || 540;
       scene.setSize(w, h);
     };
 
@@ -468,7 +468,6 @@ export default function ParticleSaturn(props) {
     });
     ro.observe(container);
 
-    // Also listen to window resize
     window.addEventListener("resize", updateSize);
 
     return () => {
@@ -489,7 +488,7 @@ export default function ParticleSaturn(props) {
         inset: 0,
         width: "100%",
         height: "100%",
-        overflow: "hidden",
+        overflow: "visible",
         ...style,
       }}
     />
