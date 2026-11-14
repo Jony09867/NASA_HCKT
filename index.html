@@ -7,6 +7,7 @@
   <title>Flame in Freefall Explorer</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="explore.css">
 </head>
 <body>
   <header>
@@ -20,7 +21,7 @@
   </header>
 
   <main id="top">
-    <!-- Section 01: Hero / Home -->
+    <!-- Section 01: Hero / Home (React Bits & 3D WebGL Particle Saturn) -->
     <section class="hero">
       <div>
         <div id="react-hero-eyebrow">
@@ -36,6 +37,7 @@
         </div>
 
         <p>Explore the experiments helping us understand combustion beyond Earth. Discover the questions, conditions, and measurements behind the science.</p>
+        
         <div id="react-hero-cta">
           <a class="button" href="#explore">Explore investigations <span>↗</span></a>
         </div>
@@ -59,44 +61,63 @@
       </div>
     </section>
 
-    <!-- Section 02: Explore (Teammate component - untouched) -->
+    <!-- Section 02: Explore (Teammate component: Search, Fuel & Oxygen Filters) -->
     <section class="explore" id="explore">
       <div class="section-head">
         <div>
           <span class="eyebrow">THE INVESTIGATION LIBRARY / 02</span>
-          <h2>Explore the science<span class="orange">.</span></h2>
+          <h2><span id="explore-title">Explore the science</span><span class="orange">.</span></h2>
           <p>Search the library and select two investigations to compare.</p>
         </div>
         <div class="count">
           <strong id="count">00</strong>
-          <span>INVESTIGATIONS<br>AVAILABLE</span>
+          <span id="count-label">INVESTIGATIONS<br>AVAILABLE</span>
         </div>
       </div>
+
       <div class="notice">
         <strong>Research in progress.</strong> The team is collecting and verifying NASA sources. Investigation details will appear here when available.
       </div>
-      <div class="filters">
-        <label>
-          <span>SEARCH INVESTIGATIONS</span>
-          <input id="search" placeholder="Search by name or objective..." type="search">
-        </label>
-        <label>
-          <span>FUEL TYPE</span>
-          <select id="fuel">
-            <option value="">All fuel types</option>
-          </select>
-        </label>
-        <button id="clear" class="clear">Clear filters ↗</button>
+
+      <div class="filters-container">
+        <div class="filters">
+          <label>
+            <span>SEARCH INVESTIGATIONS</span>
+            <input id="search" placeholder="Search by name or objective..." type="search" autocomplete="off" spellcheck="false" aria-label="Search investigations by name or objective">
+          </label>
+          <label>
+            <span>FUEL TYPE</span>
+            <div class="select-wrapper">
+              <select id="fuel" aria-label="Filter by fuel type">
+                <option value="">All fuel types</option>
+              </select>
+            </div>
+          </label>
+          <label>
+            <span>TARGET OXYGEN (%)</span>
+            <div class="oxygen-input-wrapper">
+              <input id="oxygen" type="number" min="0" max="100" step="1" placeholder="e.g. 21" aria-label="Target oxygen percentage">
+              <span class="input-suffix">%</span>
+            </div>
+          </label>
+          <button id="clear" class="clear specular-button" type="button">Clear filters ↗</button>
+        </div>
+
+        <div id="active-filters" class="active-filters-bar" hidden></div>
       </div>
+
       <div id="cards" class="cards"></div>
+
       <div id="empty" class="empty">
-        <span>✳</span>
+        <span class="empty-mark">✳</span>
         <h3>No investigations to show yet</h3>
         <p>Verified experiment data will appear here. Try clearing your filters or check back later.</p>
       </div>
+
+      <div id="toast-container" aria-live="polite"></div>
     </section>
 
-    <!-- Section 03: Compare (Teammate component - untouched) -->
+    <!-- Section 03: Compare (Teammate component: Side-by-side comparison) -->
     <section class="compare" id="compare">
       <div>
         <span class="eyebrow">SIDE BY SIDE / 03</span>
@@ -109,7 +130,7 @@
       </div>
     </section>
 
-    <!-- Section 04: About (ScrollReveal) -->
+    <!-- Section 04: About (ScrollReveal & Magnet) -->
     <section class="about" id="about">
       <span class="eyebrow">WHY IT MATTERS / 04</span>
       <div id="react-about-reveal">
@@ -123,16 +144,18 @@
   </main>
 
   <footer>
-    <div class="brand"><span class="mark">✳</span> FREEFALL <small>EXPLORER</small></div>
+    <div class="brand">
+      <span class="mark">✳</span> FREEFALL <small>EXPLORER</small>
+    </div>
     <span>AN INDEPENDENT SPACE APPS PROJECT</span>
     <div id="react-back-to-top">
       <a href="#top">BACK TO TOP ↑</a>
     </div>
   </footer>
 
-  <!-- React Bits Homepage Mount -->
+  <!-- React Bits & Animations -->
   <script type="module" src="/src/home.jsx"></script>
-  <!-- Teammate Scripts (Preserved in original order) -->
+  <!-- NASA Data & Explorer Logic (from origin/main) -->
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
