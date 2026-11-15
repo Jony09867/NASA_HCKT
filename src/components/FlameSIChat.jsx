@@ -3,7 +3,6 @@ import {
   LoaderCircleIcon,
   CircleCheckIcon,
   ChevronDownIcon,
-  ChevronRightIcon,
   TerminalIcon,
   GlobeIcon,
   ArrowUpIcon,
@@ -14,8 +13,10 @@ import {
   ThumbsDownIcon,
   SparklesIcon,
   RouteIcon,
+  PlusIcon,
+  MessageCircleDashedIcon,
+  ArrowDownIcon,
 } from 'lucide-react';
-import ShinyText from './ShinyText';
 import FadeContent from './FadeContent';
 import { Magnet } from './Magnet';
 import './FlameSIChat.css';
@@ -184,35 +185,21 @@ const SUGGESTIONS = [
 ];
 
 export default function FlameSIChat() {
-  const [messages, setMessages] = useState([
-    {
-      id: 'init',
-      role: 'assistant',
-      reasoning: 'FLAME-SI v2.4 initialized with NASA Physical Science Informatics (PSI) knowledge base. Ready for mission combustion and spacecraft fire safety analysis.',
-      tools: [{ cmd: 'init --dataset="NASA-PSI-CIR-MSG" --status="ready"', output: '10 flight investigations loaded' }],
-      plan: ['Ready to assist with Artemis Moon Base, Spacesuit EVA, and ISS fire safety scenarios.'],
-      sources: [{ title: 'NASA Physical Science Informatics (PSI)', url: 'https://psi.nasa.gov/' }],
-      text: `Hello! I am **FLAME-SI**, your interactive space fire safety co-pilot.
-
-I synthesize findings from decades of NASA microgravity experiments—including **BASS-II**, **FLEX**, **ACME**, and **Saffire**—to help aerospace engineers evaluate ignition thresholds, flame propagation, and suppression protocols for missions to the Moon, Mars, and the ISS.
-
-Pick a quick mission scenario below or ask me any question!`,
-    },
-  ]);
-
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
-  const [model, setModel] = useState('flame-si-v2.4');
-  const [effort, setEffort] = useState('deep');
+  const [showLatest, setShowLatest] = useState(false);
+  const sendTimer = useRef(null);
+  const followLatest = useRef(true);
+  useEffect(() => () => clearTimeout(sendTimer.current), []);
   const [copiedId, setCopiedId] = useState(null);
   const [feedback, setFeedback] = useState({});
-  const [expandedTrace, setExpandedTrace] = useState({ init: false });
 
   const chatBodyRef = useRef(null);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
-    if (chatBodyRef.current) {
+    if (chatBodyRef.current && followLatest.current) {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
     }
   }, [messages, isStreaming]);
@@ -243,6 +230,7 @@ Pick a quick mission scenario below or ask me any question!`,
 
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
+    followLatest.current = true;
     setIsStreaming(true);
 
     // Determine matching knowledge base or generate dynamic synthesis
@@ -303,10 +291,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
       text: matched.reply,
     };
 
-    // Expand reasoning trace for the new message
-    setExpandedTrace((prev) => ({ ...prev, [assistantMsgId]: true }));
 
-    setTimeout(() => {
+    sendTimer.current = setTimeout(() => {
       setMessages((prev) => [...prev, partialAssistantMsg]);
       setIsStreaming(false);
     }, 900);
@@ -326,287 +312,75 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
   };
 
   const handleReset = () => {
-    setMessages([
-      {
-        id: 'init',
-        role: 'assistant',
-        reasoning: 'FLAME-SI v2.4 reset to baseline state.',
-        tools: [{ cmd: 'init --dataset="NASA-PSI-CIR-MSG"', output: 'Ready' }],
-        plan: ['Ready to assist with Artemis Moon Base, Spacesuit EVA, and ISS fire safety scenarios.'],
-        sources: [{ title: 'NASA Physical Science Informatics (PSI)', url: 'https://psi.nasa.gov/' }],
-        text: `Conversation reset. I am ready to evaluate new mission fire safety scenarios or answer questions regarding NASA's microgravity combustion research!`,
-      },
-    ]);
+    clearTimeout(sendTimer.current);
+    setMessages([]); setInput(''); setIsStreaming(false); setFeedback({});
+    setShowLatest(false); followLatest.current = true;
   };
 
   return (
-    <div className="flame-chat-container">
-      {/* Header */}
-      <div className="flame-chat-header">
-        <div className="flame-chat-title-group">
-          <div className="flame-chat-avatar">SI</div>
-          <div className="flame-chat-title">
-            <h3>
-              <ShinyText
-                text="FLAME-SI"
-                color="#f7f3ed"
-                shineColor="#ffd7a8"
-                speed={4.5}
-                delay={1}
-                shineWidth={28}
-                softness={0.8}
-              />{' '}
-              Co-Pilot
-              <span className="flame-model-pill">
-                <SparklesIcon size={12} />
-                NASA PSI Fine-Tuned
-              </span>
-            </h3>
-            <p>Super Intelligence for Spacecraft Fire Safety & Flammability Dynamics</p>
-          </div>
-        </div>
-
-        <div className="flame-chat-controls">
-          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-<button
-            type="button"
-            className="flame-reset-btn"
-            onClick={handleReset}
-            title="Reset conversation"
-          >
-            <RotateCwIcon size={16} />
-          </button>
-</Magnet>
-        </div>
-      </div>
-
-      {/* Message Body */}
-      <div className="flame-chat-body" ref={chatBodyRef} onClick={handleTagClick}>
-        {messages.map((msg) => {
-          if (msg.role === 'user') {
-            return (
-              <FadeContent key={msg.id} effect="fade" trigger="mount" duration={0.25} once blur={false}>
-                <div className="chat-msg user">
-                  <div className="bubble-user">{msg.text}</div>
-                </div>
-              </FadeContent>
-            );
-          }
-
-          const isTraceOpen = expandedTrace[msg.id] ?? false;
-
-          return (
-            <FadeContent key={msg.id} effect="fade" trigger="mount" duration={0.25} once blur={false}>
-              <div className="chat-msg assistant">
-              <div className="assistant-container">
-                {/* 1. Reasoning / Chain-of-Thought Trace (collapsible) */}
-                {msg.reasoning && (
-                  <div className="trace-card">
-                    <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1} style={{ width: '100%' }}>
-<button
-                      type="button"
-                      className="trace-trigger"
-                      onClick={() =>
-                        setExpandedTrace((prev) => ({
-                          ...prev,
-                          [msg.id]: !isTraceOpen,
-                        }))
-                      }
-                    >
-                      <div className="trace-status-icon">
-                        {isStreaming && msg === messages[messages.length - 1] ? (
-                          <LoaderCircleIcon size={14} className="animate-spin text-orange-400" />
-                        ) : (
-                          <CircleCheckIcon size={14} style={{ color: '#34d399' }} />
-                        )}
-                        <span>
-                          {isStreaming && msg === messages[messages.length - 1]
-                            ? 'Reasoning over NASA PSI Physics...'
-                            : 'Thought for 2.4s (Chain-of-Thought)'}
-                        </span>
-                      </div>
-                      {isTraceOpen ? <ChevronDownIcon size={15} /> : <ChevronRightIcon size={15} />}
-                    </button>
-</Magnet>
-
-                    {isTraceOpen && (
-                      <div className="trace-content">
-                        {msg.reasoning}
-
-                        {/* Tool steps */}
-                        {msg.tools && msg.tools.length > 0 && (
-                          <div className="trace-steps-list">
-                            {msg.tools.map((t, idx) => (
-                              <div key={idx} className="trace-step-item">
-                                <TerminalIcon size={12} style={{ color: '#ff8a58' }} />
-                                <span>{t.cmd}</span>
-                                <span style={{ color: '#8c8880' }}>→ {t.output}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* 2. Action Plan / Checklist */}
-                {msg.plan && msg.plan.length > 0 && (
-                  <div className="plan-container">
-                    <div className="plan-title">
-                      <RouteIcon size={13} style={{ display: 'inline', marginRight: '6px' }} />
-                      Fire Safety Protocol Checklist:
-                    </div>
-                    {msg.plan.map((step, idx) => (
-                      <div key={idx} className="plan-step done">
-                        <CircleCheckIcon size={14} />
-                        <span>{step}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* 3. Text Body */}
-                <div
-                  className="assistant-text"
-                  dangerouslySetInnerHTML={{
-                    __html: msg.text.replace(/\n\n/g, '<br/><br/>').replace(/\n/g, '<br/>'),
-                  }}
-                />
-
-                {/* 4. Sources Citations */}
-                {msg.sources && msg.sources.length > 0 && (
-                  <div className="sources-bar">
-                    {msg.sources.map((src, idx) => (
-                      <Magnet key={idx} wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-                      <a
-                        href={src.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="source-pill"
-                      >
-                        <GlobeIcon size={12} />
-                        <span>{src.title} ↗</span>
-                      </a>
-                      </Magnet>
-                    ))}
-                  </div>
-                )}
-
-                {/* 5. Message Footer Actions */}
+    <section className="flame-chat-container" aria-label="FLAME-SI research chat">
+      <header className="flame-chat-header">
+        <div><span className="chat-eyebrow">FLAME-SI / RESEARCH ASSISTANT</span>
+          <h3>New thread</h3><p>Explore combustion beyond Earth.</p></div>
+        <Magnet padding={35} maxOffset={5} magnetStrength={3}>
+          <button className="flame-reset-btn" type="button" onClick={handleReset} aria-label="Reset conversation" title="Reset conversation"><RotateCwIcon size={17} /></button>
+        </Magnet>
+      </header>
+      <div className="chat-scroll-shell">
+        <div className="flame-chat-body" ref={chatBodyRef} aria-busy={isStreaming} onClick={handleTagClick}
+          onScroll={(e) => { const el = e.currentTarget; const near = el.scrollHeight - el.scrollTop - el.clientHeight < 70; followLatest.current = near; setShowLatest(!near); }}>
+          {messages.length === 0 && <div className="chat-empty">
+            <div className="chat-empty-icon"><MessageCircleDashedIcon size={28} /></div>
+            <h4>What would you like to explore?</h4>
+            <p>Discover NASA combustion experiments, compare mission conditions, and explore fire safety research.</p>
+            <div className="chat-starters">{SUGGESTIONS.slice(0, 3).map(item => <Magnet key={item.key} padding={35} maxOffset={5} magnetStrength={3}>
+              <button type="button" onClick={() => handleSend(item.label)}>{item.label}<ArrowUpIcon size={14} /></button>
+            </Magnet>)}</div>
+          </div>}
+          {messages.map(msg => <FadeContent key={msg.id} trigger="mount" duration={0.2} blur={false}>
+            {msg.role === 'user' ? <div className="chat-msg user"><div className="bubble-user">{msg.text}</div></div> :
+              <article className="chat-msg assistant">
+                <div className="assistant-label"><SparklesIcon size={14} /> FLAME-SI <span>Research overview</span></div>
+                {msg.reasoning && <details className="chat-trace"><summary><CircleCheckIcon size={15} /> View analysis notes <ChevronDownIcon size={14} /></summary>
+                  <div className="trace-content">{msg.reasoning}
+                    {msg.tools?.length > 0 && <div className="trace-steps-list"><span className="trace-demo-label">Illustrative workflow · no commands executed</span>{msg.tools.map((tool, i) => <details key={i} className="chat-tool"><summary><TerminalIcon size={14} /><code>{tool.cmd}</code></summary><pre>{tool.output}</pre></details>)}</div>}
+                  </div></details>}
+                <div className="assistant-text"><ChatText text={msg.text} /></div>
+                {msg.plan?.length > 0 && <details className="chat-plan"><summary><RouteIcon size={14} /> Review discussion points <ChevronDownIcon size={14} /></summary><ul>{msg.plan.map((step,i)=><li key={i}>{step}</li>)}</ul></details>}
+                <div className="sources-bar">{msg.sources?.map((source,i)=><Magnet key={i} padding={35} maxOffset={5} magnetStrength={3}><a className="source-pill" href={source.url} target="_blank" rel="noopener noreferrer"><GlobeIcon size={12}/>{source.title} ↗</a></Magnet>)}</div>
                 <div className="msg-footer">
-                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-<button
-                    type="button"
-                    className="msg-action-btn"
-                    title="Copy response"
-                    onClick={() => handleCopy(msg.id, msg.text)}
-                  >
-                    {copiedId === msg.id ? <CheckIcon size={14} style={{ color: '#34d399' }} /> : <CopyIcon size={14} />}
-                  </button>
-</Magnet>
-                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-<button
-                    type="button"
-                    className={`msg-action-btn ${feedback[msg.id] === 'up' ? 'active' : ''}`}
-                    title="Helpful insight"
-                    onClick={() => handleFeedback(msg.id, 'up')}
-                  >
-                    <ThumbsUpIcon size={14} />
-                  </button>
-</Magnet>
-                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-<button
-                    type="button"
-                    className={`msg-action-btn ${feedback[msg.id] === 'down' ? 'active' : ''}`}
-                    title="Needs refinement"
-                    onClick={() => handleFeedback(msg.id, 'down')}
-                  >
-                    <ThumbsDownIcon size={14} />
-                  </button>
-</Magnet>
+                  <Magnet padding={35} maxOffset={5} magnetStrength={3}><button type="button" aria-label="Copy response" onClick={()=>handleCopy(msg.id,msg.text)}>{copiedId===msg.id?<CheckIcon size={15}/>:<CopyIcon size={15}/>}</button></Magnet>
+                  <Magnet padding={35} maxOffset={5} magnetStrength={3}><button type="button" aria-label="Helpful response" aria-pressed={feedback[msg.id]==='up'} onClick={()=>handleFeedback(msg.id,'up')}><ThumbsUpIcon size={15}/></button></Magnet>
+                  <Magnet padding={35} maxOffset={5} magnetStrength={3}><button type="button" aria-label="Unhelpful response" aria-pressed={feedback[msg.id]==='down'} onClick={()=>handleFeedback(msg.id,'down')}><ThumbsDownIcon size={15}/></button></Magnet>
                 </div>
-              </div>
-            </div>
-            </FadeContent>
-          );
-        })}
-      </div>
-
-      {/* Suggestions / Prompt Chips */}
-      <div className="suggestions-wrapper">
-        <span className="suggestions-label">Explore Mission Scenarios:</span>
-        <div className="suggestions-scroll">
-          {SUGGESTIONS.map((s, idx) => (
-            <Magnet key={idx} wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-<button
-             
-              type="button"
-              className="suggestion-pill"
-              onClick={() => handleSend(s.label)}
-            >
-              {s.label}
-            </button>
-</Magnet>
-          ))}
+              </article>}
+          </FadeContent>)}
+          {isStreaming && <div className="chat-loading" role="status"><LoaderCircleIcon size={16} className="chat-spin"/>Preparing research overview…</div>}
         </div>
+        {showLatest && <button type="button" className="chat-scroll-latest" aria-label="Scroll to latest message" onClick={()=>{const el=chatBodyRef.current;el.scrollTop=el.scrollHeight;followLatest.current=true;setShowLatest(false);}}><ArrowDownIcon size={16}/></button>}
       </div>
-
-      {/* Input Form */}
       <div className="chat-input-area">
-        <div className="chat-input-box">
-          <textarea
-            className="chat-textarea"
-            placeholder="Ask FLAME-SI about microgravity fire dynamics, O2 limits, or PSI flight investigations..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-            rows={2}
-          />
-
+        <form className="chat-input-box" onSubmit={e=>{e.preventDefault();handleSend();}}>
+          <textarea className="chat-textarea" aria-label="Message FLAME-SI" placeholder="Ask about microgravity, combustion, or a mission…" value={input} onChange={e=>setInput(e.target.value)} rows={2}
+            onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();e.currentTarget.form.requestSubmit();}}}/>
           <div className="chat-input-footer">
-            <div className="chat-input-options">
-              <select
-                className="chat-option-select"
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-              >
-                <option value="flame-si-v2.4">FLAME-SI v2.4 (NASA PSI)</option>
-                <option value="artemis-safety">Artemis Safety Model</option>
-              </select>
-
-              <select
-                className="chat-option-select"
-                value={effort}
-                onChange={(e) => setEffort(e.target.value)}
-              >
-                <option value="deep">Deep Scientific Reasoning</option>
-                <option value="rapid">Rapid Summary</option>
-              </select>
-            </div>
-
-            <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-              <button
-                type="button"
-                className="chat-send-btn"
-                disabled={!input.trim() || isStreaming}
-                onClick={() => handleSend()}
-              >
-                {isStreaming ? (
-                  <LoaderCircleIcon size={16} className="animate-spin" />
-                ) : (
-                  <ArrowUpIcon size={18} />
-                )}
-              </button>
-            </Magnet>
+            <details className="chat-context"><summary aria-label="Add mission context" title="Add mission context"><PlusIcon size={18}/></summary><div className="chat-context-menu"><span>MISSION SCENARIOS</span>{SUGGESTIONS.map(item=><button type="button" key={item.key} onClick={e=>{setInput(item.label);e.currentTarget.closest('details').open=false;}}>{item.label}</button>)}</div></details>
+            <span className="chat-mode"><GlobeIcon size={13}/> NASA research · demo</span>
+            <Magnet padding={35} maxOffset={5} magnetStrength={3} disabled={isStreaming||!input.trim()}><button type="submit" className="chat-send-btn" aria-label="Send message" disabled={isStreaming||!input.trim()}>{isStreaming?<LoaderCircleIcon size={17} className="chat-spin"/>:<ArrowUpIcon size={19}/>}</button></Magnet>
           </div>
-        </div>
+        </form>
+        <p className="chat-input-hint">Curated research demo · Enter to send · Shift + Enter for a new line</p>
       </div>
-    </div>
+    </section>
   );
+}
+
+// Render the curated message markup as React nodes, never as user-supplied HTML.
+function ChatText({ text }) {
+  const inline = value => value.split(/(\*\*[^*]+\*\*|<span class="inv-action-tag" data-inv="[^"]+">[^<]+<\/span>)/g).map((part,i)=>{
+    if(part.startsWith('**')) return <strong key={i}>{part.slice(2,-2)}</strong>;
+    const match=part.match(/^<span class="inv-action-tag" data-inv="([^"]+)">([^<]+)<\/span>$/);
+    return match ? <button type="button" key={i} className="inv-action-tag" data-inv={match[1]}>{match[2]}</button> : part;
+  });
+  return text.split(/\n\n+/).map((block,i)=>block.startsWith('### ')?<h4 key={i}>{inline(block.slice(4))}</h4>:block.startsWith('* ')?<ul key={i}>{block.split('\n').map((line,j)=><li key={j}>{inline(line.replace(/^\* /,''))}</li>)}</ul>:<p key={i}>{inline(block)}</p>);
 }
