@@ -222,8 +222,9 @@ export default function SIDashboard() {
           <span className="si-preset-label">Select Mission Profile or Atmospheric Condition:</span>
       <AnimatedContent className="si-presets-grid">
         {Object.entries(PRESETS).map(([key, p]) => (
+          <Magnet key={key} wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1} style={{ display: 'grid', minWidth: 0 }}>
           <SpotlightCard
-            key={key}
+            style={{ width: '100%', height: '100%' }}
             as="button"
             type="button"
             aria-pressed={activePreset === key}
@@ -246,6 +247,7 @@ export default function SIDashboard() {
             <span className="si-preset-specs">{p.specs}</span>
             <span className="si-preset-desc">{p.desc}</span>
           </SpotlightCard>
+          </Magnet>
         ))}
       </AnimatedContent>
 
