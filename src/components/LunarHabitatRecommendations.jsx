@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Stepper, { Step } from './Stepper';
 import './LunarHabitatRecommendations.css';
 
 export const LUNAR_RECOMMENDATIONS = [
@@ -111,13 +112,32 @@ export const LUNAR_RECOMMENDATIONS = [
 
 export function LunarHabitatRecommendations() {
   const [expandedId, setExpandedId] = useState('R1');
+  const [viewMode, setViewMode] = useState('stepper'); // 'stepper' | 'accordion'
 
   return (
     <div className="lunar-rec-container">
       {/* Title & Introduction */}
       <div className="lunar-rec-header">
-        <div className="lunar-rec-eyebrow">
-          <span>MISSION FLAMMABILITY DIRECTIVES · ARTEMIS LUNAR HABITAT</span>
+        <div className="lunar-header-top-flex">
+          <div className="lunar-rec-eyebrow">
+            <span>MISSION FLAMMABILITY DIRECTIVES · ARTEMIS LUNAR HABITAT</span>
+          </div>
+          <div className="lunar-view-toggle" role="group" aria-label="Directives view mode">
+            <button
+              type="button"
+              className={`lunar-toggle-mode-btn ${viewMode === 'stepper' ? 'is-active' : ''}`}
+              onClick={() => setViewMode('stepper')}
+            >
+              ✦ Interactive Stepper
+            </button>
+            <button
+              type="button"
+              className={`lunar-toggle-mode-btn ${viewMode === 'accordion' ? 'is-active' : ''}`}
+              onClick={() => setViewMode('accordion')}
+            >
+              Full Accordion List
+            </button>
+          </div>
         </div>
         <h2 className="lunar-rec-title">What this means for a lunar habitat</h2>
         <p className="lunar-rec-sub">
@@ -138,84 +158,169 @@ export function LunarHabitatRecommendations() {
         </div>
       </div>
 
-      {/* At a glance summary list */}
-      <div className="lunar-at-a-glance">
-        <h4 className="lunar-glance-title">At a Glance · 5 Safety Directives</h4>
-        <div className="lunar-glance-list">
-          {LUNAR_RECOMMENDATIONS.map((r) => (
-            <div
-              key={r.id}
-              className={`lunar-glance-item ${expandedId === r.id ? 'is-active' : ''}`}
-              onClick={() => setExpandedId(r.id)}
-            >
-              <span className="lunar-glance-code">{r.code}</span>
-              <span className="lunar-glance-text">{r.title}</span>
-              <span className="lunar-glance-arrow">{expandedId === r.id ? '▼' : '→'}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Detailed Recommendation Cards */}
-      <div className="lunar-cards-list">
-        {LUNAR_RECOMMENDATIONS.map((r) => {
-          const isExpanded = expandedId === r.id;
-          return (
-            <div key={r.id} className={`lunar-detail-card ${isExpanded ? 'is-open' : ''}`}>
-              <div className="lunar-card-head" onClick={() => setExpandedId(isExpanded ? '' : r.id)}>
-                <div className="lunar-card-head-left">
-                  <span className="lunar-card-badge-code">{r.code}</span>
-                  <div>
-                    <h3 className="lunar-card-title">{r.title}</h3>
-                    <span className="lunar-card-meta-tag">{r.badge}</span>
-                  </div>
-                </div>
-                <div className="lunar-card-head-right">
-                  <span className="lunar-badge-severity">{r.severity}</span>
-                  <span className="lunar-toggle-btn">{isExpanded ? 'Collapse ▴' : 'Inspect Directive ▾'}</span>
-                </div>
+      {viewMode === 'stepper' ? (
+        /* Interactive Animated Stepper View */
+        <div className="lunar-stepper-view-wrap">
+          <Stepper
+            initialStep={1}
+            indicator="numbers"
+            orientation="horizontal"
+            theme="light"
+            accentColor="#164f91"
+            width="100%"
+            backButtonText="Previous Directive"
+            nextButtonText="Next Mandate"
+            completeButtonText="Complete Review"
+            completedContent={
+              <div className="lunar-audit-complete-card">
+                <div className="lunar-complete-icon">✔</div>
+                <h3>Artemis Habitation Directives Reviewed</h3>
+                <p>
+                  All 5 empirical combustion gap mandates have been audited against NASA BASS-II and Saffire flight
+                  findings.
+                </p>
+                <button
+                  type="button"
+                  className="lunar-restart-btn"
+                  onClick={() => setViewMode('accordion')}
+                >
+                  View Full Document List ↗
+                </button>
               </div>
-
-              {isExpanded && (
-                <div className="lunar-card-body">
-                  {/* Punchy Core Hazard Callout */}
-                  <div className="lunar-core-hazard-banner">
-                    <span className="lunar-hazard-tag">CORE HAZARD</span>
-                    <p className="lunar-hazard-lead">{r.coreHazard}</p>
+            }
+          >
+            {LUNAR_RECOMMENDATIONS.map((r) => (
+              <Step key={r.id} title={`${r.code}: ${r.severity}`}>
+                <div className="lunar-detail-card is-open" style={{ margin: 0, boxShadow: 'none' }}>
+                  <div className="lunar-card-head" style={{ cursor: 'default' }}>
+                    <div className="lunar-card-head-left">
+                      <span className="lunar-card-badge-code">{r.code}</span>
+                      <div>
+                        <h3 className="lunar-card-title">{r.title}</h3>
+                        <span className="lunar-card-meta-tag">{r.badge}</span>
+                      </div>
+                    </div>
+                    <div className="lunar-card-head-right">
+                      <span className="lunar-badge-severity">{r.severity}</span>
+                    </div>
                   </div>
 
-                  {/* Physical Explanation */}
-                  <div className="lunar-summary-box">
-                    <strong>Physical Mechanism:</strong>
-                    <p>{r.summary}</p>
-                  </div>
+                  <div className="lunar-card-body" style={{ paddingTop: '0.75rem' }}>
+                    <div className="lunar-core-hazard-banner">
+                      <span className="lunar-hazard-tag">CORE HAZARD</span>
+                      <p className="lunar-hazard-lead">{r.coreHazard}</p>
+                    </div>
 
-                  {/* Bulleted Key Evidence Points */}
-                  <div className="lunar-keypoints-box">
-                    <strong>Flight Data & Experimental Evidence:</strong>
-                    <ul className="lunar-bullet-list">
-                      {r.keyPoints.map((pt, idx) => (
-                        <li key={idx}>{pt}</li>
-                      ))}
-                    </ul>
-                  </div>
+                    <div className="lunar-summary-box">
+                      <strong>Physical Mechanism:</strong>
+                      <p>{r.summary}</p>
+                    </div>
 
-                  {/* Actionable Engineering Directive */}
-                  <div className="lunar-directive-box">
-                    <strong>Artemis Habitation Mandate:</strong>
-                    <p>{r.directive}</p>
-                  </div>
+                    <div className="lunar-keypoints-box">
+                      <strong>Flight Data & Experimental Evidence:</strong>
+                      <ul className="lunar-bullet-list">
+                        {r.keyPoints.map((pt, idx) => (
+                          <li key={idx}>{pt}</li>
+                        ))}
+                      </ul>
+                    </div>
 
-                  {/* Citation Footer */}
-                  <div className="lunar-citation-box">
-                    <span>Evidence Citation:</span> <code>{r.citation}</code>
+                    <div className="lunar-directive-box">
+                      <strong>Artemis Habitation Mandate:</strong>
+                      <p>{r.directive}</p>
+                    </div>
+
+                    <div className="lunar-citation-box">
+                      <span>Evidence Citation:</span> <code>{r.citation}</code>
+                    </div>
                   </div>
                 </div>
-              )}
+              </Step>
+            ))}
+          </Stepper>
+        </div>
+      ) : (
+        <>
+          {/* At a glance summary list */}
+          <div className="lunar-at-a-glance">
+            <h4 className="lunar-glance-title">At a Glance · 5 Safety Directives</h4>
+            <div className="lunar-glance-list">
+              {LUNAR_RECOMMENDATIONS.map((r) => (
+                <div
+                  key={r.id}
+                  className={`lunar-glance-item ${expandedId === r.id ? 'is-active' : ''}`}
+                  onClick={() => setExpandedId(r.id)}
+                >
+                  <span className="lunar-glance-code">{r.code}</span>
+                  <span className="lunar-glance-text">{r.title}</span>
+                  <span className="lunar-glance-arrow">{expandedId === r.id ? '▼' : '→'}</span>
+                </div>
+              ))}
             </div>
-          );
-        })}
-      </div>
+          </div>
+
+          {/* Detailed Recommendation Cards */}
+          <div className="lunar-cards-list">
+            {LUNAR_RECOMMENDATIONS.map((r) => {
+              const isExpanded = expandedId === r.id;
+              return (
+                <div key={r.id} className={`lunar-detail-card ${isExpanded ? 'is-open' : ''}`}>
+                  <div className="lunar-card-head" onClick={() => setExpandedId(isExpanded ? '' : r.id)}>
+                    <div className="lunar-card-head-left">
+                      <span className="lunar-card-badge-code">{r.code}</span>
+                      <div>
+                        <h3 className="lunar-card-title">{r.title}</h3>
+                        <span className="lunar-card-meta-tag">{r.badge}</span>
+                      </div>
+                    </div>
+                    <div className="lunar-card-head-right">
+                      <span className="lunar-badge-severity">{r.severity}</span>
+                      <span className="lunar-toggle-btn">{isExpanded ? 'Collapse ▴' : 'Inspect Directive ▾'}</span>
+                    </div>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="lunar-card-body">
+                      {/* Punchy Core Hazard Callout */}
+                      <div className="lunar-core-hazard-banner">
+                        <span className="lunar-hazard-tag">CORE HAZARD</span>
+                        <p className="lunar-hazard-lead">{r.coreHazard}</p>
+                      </div>
+
+                      {/* Physical Explanation */}
+                      <div className="lunar-summary-box">
+                        <strong>Physical Mechanism:</strong>
+                        <p>{r.summary}</p>
+                      </div>
+
+                      {/* Bulleted Key Evidence Points */}
+                      <div className="lunar-keypoints-box">
+                        <strong>Flight Data & Experimental Evidence:</strong>
+                        <ul className="lunar-bullet-list">
+                          {r.keyPoints.map((pt, idx) => (
+                            <li key={idx}>{pt}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Actionable Engineering Directive */}
+                      <div className="lunar-directive-box">
+                        <strong>Artemis Habitation Mandate:</strong>
+                        <p>{r.directive}</p>
+                      </div>
+
+                      {/* Citation Footer */}
+                      <div className="lunar-citation-box">
+                        <span>Evidence Citation:</span> <code>{r.citation}</code>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

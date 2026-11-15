@@ -401,3 +401,106 @@
   font-size: 0.8rem;
   border: 1px solid #cbd5e1;
 }
+
+/* Header Top Flex & Mode Toggle */
+.lunar-header-top-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.lunar-view-toggle {
+  display: flex;
+  gap: 4px;
+  background: #edf3fa;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid #cbd8e8;
+}
+
+.lunar-toggle-mode-btn {
+  background: transparent;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4e637d;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lunar-toggle-mode-btn:hover {
+  color: #102b4e;
+}
+
+.lunar-toggle-mode-btn.is-active {
+  background: #ffffff;
+  color: #164f91;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(16, 43, 78, 0.1);
+}
+
+.lunar-stepper-view-wrap {
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.lunar-audit-complete-card {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: #f8fbff;
+  border: 1px solid #cbd8e8;
+  border-radius: 12px;
+}
+
+.lunar-complete-icon {
+  width: 56px;
+  height: 56px;
+  background: #15803d;
+  color: #ffffff;
+  font-size: 1.8rem;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  box-shadow: 0 4px 14px rgba(21, 128, 61, 0.25);
+}
+
+.lunar-audit-complete-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.45rem;
+  color: #102b4e;
+  margin: 0 0 0.5rem;
+}
+
+.lunar-audit-complete-card p {
+  color: #4e637d;
+  font-size: 0.94rem;
+  max-width: 540px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.6;
+}
+
+.lunar-restart-btn {
+  background: #164f91;
+  color: #ffffff;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.lunar-restart-btn:hover {
+  background: #0c3971;
+}

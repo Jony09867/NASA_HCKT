@@ -10,6 +10,7 @@ import FlowDuctSchematic from './FlowDuctSchematic';
 import LunarHabitatRecommendations from './LunarHabitatRecommendations';
 import OptionWheel from './OptionWheel';
 import MagicBento from './MagicBento';
+import Stepper, { Step } from './Stepper';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -376,6 +377,7 @@ export default function SIDashboard() {
   const [selectedInvestigation, setSelectedInvestigation] = useState('all');
   const [materialViewMode, setMaterialViewMode] = useState('chips'); // 'chips' | 'wheel'
   const [pipelineViewMode, setPipelineViewMode] = useState('bento'); // 'bento' | 'flow'
+  const [labWorkflowMode, setLabWorkflowMode] = useState('filters'); // 'filters' | 'stepper'
 
   // Lab Stage View Toggle: 3D WebGL vs 2D Flow Duct Schematic
   const [labStageMode, setLabStageMode] = useState('3d'); // '3d' | 'duct'
@@ -698,159 +700,280 @@ export default function SIDashboard() {
           {/* LEFT COLUMN: Filters & Material Chips */}
           <aside className="si-lab-left-filters">
             <div className="si-filters-header">
-              <h3 className="si-filters-title">Experiment Lab</h3>
+              <div className="si-filter-header-flex">
+                <h3 className="si-filters-title" style={{ margin: 0 }}>Experiment Lab</h3>
+                <div className="si-mat-mode-toggle" role="group" aria-label="Lab workflow mode">
+                  <button
+                    type="button"
+                    className={`si-mat-toggle-btn ${labWorkflowMode === 'filters' ? 'is-active' : ''}`}
+                    onClick={() => setLabWorkflowMode('filters')}
+                  >
+                    All Filters
+                  </button>
+                  <button
+                    type="button"
+                    className={`si-mat-toggle-btn ${labWorkflowMode === 'stepper' ? 'is-active' : ''}`}
+                    onClick={() => setLabWorkflowMode('stepper')}
+                  >
+                    ✦ Guided Stepper
+                  </button>
+                </div>
+              </div>
               <p className="si-filters-sub">
                 Every choice below is a value NASA recorded (airflow is converted from the fan reading with NASA's
                 calibration). Each one narrows the others.
               </p>
             </div>
 
-            {/* 1. What is burning */}
-            <div className="si-filter-section">
-              <span className="si-filter-num-label">1 · What is burning</span>
-              <div className="si-pill-btn-group">
-                {[
-                  { id: 'solid', label: 'Solid' },
-                  { id: 'liquid', label: 'Liquid droplet' },
-                  { id: 'gas', label: 'Gas' },
-                ].map((f) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    className={`si-filter-pill-btn ${selectedFuelType === f.id ? 'is-active' : ''}`}
-                    onClick={() => setSelectedFuelType(f.id)}
-                  >
-                    {f.label}
-                  </button>
-                ))}
+            {labWorkflowMode === 'stepper' ? (
+              <div className="si-lab-stepper-container" style={{ marginTop: '0.85rem' }}>
+                <Stepper
+                  initialStep={1}
+                  indicator="numbers"
+                  orientation="horizontal"
+                  theme="light"
+                  accentColor="#164f91"
+                  width="100%"
+                  backButtonText="Back"
+                  nextButtonText="Next"
+                  completeButtonText="Launch 3D Burn"
+                  onFinalStepCompleted={() => {
+                    setLabStageMode('3d');
+                  }}
+                >
+                  <Step title="Fuel">
+                    <div className="si-stepper-step-card">
+                      <span className="si-subfilter-label">Choose Solid Fuel Specimen:</span>
+                      <div className="si-mat-chips-grid" style={{ marginTop: '0.5rem' }}>
+                        {COVERAGE_MATRIX.map((mat) => (
+                          <button
+                            key={mat.code}
+                            type="button"
+                            className={`si-mat-chip ${selectedMaterialCode === mat.code ? 'is-active' : ''}`}
+                            onClick={() => handleSelectMaterial(mat)}
+                          >
+                            <span className="si-mat-chip-name">{mat.code}</span>
+                            <span className="si-mat-chip-count">{mat.totalTests}</span>
+                          </button>
+                        ))}
+                      </div>
+                      <div className="si-stepper-meta-note">
+                        Active: <strong>{activeCoverage.material}</strong> · {activeCoverage.totalTests} NASA PSI runs
+                      </div>
+                    </div>
+                  </Step>
+
+                  <Step title="Atmosphere">
+                    <div className="si-stepper-step-card">
+                      <span className="si-subfilter-label">Target Atmosphere Profile:</span>
+                      <div className="si-preset-btn-list" style={{ marginTop: '0.5rem' }}>
+                        {Object.entries(PRESETS).map(([k, p]) => (
+                          <button
+                            key={k}
+                            type="button"
+                            className={`si-preset-quick-btn ${activePreset === k ? 'is-active' : ''}`}
+                            onClick={() => handlePresetSelect(k)}
+                          >
+                            <strong>{p.title}</strong>
+                            <small>{p.specs}</small>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </Step>
+
+                  <Step title="Airflow">
+                    <div className="si-stepper-step-card">
+                      <span className="si-subfilter-label">Opposed Duct Ventilation Velocity:</span>
+                      <div className="si-pill-btn-group" style={{ marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                        {[
+                          { val: 0.0, label: '0 cm/s (Quenched)' },
+                          { val: 0.05, label: '5 cm/s (BASS-II Cap)' },
+                          { val: 0.12, label: '12 cm/s (Nominal)' },
+                          { val: 0.265, label: '26.5 cm/s (Blowoff)' },
+                        ].map((af) => (
+                          <button
+                            key={af.val}
+                            type="button"
+                            className={`si-filter-pill-btn ${ventilation === af.val ? 'is-active' : ''}`}
+                            onClick={() => setVentilation(af.val)}
+                          >
+                            {af.label}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="si-stepper-meta-note">
+                        Opposed flow: <strong>{(ventilation * 100).toFixed(1)} cm/s</strong> across sample duct
+                      </div>
+                    </div>
+                  </Step>
+
+                  <Step title="Results">
+                    <div className="si-stepper-step-card">
+                      <span className="si-subfilter-label">Closest Empirical NASA Test Point:</span>
+                      <div className="si-test-point-box" style={{ marginTop: '0.5rem' }}>
+                        <div className="si-test-point-head">
+                          <span className="si-point-badge">MATCH</span>
+                          <span className="si-point-id">{closestTest.testId}</span>
+                        </div>
+                        <div className="si-test-point-outcome" style={{ marginTop: '0.35rem' }}>
+                          <strong>Outcome:</strong> {closestTest.outcome}
+                        </div>
+                      </div>
+                    </div>
+                  </Step>
+                </Stepper>
               </div>
-            </div>
-
-            {/* 2. Investigation */}
-            <div className="si-filter-section">
-              <span className="si-filter-num-label">2 · Investigation</span>
-              <select
-                className="si-filter-select"
-                value={selectedInvestigation}
-                onChange={(e) => setSelectedInvestigation(e.target.value)}
-              >
-                <option value="all">All investigations with this fuel</option>
-                <option value="bass">PSI-25 BASS-II (Burning & Suppression II)</option>
-                <option value="saffire">PSI-98/99/100 SAFFIRE I–III (Spacecraft Fire)</option>
-                <option value="flex">PSI-69 FLEX (Flame Extinction Experiment)</option>
-                <option value="acme">PSI-7585 ACME (Advanced Combustion Microgravity)</option>
-              </select>
-            </div>
-
-            {/* 3. Material with real test count chips & OptionWheel Dial */}
-            <div className="si-filter-section">
-              <div className="si-filter-header-flex">
-                <span className="si-filter-num-label">3 · Material</span>
-                <div className="si-mat-mode-toggle" role="group" aria-label="Material selector view">
-                  <button
-                    type="button"
-                    className={`si-mat-toggle-btn ${materialViewMode === 'chips' ? 'is-active' : ''}`}
-                    onClick={() => setMaterialViewMode('chips')}
-                  >
-                    Chips
-                  </button>
-                  <button
-                    type="button"
-                    className={`si-mat-toggle-btn ${materialViewMode === 'wheel' ? 'is-active' : ''}`}
-                    onClick={() => setMaterialViewMode('wheel')}
-                  >
-                    3D Dial Wheel
-                  </button>
-                </div>
-              </div>
-
-              {materialViewMode === 'chips' ? (
-                <div className="si-mat-chips-grid">
-                  {COVERAGE_MATRIX.map((mat) => (
-                    <button
-                      key={mat.code}
-                      type="button"
-                      className={`si-mat-chip ${selectedMaterialCode === mat.code ? 'is-active' : ''}`}
-                      onClick={() => handleSelectMaterial(mat)}
-                    >
-                      <span className="si-mat-chip-name">{mat.code}</span>
-                      <span className="si-mat-chip-count">{mat.totalTests}</span>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="si-mat-wheel-card">
-                  <div className="si-wheel-header-info">
-                    <span className="si-wheel-selected-badge">{activeCoverage.code}</span>
-                    <span className="si-wheel-hint">Drag, scroll, or click to rotate</span>
+            ) : (
+              <>
+                {/* 1. What is burning */}
+                <div className="si-filter-section">
+                  <span className="si-filter-num-label">1 · What is burning</span>
+                  <div className="si-pill-btn-group">
+                    {[
+                      { id: 'solid', label: 'Solid' },
+                      { id: 'liquid', label: 'Liquid droplet' },
+                      { id: 'gas', label: 'Gas' },
+                    ].map((f) => (
+                      <button
+                        key={f.id}
+                        type="button"
+                        className={`si-filter-pill-btn ${selectedFuelType === f.id ? 'is-active' : ''}`}
+                        onClick={() => setSelectedFuelType(f.id)}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
                   </div>
-                  <div className="si-mat-wheel-wrapper">
-                    <OptionWheel
-                      items={COVERAGE_MATRIX.map((m) => `${m.code} (${m.totalTests})`)}
-                      defaultSelected={Math.max(
-                        0,
-                        COVERAGE_MATRIX.findIndex((m) => m.code === selectedMaterialCode)
-                      )}
-                      textColor="#6b829e"
-                      activeColor="#164f91"
-                      fontSize={0.92}
-                      spacing={1.65}
-                      curve={0.8}
-                      tilt={5.5}
-                      blur={1.2}
-                      fade={0.32}
-                      minOpacity={0.12}
-                      smoothing={180}
-                      inset={26}
-                      draggable
-                      loop={false}
-                      onChange={(index) => {
-                        if (COVERAGE_MATRIX[index]) {
-                          handleSelectMaterial(COVERAGE_MATRIX[index]);
-                        }
-                      }}
-                    />
+                </div>
+
+                {/* 2. Investigation */}
+                <div className="si-filter-section">
+                  <span className="si-filter-num-label">2 · Investigation</span>
+                  <select
+                    className="si-filter-select"
+                    value={selectedInvestigation}
+                    onChange={(e) => setSelectedInvestigation(e.target.value)}
+                  >
+                    <option value="all">All investigations with this fuel</option>
+                    <option value="bass">PSI-25 BASS-II (Burning & Suppression II)</option>
+                    <option value="saffire">PSI-98/99/100 SAFFIRE I–III (Spacecraft Fire)</option>
+                    <option value="flex">PSI-69 FLEX (Flame Extinction Experiment)</option>
+                    <option value="acme">PSI-7585 ACME (Advanced Combustion Microgravity)</option>
+                  </select>
+                </div>
+
+                {/* 3. Material with real test count chips & OptionWheel Dial */}
+                <div className="si-filter-section">
+                  <div className="si-filter-header-flex">
+                    <span className="si-filter-num-label">3 · Material</span>
+                    <div className="si-mat-mode-toggle" role="group" aria-label="Material selector view">
+                      <button
+                        type="button"
+                        className={`si-mat-toggle-btn ${materialViewMode === 'chips' ? 'is-active' : ''}`}
+                        onClick={() => setMaterialViewMode('chips')}
+                      >
+                        Chips
+                      </button>
+                      <button
+                        type="button"
+                        className={`si-mat-toggle-btn ${materialViewMode === 'wheel' ? 'is-active' : ''}`}
+                        onClick={() => setMaterialViewMode('wheel')}
+                      >
+                        3D Dial Wheel
+                      </button>
+                    </div>
+                  </div>
+
+                  {materialViewMode === 'chips' ? (
+                    <div className="si-mat-chips-grid">
+                      {COVERAGE_MATRIX.map((mat) => (
+                        <button
+                          key={mat.code}
+                          type="button"
+                          className={`si-mat-chip ${selectedMaterialCode === mat.code ? 'is-active' : ''}`}
+                          onClick={() => handleSelectMaterial(mat)}
+                        >
+                          <span className="si-mat-chip-name">{mat.code}</span>
+                          <span className="si-mat-chip-count">{mat.totalTests}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="si-mat-wheel-card">
+                      <div className="si-wheel-header-info">
+                        <span className="si-wheel-selected-badge">{activeCoverage.code}</span>
+                        <span className="si-wheel-hint">Drag, scroll, or click to rotate</span>
+                      </div>
+                      <div className="si-mat-wheel-wrapper">
+                        <OptionWheel
+                          items={COVERAGE_MATRIX.map((m) => `${m.code} (${m.totalTests})`)}
+                          defaultSelected={Math.max(
+                            0,
+                            COVERAGE_MATRIX.findIndex((m) => m.code === selectedMaterialCode)
+                          )}
+                          textColor="#6b829e"
+                          activeColor="#164f91"
+                          fontSize={0.92}
+                          spacing={1.65}
+                          curve={0.8}
+                          tilt={5.5}
+                          blur={1.2}
+                          fade={0.32}
+                          minOpacity={0.12}
+                          smoothing={180}
+                          inset={26}
+                          draggable
+                          loop={false}
+                          onChange={(index) => {
+                            if (COVERAGE_MATRIX[index]) {
+                              handleSelectMaterial(COVERAGE_MATRIX[index]);
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Recorded conditions */}
+                <div className="si-filter-section">
+                  <span className="si-filter-num-label">4 · Recorded conditions</span>
+                  <div className="si-shape-row">
+                    <span className="si-subfilter-label">Sample shape:</span>
+                    <div className="si-pill-btn-group sm">
+                      {['Rod', 'Sphere', 'Slab', 'Film'].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          className={`si-filter-pill-btn ${selectedShape === s ? 'is-active' : ''}`}
+                          onClick={() => setSelectedShape(s)}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="si-quick-presets-box">
+                    <span className="si-subfilter-label">Target Atmosphere:</span>
+                    <div className="si-preset-btn-list">
+                      {Object.entries(PRESETS).map(([k, p]) => (
+                        <button
+                          key={k}
+                          type="button"
+                          className={`si-preset-quick-btn ${activePreset === k ? 'is-active' : ''}`}
+                          onClick={() => handlePresetSelect(k)}
+                        >
+                          <strong>{p.title}</strong>
+                          <small>{p.specs}</small>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
-
-            {/* 4. Recorded conditions */}
-            <div className="si-filter-section">
-              <span className="si-filter-num-label">4 · Recorded conditions</span>
-              <div className="si-shape-row">
-                <span className="si-subfilter-label">Sample shape:</span>
-                <div className="si-pill-btn-group sm">
-                  {['Rod', 'Sphere', 'Slab', 'Film'].map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      className={`si-filter-pill-btn ${selectedShape === s ? 'is-active' : ''}`}
-                      onClick={() => setSelectedShape(s)}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="si-quick-presets-box">
-                <span className="si-subfilter-label">Target Atmosphere:</span>
-                <div className="si-preset-btn-list">
-                  {Object.entries(PRESETS).map(([k, p]) => (
-                    <button
-                      key={k}
-                      type="button"
-                      className={`si-preset-quick-btn ${activePreset === k ? 'is-active' : ''}`}
-                      onClick={() => handlePresetSelect(k)}
-                    >
-                      <strong>{p.title}</strong>
-                      <small>{p.specs}</small>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+              </>
+            )}
           </aside>
 
           {/* CENTER COLUMN: 3D WebGL Volumetric Chamber vs. BASS-II Flow Duct Schematic */}

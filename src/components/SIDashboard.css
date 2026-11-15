@@ -448,6 +448,33 @@
   );
 }
 
+/* Guided Stepper in Lab Sidebar */
+.si-lab-stepper-container {
+  width: 100%;
+}
+
+.si-lab-stepper-container .stepper {
+  width: 100%;
+}
+
+.si-stepper-step-card {
+  padding: 0.25rem 0;
+}
+
+.si-stepper-meta-note {
+  margin-top: 0.85rem;
+  font-size: 0.82rem;
+  color: var(--si-text-muted);
+  background: #edf3fa;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  border-left: 3px solid var(--si-primary);
+}
+
+.si-stepper-meta-note strong {
+  color: var(--si-text-ink);
+}
+
 /* Quick Presets list */
 .si-quick-presets-box {
   margin-top: 1rem;
