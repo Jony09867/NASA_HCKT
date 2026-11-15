@@ -1,3 +1,4 @@
+import { magnetizeAllPageButtons } from './components/Magnet';
 import {readSelection} from './session';
 const routes=[['home','/','Home'],['explore','/explore/','Explore'],['compare','/compare/','Compare'],['simulator','/simulator/','Simulator'],['chat','/chat/','SI Chat']];
 const page=document.body.dataset.page;
@@ -13,3 +14,17 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&toggle.getAttribute
 document.addEventListener('click',e=>{if(!e.target.closest('.site-header'))closeNav();});
 function updateCount(){const n=readSelection().length;document.querySelectorAll('[data-selection-count]').forEach(el=>el.textContent=n);}
 updateCount();window.addEventListener('freefall:selection',updateCount);window.addEventListener('pageshow',updateCount);
+
+
+
+// The spotlight follows the pointer on static and dynamically rendered cards.
+const spotlightCards = '.steps-grid > a, .spotlight-card, .si-preset-card, .si-rank-card, .si-pillar-card';
+document.addEventListener('pointermove', event => {
+  if (event.pointerType !== 'mouse' || !matchMedia('(hover: hover) and (pointer: fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const card = event.target instanceof Element ? event.target.closest(spotlightCards) : null;
+  if (!card) return;
+  const rect = card.getBoundingClientRect();
+  card.style.setProperty('--spot-x', (event.clientX - rect.left) + 'px');
+  card.style.setProperty('--spot-y', (event.clientY - rect.top) + 'px');
+}, { passive: true });
+magnetizeAllPageButtons();
