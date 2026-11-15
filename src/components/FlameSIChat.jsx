@@ -20,6 +20,7 @@ import {
 import FadeContent from './FadeContent';
 import { Magnet } from './Magnet';
 import './FlameSIChat.css';
+import {readSession,writeSession,CHAT_KEY} from '../session';
 
 // Curated NASA PSI Knowledge Base Responses for the Challenge
 const KNOWLEDGE_BASE = {
@@ -185,8 +186,13 @@ const SUGGESTIONS = [
 ];
 
 export default function FlameSIChat() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState(()=>{const saved=readSession(CHAT_KEY,{});return Array.isArray(saved?.messages)?saved.messages.filter(m=>m && typeof m.text==='string' && ['user','assistant'].includes(m.role)):[];});
+  const [input, setInput] = useState(()=>{
+    const name=new URLSearchParams(location.search).get('investigation');
+    return name?'Explain the findings and documented conditions of '+name+'.':String(readSession(CHAT_KEY,{})?.draft||'');
+  });
+  useEffect(()=>{writeSession(CHAT_KEY,{messages,draft:input});},[messages,input]);
+  useEffect(()=>{const url=new URL(location.href);url.searchParams.delete('investigation');history.replaceState(null,'',url.pathname+url.search);},[]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [showLatest, setShowLatest] = useState(false);
   const sendTimer = useRef(null);
@@ -209,15 +215,7 @@ export default function FlameSIChat() {
     const target = e.target.closest('.inv-action-tag');
     if (target) {
       const invId = target.getAttribute('data-inv');
-      const exploreSection = document.querySelector('#explore');
-      if (exploreSection) {
-        exploreSection.scrollIntoView({ behavior: 'smooth' });
-      }
-      const searchInput = document.querySelector('#search');
-      if (searchInput && invId) {
-        searchInput.value = invId;
-        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-      }
+      if(invId)window.location.assign('/explore/?id='+encodeURIComponent(invId));
     }
   };
 
@@ -313,6 +311,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
 
   const handleReset = () => {
     clearTimeout(sendTimer.current);
+    writeSession(CHAT_KEY,{messages:[],draft:''});
     setMessages([]); setInput(''); setIsStreaming(false); setFeedback({});
     setShowLatest(false); followLatest.current = true;
   };
@@ -322,9 +321,9 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
       <header className="flame-chat-header">
         <div><span className="chat-eyebrow">FLAME-SI / RESEARCH ASSISTANT</span>
           <h3>New thread</h3><p>Explore combustion beyond Earth.</p></div>
-        <Magnet padding={35} maxOffset={5} magnetStrength={3}>
+        
           <button className="flame-reset-btn" type="button" onClick={handleReset} aria-label="Reset conversation" title="Reset conversation"><RotateCwIcon size={17} /></button>
-        </Magnet>
+        
       </header>
       <div className="chat-scroll-shell">
         <div className="flame-chat-body" ref={chatBodyRef} aria-busy={isStreaming} onClick={handleTagClick}
@@ -333,9 +332,9 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
             <div className="chat-empty-icon"><MessageCircleDashedIcon size={28} /></div>
             <h4>What would you like to explore?</h4>
             <p>Discover NASA combustion experiments, compare mission conditions, and explore fire safety research.</p>
-            <div className="chat-starters">{SUGGESTIONS.slice(0, 3).map(item => <Magnet key={item.key} padding={35} maxOffset={5} magnetStrength={3}>
-              <button type="button" onClick={() => handleSend(item.label)}>{item.label}<ArrowUpIcon size={14} /></button>
-            </Magnet>)}</div>
+            <div className="chat-starters">{SUGGESTIONS.slice(0, 3).map(item => 
+              <button key={item.key} type="button" onClick={() => handleSend(item.label)}>{item.label}<ArrowUpIcon size={14} /></button>
+            )}</div>
           </div>}
           {messages.map(msg => <FadeContent key={msg.id} trigger="mount" duration={0.2} blur={false}>
             {msg.role === 'user' ? <div className="chat-msg user"><div className="bubble-user">{msg.text}</div></div> :
@@ -347,11 +346,11 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
                   </div></details>}
                 <div className="assistant-text"><ChatText text={msg.text} /></div>
                 {msg.plan?.length > 0 && <details className="chat-plan"><summary><RouteIcon size={14} /> Review discussion points <ChevronDownIcon size={14} /></summary><ul>{msg.plan.map((step,i)=><li key={i}>{step}</li>)}</ul></details>}
-                <div className="sources-bar">{msg.sources?.map((source,i)=><Magnet key={i} padding={35} maxOffset={5} magnetStrength={3}><a className="source-pill" href={source.url} target="_blank" rel="noopener noreferrer"><GlobeIcon size={12}/>{source.title} ↗</a></Magnet>)}</div>
+                <div className="sources-bar">{msg.sources?.map((source,i)=><a key={i} className="source-pill" href={source.url} target="_blank" rel="noopener noreferrer"><GlobeIcon size={12}/>{source.title} ↗</a>)}</div>
                 <div className="msg-footer">
-                  <Magnet padding={35} maxOffset={5} magnetStrength={3}><button type="button" aria-label="Copy response" onClick={()=>handleCopy(msg.id,msg.text)}>{copiedId===msg.id?<CheckIcon size={15}/>:<CopyIcon size={15}/>}</button></Magnet>
-                  <Magnet padding={35} maxOffset={5} magnetStrength={3}><button type="button" aria-label="Helpful response" aria-pressed={feedback[msg.id]==='up'} onClick={()=>handleFeedback(msg.id,'up')}><ThumbsUpIcon size={15}/></button></Magnet>
-                  <Magnet padding={35} maxOffset={5} magnetStrength={3}><button type="button" aria-label="Unhelpful response" aria-pressed={feedback[msg.id]==='down'} onClick={()=>handleFeedback(msg.id,'down')}><ThumbsDownIcon size={15}/></button></Magnet>
+                  <button type="button" aria-label="Copy response" onClick={()=>handleCopy(msg.id,msg.text)}>{copiedId===msg.id?<CheckIcon size={15}/>:<CopyIcon size={15}/>}</button>
+                  <button type="button" aria-label="Helpful response" aria-pressed={feedback[msg.id]==='up'} onClick={()=>handleFeedback(msg.id,'up')}><ThumbsUpIcon size={15}/></button>
+                  <button type="button" aria-label="Unhelpful response" aria-pressed={feedback[msg.id]==='down'} onClick={()=>handleFeedback(msg.id,'down')}><ThumbsDownIcon size={15}/></button>
                 </div>
               </article>}
           </FadeContent>)}

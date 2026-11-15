@@ -2,11 +2,11 @@
   display: inline-block;
   background: linear-gradient(
     110deg,
-    var(--shiny-color, #ff8a58) 0%,
-    var(--shiny-color, #ff8a58) 38%,
+    var(--shiny-color, #78b7ff) 0%,
+    var(--shiny-color, #78b7ff) 38%,
     var(--shiny-highlight, #ffffff) 50%,
-    var(--shiny-color, #ff8a58) 62%,
-    var(--shiny-color, #ff8a58) 100%
+    var(--shiny-color, #78b7ff) 62%,
+    var(--shiny-color, #78b7ff) 100%
   );
   background-size: 250% 100%;
   background-clip: text;

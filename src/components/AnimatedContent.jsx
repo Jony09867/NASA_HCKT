@@ -47,10 +47,10 @@ const AnimatedContent = ({
   targetElement,
   animateKey,
   container,
-  distance = 80,
+  distance = 0,
   direction = 'vertical',
   reverse = false,
-  duration = 0.9,
+  duration = 0.2,
   ease = 'power2.out',
   initialOpacity = 0,
   animateOpacity = true,
@@ -257,4 +257,3 @@ const AnimatedContent = ({
 };
 
 export default AnimatedContent;
-

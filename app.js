@@ -1,3 +1,4 @@
+import {readSelection,writeSelection} from './src/session';
 /* ==========================================================================
    Flame in Freefall Explorer - Core Application Logic
    Experiment Finder & Side-by-Side Evidence Comparison
@@ -8,7 +9,8 @@
 
   // --- State & DOM References ---
   const data = Array.isArray(window.EXPERIMENTS) ? window.EXPERIMENTS : [];
-  let selectedOrder = []; // Array of IDs in selected order (max 2)
+  let selectedOrder = readSelection().filter(id=>data.some(item=>String(item.id)===id));
+  writeSelection(selectedOrder); // Array of IDs in selected order (max 2)
 
   // Explore Controls
   const searchInput = document.querySelector('#search');
@@ -44,6 +46,26 @@
   const comparisonContainer = document.querySelector('#comparison-container');
   const btnSwapColumns = document.querySelector('#btn-swap-columns');
   const btnClearCompare = document.querySelector('#btn-clear-compare');
+
+  const filterControls={q:searchInput,sort:sortSelect,fuel:fuelSelect,topic:topicSelect,platform:platformSelect,oxygen:oxygenInput,facility:facilitySelect,gravity:gravitySelect,geometry:geometrySelect,airflow:airflowSelect,pressure:pressureSelect};
+  let restoring=false;
+  function restoreFilters(){
+    const params=new URLSearchParams(location.search);
+    Object.entries(filterControls).forEach(([key,el])=>{if(el)el.value=params.get(key)|| (key==='sort'?'relevant':'');});
+  }
+  function syncFilters(){
+    if(!cardsContainer||restoring)return;
+    const url=new URL(location.href);
+    Object.entries(filterControls).forEach(([key,el])=>{if(el?.value && !(key==='sort'&&el.value==='relevant'))url.searchParams.set(key,el.value);else url.searchParams.delete(key);});
+    history.replaceState(null,'',url.pathname+url.search+url.hash);
+  }
+  function updateSelection(){
+    writeSelection(selectedOrder);
+    const tray=document.getElementById('selection-summary');
+    if(tray)tray.textContent=selectedOrder.length+' of 2 selected'+(selectedOrder.length?' · '+selectedOrder.map(id=>data.find(x=>String(x.id)===id)?.acronym||id).join(' / '):'');
+  }
+  window.addEventListener('popstate',()=>{restoring=true;restoreFilters();render();restoring=false;});
+  window.addEventListener('pageshow',()=>{selectedOrder=readSelection().filter(id=>data.some(item=>String(item.id)===id));restoreFilters();render();});
 
   // --- Utilities ---
   function esc(value, fallback = 'Not available') {
@@ -282,6 +304,7 @@
   }
 
   function clearAllFilters() {
+    const clean=new URL(location.href);clean.searchParams.delete('id');history.replaceState(null,'',clean.pathname+clean.search);
     if (searchInput) {
       searchInput.value = '';
       if (searchClearBtn) searchClearBtn.hidden = true;
@@ -343,6 +366,9 @@
 
   // --- Main Render Function for Explore ---
   function render() {
+    updateSelection();
+    if(!cardsContainer){renderComparisonSection();return;}
+    syncFilters();
     const qRaw = searchInput ? searchInput.value.trim() : '';
     const q = qRaw.toLowerCase();
     const queryWords = q.split(/\s+/).filter(Boolean);
@@ -369,6 +395,8 @@
     // 1. Filtering
     let filtered = data.filter(item => {
       if (!item) return false;
+      const exactId=new URLSearchParams(location.search).get('id');
+      if(exactId && String(item.id)!==exactId)return false;
 
       // Search match across multiple verified fields
       if (queryWords.length > 0) {
@@ -476,6 +504,7 @@
       emptyContainer.hidden = true;
 
       // 6. Render Investigation Cards
+      cardObserver?.disconnect();
       cardsContainer.innerHTML = filtered.map(item => {
         const id = String(item.id || '');
         const isSelected = selectedOrder.includes(id);
@@ -534,15 +563,10 @@
                   <span class="spec-val">${esc(item.fuel)}</span>
                 </div>
                 ${oxygenHtml}
-                <div class="spec-item">
-                  <span class="spec-label">Airflow Velocity</span>
-                  <span class="spec-val">${esc(item.airflow)}</span>
-                </div>
-                <div class="spec-item">
-                  <span class="spec-label">Facility</span>
-                  <span class="spec-val">${esc(item.facility)}</span>
-                </div>
               </div>
+              <details class="investigation-details"><summary>Details</summary>
+                <dl><dt>Airflow velocity</dt><dd>${esc(item.airflow)}</dd><dt>Facility</dt><dd>${esc(item.facility)}</dd><dt>Measurements</dt><dd>${esc(item.measurements)}</dd><dt>Findings</dt><dd>${esc(item.findings)}</dd></dl>
+              </details>
 
               <div class="card-footer">
                 ${hasValidUrl 
@@ -559,8 +583,8 @@
 
       // Attach card listeners
       cardsContainer.querySelectorAll('.spotlight-card').forEach(card => {
-        initSpotlightCard(card);
-        if (cardObserver) {
+
+        if (cardObserver && card.getBoundingClientRect().top >= window.innerHeight) {
           cardObserver.observe(card);
         } else {
           card.classList.add('is-visible');
@@ -610,8 +634,8 @@
         <div class="compare-empty-guide">
           <span class="guide-mark" aria-hidden="true">✳</span>
           <h3>No investigations selected for comparison</h3>
-          <p>Select up to two investigations from the library above to analyze their experimental setups, conditions, observations, and findings side by side.</p>
-          <a href="#explore" class="specular-button">Explore investigations ↑</a>
+          <p>Select up to two investigations from the library to analyze their experimental setups, conditions, observations, and findings side by side.</p>
+          <a href="/explore/" class="specular-button">Explore investigations ↑</a>
         </div>
       `;
       return;
@@ -633,7 +657,7 @@
               <div class="inv-topic">${esc(it1.topic)} · ${esc(it1.platform)}</div>
             </div>
             <div class="evidence-header-cell investigation-col slot-placeholder">
-              <span>02 / SELECT SECOND INVESTIGATION ABOVE ↗</span>
+              <span><a href="/explore/">02 / SELECT SECOND INVESTIGATION ↗</a></span>
             </div>
           </div>
           ${renderCategoryRows(it1, null)}
@@ -855,6 +879,7 @@
     btnSwapColumns.addEventListener('click', () => {
       if (selectedOrder.length === 2) {
         selectedOrder.reverse();
+        updateSelection();
         renderComparisonSection();
       }
     });
@@ -869,7 +894,8 @@
 
   // Initial Initialization
   initAllDropdowns();
+  restoreFilters();
   render();
-  initTechHeadingReveal();
+
 
 })();

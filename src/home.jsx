@@ -6,8 +6,8 @@ import CircularText from './components/CircularText';
 import ScrollReveal from './components/ScrollReveal';
 import ParticleSaturn from './components/ParticleSaturn';
 import Magnet, { magnetizeAllPageButtons } from './components/Magnet';
-import SIDashboard from './components/SIDashboard';
-import AnimatedContent from './components/AnimatedContent';
+
+
 
 function initReactHome() {
   // 1. Eyebrow ShinyText
@@ -17,7 +17,7 @@ function initReactHome() {
     root.render(
       <ShinyText
         text="MICROGRAVITY RESEARCH / 01"
-        color="#ff8a58"
+        color="#78b7ff"
         shineColor="#ffffff"
         speed={2.5}
         shineWidth={35}
@@ -55,33 +55,33 @@ function initReactHome() {
     root.render(
       <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <Magnet
-          padding={90}
+          padding={35}
           magnetStrength={2.2}
-          tilt={6}
-          scale={1.03}
+          maxOffset={5} tilt={0}
+          scale={1}
           spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
         >
-          <a className="button" href="#si-intelligence">
-            SI Safety Dashboard
+          <a className="button" href="/explore/">
+            Explore investigations
           </a>
         </Magnet>
         <Magnet
-          padding={90}
+          padding={35}
           magnetStrength={2.2}
-          tilt={6}
-          scale={1.03}
+          maxOffset={5} tilt={0}
+          scale={1}
           spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
         >
           <a
             className="button"
-            href="#explore"
+            href="/simulator/"
             style={{
               background: 'transparent',
               borderColor: 'rgba(255, 255, 255, 0.18)',
               color: '#d7ba9e',
             }}
           >
-            Explore Library <span>↗</span>
+            Try the simulator <span>↗</span>
           </a>
         </Magnet>
       </div>
@@ -105,13 +105,13 @@ function initReactHome() {
           repeat={2}
           ring={false}
           fontWeight={500}
-          color="#d7ba9e"
+          color="#416B9A"
         />
         <div className="saturn-wrap">
           <ParticleSaturn
-            coreColor="#ff4414"
-            ringColor="#ffa855"
-            density={20}
+            coreColor="#0B3D91"
+            ringColor="#4DA6FF"
+            density={14}
             particleSize={15}
             glow={26}
             tilt={8}
@@ -123,13 +123,6 @@ function initReactHome() {
         </div>
       </div>
     );
-  }
-
-  // 4b. SI Fire Safety Intelligence Dashboard
-  const siDashboardEl = document.getElementById('react-si-dashboard');
-  if (siDashboardEl) {
-    const root = createRoot(siDashboardEl);
-    root.render(<SIDashboard />);
   }
 
   // 5. About ScrollReveal (Word-by-word rotation & unblur on scroll)
@@ -158,13 +151,7 @@ function initReactHome() {
   if (aboutCtaEl) {
     const root = createRoot(aboutCtaEl);
     root.render(
-      <Magnet
-        padding={70}
-        magnetStrength={2.5}
-        tilt={5}
-        scale={1.04}
-        spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
-      >
+      
         <a
           href="https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/?tab=details"
           target="_blank"
@@ -172,7 +159,7 @@ function initReactHome() {
         >
           VIEW THE CHALLENGE ↗
         </a>
-      </Magnet>
+      
     );
   }
 
@@ -181,32 +168,13 @@ function initReactHome() {
   if (backToTopEl) {
     const root = createRoot(backToTopEl);
     root.render(
-      <Magnet
-        padding={60}
-        magnetStrength={2.5}
-        tilt={4}
-        scale={1.05}
-        spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
-      >
+      
         <a href="#top">BACK TO TOP ↑</a>
-      </Magnet>
+      
     );
   }
 
-  // 8. Global Magnetizer: magnetizes all buttons, nav links, and dynamic cards across the entire page!
-  magnetizeAllPageButtons();
 
-  // Animate existing static layout nodes without reparenting the vanilla Explore UI.
-  // Text effects and dynamic library cards keep their own existing animations.
-  const entranceTargets = document.querySelectorAll(
-
-    '#explore .section-head, #explore .notice, #explore .filters-container, ' +
-    '#compare, footer'
-  );
-  const animationRoot = createRoot(document.createElement('div'));
-  animationRoot.render(<>{Array.from(entranceTargets, (element, index) => (
-    <AnimatedContent key={index} targetElement={element} />
-  ))}</>);
 }
 
 if (document.readyState === 'loading') {

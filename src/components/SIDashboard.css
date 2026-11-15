@@ -23,7 +23,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.15em;
-  color: #ff8a58;
+  color: #78b7ff;
   text-transform: uppercase;
   background: rgba(255, 138, 88, 0.12);
   padding: 0.35rem 0.75rem;
@@ -35,7 +35,7 @@
 .si-eyebrow-badge .pulse-dot {
   width: 6px;
   height: 6px;
-  background: #ff8a58;
+  background: #78b7ff;
   border-radius: 50%;
   animation: si-pulse 2s infinite ease-in-out;
 }
@@ -56,7 +56,7 @@
 
 .si-header h2 strong {
   font-weight: 600;
-  color: #ff8a58;
+  color: #78b7ff;
 }
 
 .si-header p {
@@ -99,7 +99,7 @@
 }
 
 .si-view-btn.is-active {
-  background: #ff8a58;
+  background: #78b7ff;
   color: #0d0c0a;
   font-weight: 600;
   box-shadow: 0 4px 16px rgba(255, 138, 88, 0.25);
@@ -146,7 +146,7 @@
 }
 
 .si-preset-card.is-active {
-  border-color: #ff8a58;
+  border-color: #78b7ff;
   background-color: #211b18;
   box-shadow: 0 0 24px rgba(255, 138, 88, 0.1);
 }
@@ -333,7 +333,7 @@
 
 .si-control-group input[type="range"] {
   width: 100%;
-  accent-color: #ff8a58;
+  accent-color: #78b7ff;
   cursor: pointer;
 }
 
@@ -383,7 +383,7 @@
 }
 
 .si-rank-card.top-rank {
-  border-left: 3px solid #ff8a58;
+  border-left: 3px solid #78b7ff;
   background: linear-gradient(90deg, rgba(255, 138, 88, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
 }
 
@@ -400,7 +400,7 @@
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: #ff8a58;
+  color: #78b7ff;
   background: rgba(255, 138, 88, 0.15);
   padding: 0.25rem 0.6rem;
   border-radius: 4px;
@@ -446,7 +446,7 @@
 }
 
 .si-rank-insight strong {
-  color: #ff8a58;
+  color: #78b7ff;
   display: block;
   font-size: 0.75rem;
   font-family: 'DM Sans', sans-serif;
@@ -477,9 +477,9 @@
 }
 
 .si-action-btn.primary {
-  background: #ff8a58;
+  background: #78b7ff;
   color: #0d0c0a;
-  border: 1px solid #ff8a58;
+  border: 1px solid #78b7ff;
 }
 
 .si-action-btn.primary:hover {
@@ -493,7 +493,7 @@
 }
 
 .si-action-btn.secondary:hover {
-  border-color: #ff8a58;
+  border-color: #78b7ff;
   color: #f7f3ed;
 }
 
@@ -533,7 +533,7 @@
 }
 
 .si-tab-btn.is-active {
-  color: #ff8a58;
+  color: #78b7ff;
   background: rgba(255, 138, 88, 0.12);
   border-color: rgba(255, 138, 88, 0.3);
   transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
@@ -571,7 +571,7 @@
 .si-pillar-badge {
   font-family: 'DM Sans', sans-serif;
   font-size: 0.7rem;
-  color: #ff8a58;
+  color: #78b7ff;
   background: rgba(255, 138, 88, 0.1);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
