@@ -988,9 +988,9 @@ Select a mission scenario below, ask any combustion question, or issue direct co
                       initialGravity="0g"
                       initialO2={oxygen || 34}
                       initialFlow={0.1}
-                      onApplyToSimulator={({ gravity: g, oxygen: o2, flow: v }) => {
-                        if (onSetAtmosphere) onSetAtmosphere({ oxygen: o2, pressure, gravity: g });
-                        setToastNotice(`✓ Applied ${o2}% O₂ (${g}) to Mission Simulator`);
+                      onApplyToSimulator={({ gravity: g, oxygen: o2, pressure: p, flow: v }) => {
+                        if (onSetAtmosphere) onSetAtmosphere({ oxygen: o2, pressure: p || pressure, gravity: g });
+                        setToastNotice(`✓ Applied ${o2}% O₂ (${g}, ${p || pressure} psi) to Mission Simulator`);
                       }}
                       onInspectInExplorer={onInspectInExplorer}
                     />
