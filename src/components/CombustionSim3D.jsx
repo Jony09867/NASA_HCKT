@@ -315,53 +315,55 @@ const VOLUMETRIC_FLAME_VERT = /* glsl */ `
     float buoyancy = pow(clamp(uGravity, 0.0, 1.0), 0.44);
     float wind = clamp((uAirflow - 0.04) / 0.45, 0.0, 1.35);
 
+    // Smooth, gentle laminar advection (no high-frequency jitter)
     vec3 advect = vec3(
-      uTime * (0.9 + wind * 4.2),
-      uTime * (1.2 + buoyancy * 3.8),
-      uTime * 0.6
+      uTime * (0.22 + wind * 1.3),
+      uTime * (0.28 + buoyancy * 1.6),
+      uTime * 0.12
     );
-    float n = fbm(pos * 2.3 - advect);
+    float n = fbm(pos * 2.1 - advect);
     float turb = n - 0.48;
     vNoise = n;
 
     // Shell radius scaling (inner hot core -> middle reaction sheet -> outer thermal halo)
-    float shellScale = 0.68 + uShellIndex * 0.21 + o2Norm * 0.28;
+    float shellScale = 0.70 + uShellIndex * 0.18 + o2Norm * 0.16;
     if (uCoolFlame > 0.5) {
-      shellScale = 0.62 + uShellIndex * 0.15 + 0.05 * sin(uTime * 3.5);
+      shellScale = 0.64 + uShellIndex * 0.14 + 0.03 * sin(uTime * 2.2);
     }
     pos *= shellScale;
 
     // Buoyant vertical teardrop / bell elongation (1/6g Lunar & 1g Earth)
     float upperMask = smoothstep(-0.55, 0.9, vLocalPos.y);
     if (buoyancy > 0.01) {
-      float stretchY = 1.0 + buoyancy * (1.42 + o2Norm * 0.4) * upperMask;
+      float stretchY = 1.0 + buoyancy * (1.35 + o2Norm * 0.35) * upperMask;
       float heightRatio = clamp((vLocalPos.y + 0.35) / 1.35, 0.0, 1.0);
-      float coneTaper = 1.0 - buoyancy * 0.64 * pow(heightRatio, 1.3);
-      float neckPinch = 1.0 - buoyancy * 0.18 * exp(-pow((vLocalPos.y + 0.45) * 2.8, 2.0));
+      float coneTaper = 1.0 - buoyancy * 0.62 * pow(heightRatio, 1.3);
+      float neckPinch = 1.0 - buoyancy * 0.16 * exp(-pow((vLocalPos.y + 0.45) * 2.8, 2.0));
       pos.y *= stretchY;
       pos.x *= coneTaper * neckPinch;
       pos.z *= coneTaper * neckPinch;
-      pos.y += buoyancy * 0.38 * upperMask;
+      pos.y += buoyancy * 0.35 * upperMask;
     }
 
     // Forced convection downstream wake deformation (+X cabin ventilation)
     float wakeMask = smoothstep(-0.7, 0.95, vLocalPos.x);
     if (wind > 0.02) {
-      float stretchX = 1.0 + wind * (1.85 + o2Norm * 0.45) * wakeMask;
-      float leadingCompress = vLocalPos.x < 0.0 ? (1.0 - min(0.45, wind * 0.32)) : 1.0;
-      float tailTaper = 1.0 - min(0.58, wind * 0.38) * pow(wakeMask, 1.25);
-      pos.x = pos.x * stretchX * leadingCompress + wind * 0.52 * max(0.0, upperMask * 0.5 + wakeMask);
-      pos.y *= (1.0 - min(0.32, wind * 0.22) * wakeMask);
+      float stretchX = 1.0 + wind * (1.75 + o2Norm * 0.4) * wakeMask;
+      float leadingCompress = vLocalPos.x < 0.0 ? (1.0 - min(0.4, wind * 0.3)) : 1.0;
+      float tailTaper = 1.0 - min(0.55, wind * 0.35) * pow(wakeMask, 1.25);
+      pos.x = pos.x * stretchX * leadingCompress + wind * 0.48 * max(0.0, upperMask * 0.5 + wakeMask);
+      pos.y *= (1.0 - min(0.30, wind * 0.20) * wakeMask);
       pos.z *= tailTaper;
     }
 
-    // 3D FBM surface displacement for organic living flame motion
-    float dispAmp = (0.04 + buoyancy * 0.11 + wind * 0.12) * (0.35 + 0.65 * max(upperMask, wakeMask));
-    pos.x += turb * dispAmp * (1.0 + wind * 1.5);
-    pos.y += turb * dispAmp * (1.0 + buoyancy * 1.35);
-    pos.z += (fbm(pos * 3.1 + 2.4) - 0.48) * dispAmp * 0.9;
+    // Organic living flame motion: only activates with buoyancy or forced airflow!
+    // In 0g microgravity (NASA ACME s-Flame / FLEX), the spherical diffusion flame is calm and stationary.
+    float dispAmp = (buoyancy * 0.065 + wind * 0.07) * (0.25 + 0.75 * max(upperMask, wakeMask));
+    pos.x += turb * dispAmp * (1.0 + wind * 1.3);
+    pos.y += turb * dispAmp * (1.0 + buoyancy * 1.3);
+    pos.z += turb * dispAmp * 0.75;
 
-    vHeat = clamp(0.28 + upperMask * buoyancy * 0.58 + wakeMask * wind * 0.5 + turb * 0.22, 0.0, 1.0);
+    vHeat = clamp(0.28 + upperMask * buoyancy * 0.58 + wakeMask * wind * 0.5 + turb * 0.16, 0.0, 1.0);
 
     vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
     vViewPos = -mvPos.xyz;
@@ -397,7 +399,7 @@ const VOLUMETRIC_FLAME_FRAG = /* glsl */ `
     float ndotv = abs(dot(N, V));
 
     // Soft volumetric glow profile
-    float coreGlow = pow(ndotv, 1.25);
+    float coreGlow = pow(ndotv, 1.35);
     float rimGlow = pow(1.0 - ndotv, 1.8) * smoothstep(0.0, 0.35, ndotv);
 
     float o2Norm = clamp((uOxygen - 14.0) / 86.0, 0.0, 1.0);
@@ -405,57 +407,56 @@ const VOLUMETRIC_FLAME_FRAG = /* glsl */ `
     float wind = clamp((uAirflow - 0.04) / 0.45, 0.0, 1.35);
 
     // 0g Spherical Diffusion Palette (CH* / OH* Chemiluminescence Blue-Cyan-Violet)
-    vec3 diffCore = vec3(0.86, 0.96, 1.00);
-    vec3 diffMid  = vec3(0.14, 0.72, 1.00);
-    vec3 diffRim  = vec3(0.22, 0.34, 0.96);
+    vec3 diffCore = vec3(0.72, 0.92, 1.00);
+    vec3 diffMid  = vec3(0.12, 0.62, 0.96);
+    vec3 diffRim  = vec3(0.18, 0.28, 0.88);
     vec3 zeroGCol = mix(diffRim, diffMid, coreGlow);
-    zeroGCol = mix(zeroGCol, diffCore, pow(coreGlow, 2.3) * (0.6 + o2Norm * 0.35));
+    zeroGCol = mix(zeroGCol, diffCore, pow(coreGlow, 2.0) * (0.55 + o2Norm * 0.3));
 
     // Partial/Earth Gravity & Forced Convection Palette (Blue cup -> Deep Orange -> Gold -> White Core)
-    vec3 baseCupBlue = vec3(0.16, 0.62, 1.00);
-    vec3 outerCrimson = vec3(0.96, 0.26, 0.06);
-    vec3 midAmber = vec3(1.00, 0.58, 0.12);
-    vec3 innerGold = vec3(1.00, 0.90, 0.45);
-    vec3 hotWhite = vec3(1.00, 0.99, 0.92);
+    vec3 baseCupBlue = vec3(0.14, 0.55, 0.96);
+    vec3 outerCrimson = vec3(0.92, 0.24, 0.06);
+    vec3 midAmber = vec3(0.98, 0.54, 0.10);
+    vec3 innerGold = vec3(1.00, 0.88, 0.42);
+    vec3 hotWhite = vec3(0.98, 0.96, 0.90);
 
-    vec3 plumeCol = mix(outerCrimson, midAmber, clamp(vHeat * 0.9 + coreGlow * 0.4, 0.0, 1.0));
-    plumeCol = mix(plumeCol, innerGold, pow(coreGlow, 1.55) * (0.65 + o2Norm * 0.3));
-    plumeCol = mix(plumeCol, hotWhite, pow(coreGlow, 3.0) * (0.55 + o2Norm * 0.45));
+    vec3 plumeCol = mix(outerCrimson, midAmber, clamp(vHeat * 0.85 + coreGlow * 0.4, 0.0, 1.0));
+    plumeCol = mix(plumeCol, innerGold, pow(coreGlow, 1.5) * (0.6 + o2Norm * 0.28));
+    plumeCol = mix(plumeCol, hotWhite, pow(coreGlow, 2.8) * (0.5 + o2Norm * 0.4));
 
     // Blue leading-edge / base reaction cup
     float cupMask = smoothstep(0.15, -0.65, vLocalPos.y * (0.65 + buoyancy) + vLocalPos.x * wind * 0.75);
-    plumeCol = mix(plumeCol, baseCupBlue, cupMask * (0.72 - o2Norm * 0.25));
+    plumeCol = mix(plumeCol, baseCupBlue, cupMask * (0.68 - o2Norm * 0.22));
 
     float radiativeBlend = clamp(buoyancy * 0.88 + wind * 0.78, 0.0, 1.0);
     vec3 color = mix(zeroGCol, plumeCol, radiativeBlend);
 
     if (uCoolFlame > 0.5) {
-      vec3 coolCore = vec3(0.38, 0.85, 1.00);
-      vec3 coolHalo = vec3(0.42, 0.25, 0.96);
+      vec3 coolCore = vec3(0.35, 0.80, 0.98);
+      vec3 coolHalo = vec3(0.38, 0.22, 0.92);
       color = mix(coolHalo, coolCore, coreGlow);
     }
 
+    // Calibrated multi-shell alpha without over-exposure blowout
     float alpha;
     if (uShellIndex < 0.5) {
       // Inner incandescent core
-      alpha = 0.68 * pow(coreGlow, 1.2) + 0.18 * rimGlow;
+      alpha = 0.34 * pow(coreGlow, 1.3) + 0.08 * rimGlow;
     } else if (uShellIndex < 1.5) {
       // Primary stoichiometric reaction sheet
-      alpha = 0.42 * coreGlow + 0.48 * rimGlow;
-    } else if (uShellIndex < 2.5) {
-      // Secondary chemiluminescence envelope
-      alpha = 0.24 * coreGlow + 0.36 * rimGlow;
+      alpha = 0.22 * coreGlow + 0.30 * rimGlow;
     } else {
-      // Outer soft thermal bloom aura
-      alpha = 0.14 * pow(coreGlow, 1.8) + 0.16 * rimGlow;
+      // Outer luminescence halo
+      alpha = 0.12 * coreGlow + 0.20 * rimGlow;
     }
 
-    alpha *= (0.86 + 0.22 * vNoise);
     if (uCoolFlame > 0.5) {
-      alpha *= 0.55 + 0.18 * sin(uTime * 4.2);
+      alpha *= 0.65 + 0.15 * sin(uTime * 2.2);
     }
 
-    gl_FragColor = vec4(color * (1.18 + o2Norm * 0.32), clamp(alpha, 0.0, 0.92));
+    // Clean, luminous output with rich color depth (no 60Hz alpha strobing)
+    vec3 outColor = color * (0.95 + o2Norm * 0.22);
+    gl_FragColor = vec4(outColor, clamp(alpha, 0.0, 0.85));
   }
 `;
 
@@ -501,20 +502,20 @@ const FIRE_CLOUD_VERT = /* glsl */ `
 
     if (aLayer < 0.5) {
       // LAYER 0: Dense 3D Reaction Shell & Inner Flame Plasma Motes (7,500 motes)
-      float life = fract(aPhase + uTime * (0.28 + buoyancy * 0.45 + wind * 0.55));
+      float life = fract(aPhase + uTime * (0.16 + buoyancy * 0.28 + wind * 0.35));
       vLife = life;
 
       // Base spherical shell distribution
-      float baseR = (0.32 + 0.58 * pow(aSeed, 0.45)) * (0.85 + o2Norm * 0.32);
+      float baseR = (0.34 + 0.52 * pow(aSeed, 0.45)) * (0.85 + o2Norm * 0.22);
       if (uCoolFlame > 0.5) {
-        baseR *= 0.78 + 0.05 * sin(uTime * 3.5 + aSeed * 6.28);
+        baseR *= 0.78 + 0.03 * sin(uTime * 2.0 + aSeed * 6.28);
       }
 
-      // Swirl around reaction zone
-      float angle = aSeed * 6.28318 + uTime * (0.45 + hash1(aSeed) * 0.4);
+      // Swirl around reaction zone (gentle, steady laminar flow)
+      float angle = aSeed * 6.28318 + uTime * (0.12 + hash1(aSeed) * 0.12);
       vec3 dir = aBaseDir;
-      float cosA = cos(angle * 0.15);
-      float sinA = sin(angle * 0.15);
+      float cosA = cos(angle * 0.12);
+      float sinA = sin(angle * 0.12);
       dir = vec3(dir.x * cosA - dir.z * sinA, dir.y, dir.x * sinA + dir.z * cosA);
 
       pos = dir * baseR;
@@ -522,35 +523,35 @@ const FIRE_CLOUD_VERT = /* glsl */ `
       // Morph sphere into 1/6g bell or 1g teardrop plume
       float upper = smoothstep(-0.4, 0.9, dir.y);
       if (buoyancy > 0.01) {
-        float rise = life * buoyancy * (1.55 + o2Norm * 0.45);
-        pos.y = pos.y * (1.0 + buoyancy * 1.15 * upper) + rise * upper;
-        float taper = 1.0 - buoyancy * 0.58 * clamp(pos.y / 2.2, 0.0, 0.92);
+        float rise = life * buoyancy * (1.40 + o2Norm * 0.35);
+        pos.y = pos.y * (1.0 + buoyancy * 1.1 * upper) + rise * upper;
+        float taper = 1.0 - buoyancy * 0.55 * clamp(pos.y / 2.2, 0.0, 0.92);
         pos.x *= taper;
         pos.z *= taper;
-        // Helical thermal vortex flicker
-        pos.x += sin(uTime * 3.8 + pos.y * 2.6 + aSeed * 12.0) * 0.08 * buoyancy * upper;
-        pos.z += cos(uTime * 3.4 + pos.y * 2.6 + aSeed * 12.0) * 0.08 * buoyancy * upper;
+        // Thermal buoyancy gentle wave (only with buoyant updraft)
+        pos.x += sin(uTime * 1.2 + pos.y * 1.6 + aSeed * 6.28) * 0.035 * buoyancy * upper;
+        pos.z += cos(uTime * 1.1 + pos.y * 1.6 + aSeed * 6.28) * 0.035 * buoyancy * upper;
       }
 
       // Morph into Forced Convection Trailing Wake (+X)
       float wake = smoothstep(-0.6, 0.9, dir.x);
       if (wind > 0.02) {
-        float driftX = life * wind * (2.15 + o2Norm * 0.5);
-        pos.x = pos.x * (1.0 + wind * 1.25 * wake) + driftX * (0.35 + 0.65 * wake);
-        float wakeTaper = 1.0 - min(0.55, wind * 0.32) * clamp(pos.x / 2.6, 0.0, 0.9);
+        float driftX = life * wind * (1.95 + o2Norm * 0.4);
+        pos.x = pos.x * (1.0 + wind * 1.2 * wake) + driftX * (0.35 + 0.65 * wake);
+        float wakeTaper = 1.0 - min(0.52, wind * 0.3) * clamp(pos.x / 2.6, 0.0, 0.9);
         pos.y *= wakeTaper;
         pos.z *= wakeTaper;
-        pos.y += sin(uTime * 5.0 + pos.x * 2.8 + aSeed * 10.0) * 0.07 * wind;
+        pos.y += sin(uTime * 1.4 + pos.x * 1.6 + aSeed * 6.28) * 0.025 * wind * wake;
       }
 
       vHeat = clamp(1.0 - life * 0.55 + upper * buoyancy * 0.25, 0.0, 1.0);
-      pointSize = (6.5 + hash1(aSeed * 3.1) * 8.5) * (1.0 - life * 0.35);
+      pointSize = (5.5 + hash1(aSeed * 3.1) * 6.5) * (1.0 - life * 0.35);
       if (uExtinguished > 0.5) {
         pointSize = 0.0;
       }
     } else if (aLayer < 1.5) {
       // LAYER 1: Soot Agglomerates & Thermal Plume Aerosols (SAME-R physics)
-      float life = fract(aPhase + uTime * (0.18 + buoyancy * 0.32 + wind * 0.65));
+      float life = fract(aPhase + uTime * (0.12 + buoyancy * 0.22 + wind * 0.45));
       vLife = life;
 
       vec3 dir = aBaseDir;
@@ -559,14 +560,14 @@ const FIRE_CLOUD_VERT = /* glsl */ `
 
       // Radial diffusion in 0g + buoyant lift in 1/6g & 1g + wind advection
       pos += dir * (life * 0.85 * (1.0 - buoyancy * 0.55));
-      pos.y += life * buoyancy * 2.35;
-      pos.x += life * (0.18 + wind * 3.1);
-      pos.z += sin(uTime * 1.8 + aSeed * 25.0) * 0.12 * life;
+      pos.y += life * buoyancy * 2.1;
+      pos.x += life * (0.14 + wind * 2.6);
+      pos.z += sin(uTime * 0.9 + aSeed * 6.28) * 0.03 * (buoyancy + wind) * life;
 
       vHeat = clamp(1.0 - life * 1.15, 0.0, 1.0);
       // Soot clusters are 8x-12x larger in 0g (SAME-R)
       float clusterBoost = 0.85 + clamp(uSootScale / 9.0, 0.15, 1.1) * 0.95;
-      pointSize = (5.0 + hash1(aSeed * 19.7) * 7.5) * clusterBoost * sin(life * 3.14159);
+      pointSize = (4.5 + hash1(aSeed * 19.7) * 6.5) * clusterBoost * sin(life * 3.14159);
     } else {
       // LAYER 2: Cabin Ventilation Oxidizer Airflow Streamlines
       float speed = 0.22 + uAirflow * 1.85;
@@ -945,14 +946,16 @@ export function CombustionSim3D({
     cloudPoints.frustumCulled = false;
     worldGroup.add(cloudPoints);
 
-    // Interactive 360° Orbit Controls
+    // Interactive 360° Orbit & Smooth Wheel Zoom Controls
     let targetYaw = -0.28;
     let targetPitch = 0.2;
     let currentYaw = -0.28;
     let currentPitch = 0.2;
+    let lastCameraPreset = simStateRef.current.cameraPreset;
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
+    let camDistance = 4.85;
 
     const onPointerDown = (e) => {
       isDragging = true;
@@ -972,16 +975,25 @@ export function CombustionSim3D({
       isDragging = false;
     };
 
+    const onWheel = (e) => {
+      e.preventDefault();
+      camDistance = Math.max(2.4, Math.min(6.2, camDistance + e.deltaY * 0.0035));
+      camera.position.set(0, 0.28, camDistance);
+      camera.lookAt(0.12, 0.08, 0);
+      camera.updateProjectionMatrix();
+    };
+
     canvas.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
+    canvas.addEventListener('wheel', onWheel, { passive: false });
 
     const updateSize = () => {
       const w = Math.max(280, container.clientWidth || 640);
       const h = Math.max(240, container.clientHeight || 360);
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
-      camera.position.set(0, 0.28, 4.85);
+      camera.position.set(0, 0.28, camDistance);
       camera.lookAt(0.12, 0.08, 0);
       camera.updateProjectionMatrix();
     };
@@ -1011,21 +1023,24 @@ export function CombustionSim3D({
       const targetG = (GRAVITY_REGIMES[st.gravityKey] || GRAVITY_REGIMES['0g']).gValue;
       const matCfg = FUEL_MATERIALS[st.materialKey] || FUEL_MATERIALS.pmma;
 
-      if (!isDragging) {
+      // Handle Camera Preset button switches (without autonomous wobbling/vibrating)
+      if (st.cameraPreset !== lastCameraPreset) {
+        lastCameraPreset = st.cameraPreset;
         if (st.cameraPreset === 'iso') {
-          targetYaw += (-0.28 + Math.sin(clockTime * 0.25) * 0.08 - targetYaw) * 0.04;
-          targetPitch += (0.2 - targetPitch) * 0.06;
+          targetYaw = -0.28;
+          targetPitch = 0.2;
         } else if (st.cameraPreset === 'side') {
-          targetYaw += (0.0 - targetYaw) * 0.08;
-          targetPitch += (0.04 - targetPitch) * 0.08;
+          targetYaw = 0.0;
+          targetPitch = 0.04;
         } else if (st.cameraPreset === 'top') {
-          targetYaw += (0.0 - targetYaw) * 0.08;
-          targetPitch += (1.02 - targetPitch) * 0.08;
+          targetYaw = 0.0;
+          targetPitch = 1.02;
         }
       }
 
-      currentYaw += (targetYaw - currentYaw) * 0.14;
-      currentPitch += (targetPitch - currentPitch) * 0.14;
+      // Smooth, stable rotation interpolation without autonomous wobble
+      currentYaw += (targetYaw - currentYaw) * 0.12;
+      currentPitch += (targetPitch - currentPitch) * 0.12;
       worldGroup.rotation.y = currentYaw;
       worldGroup.rotation.x = currentPitch;
 
@@ -1066,8 +1081,7 @@ export function CombustionSim3D({
       cloudMat.uniforms.uExtinguished.value = st.physics?.isExtinguished ? 1.0 : 0.0;
       cloudMat.uniforms.uSootScale.value = st.physics?.sootClusterScale || 5.0;
 
-      // Rotate subtle diagnostic gimbal rings
-      gimbalGroup.rotation.z = clockTime * 0.12;
+      // Static, clean diagnostic gimbal rings (stationary spatial frame)
       gimbalRingMat1.color.set(isBlueSpherical ? 0x38bdf8 : 0xff8a58);
       floorRingMat.color.set(isBlueSpherical ? 0x38bdf8 : 0xff8a58);
 
@@ -1087,6 +1101,7 @@ export function CombustionSim3D({
       canvas.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      canvas.removeEventListener('wheel', onWheel);
       flameGeo.dispose();
       flameMaterials.forEach((m) => m.dispose());
       cloudGeo.dispose();

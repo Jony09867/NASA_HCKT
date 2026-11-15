@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import Magnet from './Magnet';
 import FlameSIChat from './FlameSIChat';
 import SpotlightCard from './SpotlightCard';
@@ -88,6 +88,14 @@ export default function SIDashboard() {
     setMaterialKey(p.materialKey);
     setGravity(p.gravity);
   };
+
+  const handleSimStateChange = useCallback((next) => {
+    setOxygen((prev) => (prev === next.oxygen ? prev : next.oxygen));
+    setPressure((prev) => (prev === next.pressure ? prev : next.pressure));
+    setVentilation((prev) => (prev === next.ventilation ? prev : next.ventilation));
+    setGravityKey((prev) => (prev === next.gravityKey ? prev : next.gravityKey));
+    setMaterialKey((prev) => (prev === next.materialKey ? prev : next.materialKey));
+  }, []);
 
   // Physics Calculations
   const metrics = useMemo(() => {
@@ -283,13 +291,7 @@ export default function SIDashboard() {
               initialOxygen={oxygen}
               initialVentilation={ventilation}
               initialPressure={pressure}
-              onStateChange={(next) => {
-                setOxygen(next.oxygen);
-                setPressure(next.pressure);
-                setVentilation(next.ventilation);
-                setGravityKey(next.gravityKey);
-                setMaterialKey(next.materialKey);
-              }}
+              onStateChange={handleSimStateChange}
             />
             <CombustionTelemetryChart
               gravityKey={gravityKey}
