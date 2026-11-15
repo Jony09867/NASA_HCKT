@@ -709,7 +709,7 @@ export default function SIDashboard() {
       {activeMainTab === 'lab' && (
         <div className="si-lab-3col-grid">
           {/* LEFT COLUMN: Filters & Material Chips with MagicBento dynamic spotlight and border glow */}
-          <MagicCard tag="aside" className="si-lab-left-filters" radius={20} glowColor="#164f91" enableStars={true}>
+          <MagicCard tag="aside" className="si-lab-left-filters" radius={24} glowColor="#164f91" enableStars={true}>
             <div className="si-filters-header">
               <div className="si-filter-header-flex">
                 <h3 className="si-filters-title" style={{ margin: 0 }}>Experiment Lab</h3>
@@ -1148,7 +1148,7 @@ export default function SIDashboard() {
             </div>
 
             {/* Render 3D WebGL or 2D Hardware Schematic inside MagicCard */}
-            <MagicCard className="si-stage-canvas-card" radius={20} glowColor="#0284c7" enableStars={true}>
+            <MagicCard className="si-stage-canvas-card" radius={24} glowColor="#0284c7" enableStars={true}>
               {labStageMode === '3d' ? (
                 <CombustionSim3D
                   initialGravity={gravityKey}
@@ -1192,7 +1192,7 @@ export default function SIDashboard() {
           </main>
 
           {/* RIGHT COLUMN: What Happened in Real Tests */}
-          <MagicCard tag="aside" className="si-lab-right-audit" radius={20} glowColor="#164f91" enableStars={true}>
+          <MagicCard tag="aside" className="si-lab-right-audit" radius={24} glowColor="#164f91" enableStars={true}>
             <div className="si-audit-header">
               <span className="si-audit-eyebrow">WHAT HAPPENED IN REAL TESTS</span>
               <h2 className="si-audit-mat-name">{activeCoverage.material}</h2>
@@ -1340,7 +1340,7 @@ export default function SIDashboard() {
       {activeMainTab === 'lunar' && (
         <div className="si-lunar-view-wrap">
           {/* Quick Action Banner with Tactile ScrubFields inside MagicCard */}
-          <MagicCard className="si-lunar-action-banner" radius={20} glowColor="#164f91" enableStars={true}>
+          <MagicCard className="si-lunar-action-banner" radius={24} glowColor="#164f91" enableStars={true}>
             <div className="si-lunar-banner-info">
               <div className="si-lunar-banner-badge-row">
                 <span className="si-lunar-env-pill">NASA Artemis Target Baseline</span>
@@ -1432,7 +1432,7 @@ export default function SIDashboard() {
       {activeMainTab === 'ranking' && (
         <div className="si-ranking-view-wrap">
           {/* Section 1: Choose the mission and what counts */}
-          <MagicCard className="si-ranking-config-card" radius={20} glowColor="#164f91" enableStars={true}>
+          <MagicCard className="si-ranking-config-card" radius={24} glowColor="#164f91" enableStars={true}>
             <h3 className="si-section-serif-title">1 · Choose the mission and what counts</h3>
             
             <div className="si-ranking-config-grid">
@@ -1537,7 +1537,7 @@ export default function SIDashboard() {
           </MagicCard>
 
           {/* Section 2: The ranking Table */}
-          <MagicCard className="si-ranked-table-card" radius={20} glowColor="#164f91" enableStars={false}>
+          <MagicCard className="si-ranked-table-card" radius={24} glowColor="#164f91" enableStars={false}>
             <h3 className="si-section-serif-title">2 · The ranking</h3>
             <p className="si-table-subtitle">
               Every criterion's score is shown, so nothing hides inside a single number. Click a row to see why it
@@ -1658,7 +1658,7 @@ export default function SIDashboard() {
           ========================================================================= */}
       {activeMainTab === 'gap-matrix' && (
         <div className="si-gap-matrix-view-wrap">
-          <MagicCard className="si-gap-matrix-card" radius={20} glowColor="#164f91" enableStars={false}>
+          <MagicCard className="si-gap-matrix-card" radius={24} glowColor="#164f91" enableStars={false}>
             <h3 className="si-section-serif-title">Where tests exist, and where none do</h3>
             <p className="si-matrix-sub">
               Solid-fuel tests in PSI by oxygen level and gravity level. Empty cells are hatched: nothing was measured
@@ -1779,7 +1779,7 @@ export default function SIDashboard() {
           </MagicCard>
 
           {/* Gaps this dataset cannot fill inside MagicCard */}
-          <MagicCard className="si-matrix-findings-card" radius={20} glowColor="#164f91" enableStars={true}>
+          <MagicCard className="si-matrix-findings-card" radius={24} glowColor="#164f91" enableStars={true}>
             <h4>Gaps this dataset cannot fill</h4>
             <ul>
               <li>
@@ -1814,7 +1814,7 @@ export default function SIDashboard() {
           />
 
           {/* Optional Companion 3D WebGL Orbital Radar Scope inside MagicCard */}
-          <MagicCard className="si-orbital-radar-card" radius={20} glowColor="#0284c7" enableStars={true}>
+          <MagicCard className="si-orbital-radar-card" radius={24} glowColor="#0284c7" enableStars={true}>
             <div className="si-orbital-radar-header">
               <div>
                 <span className="si-lunar-env-pill">Deep Space Sensor Telemetry</span>
@@ -1857,7 +1857,7 @@ export default function SIDashboard() {
           ========================================================================= */}
       {activeMainTab === 'pipeline' && (
         <div className="si-pipeline-view-wrap">
-          <MagicCard className="si-pipeline-card" radius={20} glowColor="#164f91" enableStars={true}>
+          <MagicCard className="si-pipeline-card" radius={24} glowColor="#164f91" enableStars={true}>
             <div className="si-filter-header-flex">
               <h3 className="si-section-serif-title" style={{ margin: 0 }}>How it works, at a glance</h3>
               <div className="si-mat-mode-toggle" role="group" aria-label="Pipeline view mode">
@@ -1884,7 +1884,7 @@ export default function SIDashboard() {
                   columns={4}
                   rowHeight={195}
                   gap={14}
-                  radius={14}
+                  radius={24}
                   theme="light"
                   glowColor="#164f91"
                   enableBorderGlow={true}

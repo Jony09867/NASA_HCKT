@@ -55,17 +55,22 @@
   color: #102b4e;
 }
 
-/* "How to read this page" Callout Box (MagicBento 20px squircle geometry) */
+/* "How to read this page" Callout Box (MagicBento 24px squircle geometry) */
 .lunar-rec-callout {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
+  border: 1px solid rgba(203, 216, 232, 0.75);
   padding: 1.35rem 1.75rem;
-  border-radius: 20px;
+  border-radius: 24px;
   display: flex;
   align-items: flex-start;
   gap: 1.15rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.10), 0 6px 16px -10px rgba(16, 43, 78, 0.06);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.10),
+    0 6px 16px -10px rgba(16, 43, 78, 0.06),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .lunar-callout-icon {
@@ -93,14 +98,19 @@
   color: #164f91;
 }
 
-/* At a glance summary list (MagicBento 20px squircle geometry) */
+/* At a glance summary list (MagicBento 24px squircle geometry) */
 .lunar-at-a-glance {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 1.75rem 2rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .lunar-glance-header {
@@ -192,7 +202,7 @@
   font-weight: 700;
 }
 
-/* Detailed Recommendation Cards (MagicBento 20px squircle geometry) */
+/* Detailed Recommendation Cards (MagicBento 24px squircle geometry) */
 .lunar-cards-list {
   display: flex;
   flex-direction: column;
@@ -201,21 +211,34 @@
 
 .lunar-detail-card {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  isolation: isolate;
   transition: all 0.25s ease;
 }
 
 .lunar-detail-card:hover {
   border-color: #8bb2df;
-  box-shadow: 0 24px 48px -20px rgba(16, 43, 78, 0.16), 0 8px 20px -8px rgba(16, 43, 78, 0.10);
+  box-shadow:
+    0 24px 48px -20px rgba(16, 43, 78, 0.16),
+    0 8px 20px -8px rgba(16, 43, 78, 0.10),
+    inset 0 0 0 1px rgba(139, 178, 223, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .lunar-detail-card.is-open {
   border-color: #164f91;
-  box-shadow: 0 24px 48px -20px rgba(22, 79, 145, 0.2), 0 8px 20px -8px rgba(22, 79, 145, 0.12);
+  box-shadow:
+    0 24px 48px -20px rgba(22, 79, 145, 0.2),
+    0 8px 20px -8px rgba(22, 79, 145, 0.12),
+    inset 0 0 0 1px rgba(22, 79, 145, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .lunar-card-head {
@@ -486,10 +509,15 @@
   text-align: center;
   padding: 3rem 2rem;
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .lunar-complete-icon {

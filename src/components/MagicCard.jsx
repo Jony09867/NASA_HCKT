@@ -44,7 +44,7 @@ export function MagicCard({
   children,
   className = '',
   style = {},
-  radius = 20,
+  radius = 24,
   theme = 'light',
   glowColor = '#164f91',
   enableBorderGlow = true,

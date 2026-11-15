@@ -229,19 +229,20 @@ body section.explore .notice strong {
   color: #102b4e !important;
 }
 
-/* 7. Investigation Cards in Light Theme (MagicBento 20px squircle geometry) */
+/* 7. Investigation Cards in Light Theme (MagicBento 24px squircle geometry with Dual-Layer Rim) */
 body section.explore .spotlight-card {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%) !important;
-  border: 1px solid rgba(203, 216, 232, 0.8) !important;
-  border-radius: 20px !important;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08) !important;
+  border: 1px solid rgba(203, 216, 232, 0.75) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08), inset 0 0 0 1px rgba(203, 216, 232, 0.75), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   overflow: hidden !important;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease !important;
+  isolation: isolate !important;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 body section.explore .spotlight-card:hover {
   border-color: #8bb2df !important;
-  box-shadow: 0 24px 48px -20px rgba(16, 43, 78, 0.16), 0 8px 20px -8px rgba(16, 43, 78, 0.10) !important;
+  box-shadow: 0 24px 48px -20px rgba(16, 43, 78, 0.16), 0 8px 20px -8px rgba(16, 43, 78, 0.10), inset 0 0 0 1px rgba(139, 178, 223, 0.75), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   transform: translateY(-3px) !important;
 }
 
@@ -408,39 +409,102 @@ body :is(.steps-grid > a, .spotlight-card, .si-preset-card, .si-rank-card, .si-p
 }
 
 /* ==========================================================================
-   Unified 20px Squircle Card Geometry (Across Explore, Compare, Chat, Simulator)
-   Derived from React Bits MagicBento: 20px radius, soft ambient shadows, crisp borders
+   Universal Magic Bento Squircle Card Corners (24px Geometry with Dual-Layer Rim)
+   Applied across Explore, Compare, SI Chat, and Simulator per user directive
    ========================================================================== */
-body section.explore .filters-container,
-body section.explore .advanced-filters-panel,
-body section.explore .selection-tray,
-body .evidence-table,
-body .comparability-notice,
-body .compare-container,
-body .steps-grid > a {
-  border-radius: 20px !important;
+body :is(
+  /* 1. Explore Cards */
+  section.explore .spotlight-card,
+  section.explore .filters-container,
+  section.explore .advanced-filters-panel,
+  section.explore .selection-tray,
+
+  /* 2. Compare Cards */
+  body .evidence-table,
+  body .comparability-notice,
+  body .compare-container,
+  body .compare-empty-guide,
+  body .evidence-card,
+  body .diff-summary-card,
+  body .steps-grid > a,
+
+  /* 3. SI Chat Cards */
+  body .flame-studio-workspace,
+  body .flame-chat-container,
+  body .chat-side-panel,
+  body .chat-flight-chart-card,
+  body .stage-sync-card,
+
+  /* 4. Simulator Cards */
+  body .magic-card,
+  body .si-lab-left-filters,
+  body .si-stage-canvas-card,
+  body .si-lab-right-audit,
+  body .c3d-sim-card,
+  body .si-stage-telemetry-drawer,
+  body .si-lunar-action-banner,
+  body .lunar-at-a-glance,
+  body .lunar-detail-card,
+  body .lunar-rec-callout,
+  body .lunar-audit-complete-card,
+  body .si-ranking-config-card,
+  body .si-ranked-table-card,
+  body .si-gap-matrix-card,
+  body .si-matrix-findings-card,
+  body .psi-env-container,
+  body .si-orbital-radar-card,
+  body .si-pipeline-card
+) {
+  border-radius: 24px !important;
   overflow: hidden !important;
+  isolation: isolate !important;
+  border: 1px solid rgba(203, 216, 232, 0.75) !important;
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
 }
 
-body .evidence-table {
-  border: 1px solid rgba(203, 216, 232, 0.85) !important;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08) !important;
+/* Secondary & Nested Sub-Cards (16px squircle radius for harmonious hierarchy) */
+body :is(
+  .card-specs-grid,
+  .evidence-card-head,
+  .diff-box,
+  .range-filter,
+  .chat-starters button,
+  .chat-input-box,
+  .chat-context-menu,
+  .c3d-chamber-viewport,
+  .si-grav-spec-card,
+  .si-log-record-card,
+  .si-test-point-box,
+  .lunar-glance-item,
+  .lunar-core-hazard-banner,
+  .lunar-summary-box,
+  .lunar-keypoints-box,
+  .lunar-directive-box,
+  .lunar-citation-box,
+  .si-mission-select-box,
+  .si-gravity-zero-callout,
+  .si-matrix-scroll-container,
+  .psi-radar-hud-bar,
+  .psi-takeaway-box,
+  .si-pipeline-tier-block
+) {
+  border-radius: 16px !important;
 }
 
 body .comparability-notice {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%) !important;
-  border: 1px solid rgba(203, 216, 232, 0.85) !important;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.10), 0 6px 16px -10px rgba(16, 43, 78, 0.06) !important;
   padding: 1.25rem 1.65rem !important;
 }
 
 body section.explore .selection-tray {
-  border-radius: 20px !important;
-  box-shadow: 0 20px 45px rgba(16, 43, 78, 0.2) !important;
-}
-
-body .evidence-card-head {
-  border-radius: 14px !important;
+  box-shadow:
+    0 24px 50px rgba(16, 43, 78, 0.2),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

@@ -223,7 +223,7 @@ function initReactHome() {
         columns={4}
         rowHeight={210}
         gap={16}
-        radius={16}
+        radius={24}
         theme="light"
         glowColor="#164f91"
         enableBorderGlow={true}

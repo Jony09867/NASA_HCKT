@@ -185,7 +185,7 @@ export function PsiFlightEnvelopeChart({
   ];
 
   return (
-    <MagicCard className="psi-env-container" radius={20} glowColor="#0284c7" enableStars={true}>
+    <MagicCard className="psi-env-container" radius={24} glowColor="#0284c7" enableStars={true}>
       {/* Header & Radar Control HUD */}
       <div className="psi-env-topbar">
         <div>

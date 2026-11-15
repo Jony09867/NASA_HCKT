@@ -193,17 +193,22 @@
   align-items: start;
 }
 
-/* LEFT COLUMN: Filters (MagicBento 20px squircle geometry) */
+/* LEFT COLUMN: Filters (MagicBento 24px squircle geometry) */
 .si-lab-left-filters {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 1.65rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .si-filters-title {
@@ -656,10 +661,15 @@
 
 .si-stage-canvas-card {
   background: var(--si-card-bg);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  isolation: isolate;
 }
 
 .si-figure-caption {
@@ -676,25 +686,34 @@
 
 .si-stage-telemetry-drawer {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 1.65rem;
   margin-top: 0.5rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.10);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.10),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
-/* RIGHT COLUMN: What Happened in Real Tests (MagicBento 20px squircle geometry) */
+/* RIGHT COLUMN: What Happened in Real Tests (MagicBento 24px squircle geometry) */
 .si-lab-right-audit {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 1.65rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .si-audit-eyebrow {
@@ -1057,16 +1076,21 @@
 
 .si-lunar-action-banner {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 1.75rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 1.5rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .si-lunar-banner-info {
@@ -1196,11 +1220,16 @@
 .si-ranking-config-card,
 .si-ranked-table-card {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 1.85rem 2rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .si-ranking-config-grid {
@@ -1506,11 +1535,16 @@
 
 .si-gap-matrix-card {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 1.85rem 2rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .si-matrix-sub {
@@ -1622,11 +1656,16 @@
 
 .si-matrix-findings-card {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 1.75rem 2rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .si-matrix-findings-card h4 {
@@ -1659,11 +1698,16 @@
 
 .si-pipeline-card {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 2rem 2.25rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .si-pipeline-tiers-container {
@@ -1830,11 +1874,16 @@
 
 .si-orbital-radar-card {
   background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
-  border: 1px solid rgba(203, 216, 232, 0.85);
-  border-radius: 20px;
+  border: 1px solid rgba(203, 216, 232, 0.75);
+  border-radius: 24px;
   padding: 1.65rem 1.85rem;
-  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  box-shadow:
+    0 20px 40px -25px rgba(16, 43, 78, 0.12),
+    0 6px 16px -10px rgba(16, 43, 78, 0.08),
+    inset 0 0 0 1px rgba(203, 216, 232, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .si-orbital-radar-header {

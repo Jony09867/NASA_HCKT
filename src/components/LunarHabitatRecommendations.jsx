@@ -165,7 +165,7 @@ export function LunarHabitatRecommendations() {
       </div>
 
       {/* At a glance summary list with MagicCard dynamic interactive spotlight and border glow */}
-      <MagicCard className="lunar-at-a-glance" radius={20} glowColor="#164f91" enableStars={true}>
+      <MagicCard className="lunar-at-a-glance" radius={24} glowColor="#164f91" enableStars={true}>
         <div className="lunar-glance-header">
           <h4 className="lunar-glance-title">At a glance</h4>
           <span className="lunar-glance-subtitle">Select any directive to jump directly into its analysis</span>
@@ -228,7 +228,7 @@ export function LunarHabitatRecommendations() {
           >
             {LUNAR_RECOMMENDATIONS.map((r) => (
               <Step key={r.id} title={`${r.code}: ${r.severity}`}>
-                <MagicCard className="lunar-detail-card is-open" radius={20} glowColor="#164f91" enableStars={true} style={{ margin: 0, boxShadow: 'none' }}>
+                <MagicCard className="lunar-detail-card is-open" radius={24} glowColor="#164f91" enableStars={true} style={{ margin: 0, boxShadow: 'none' }}>
                   <div className="lunar-card-head" style={{ cursor: 'default' }}>
                     <div className="lunar-card-head-left">
                       <span className="lunar-card-badge-code">{r.code}</span>
@@ -285,7 +285,7 @@ export function LunarHabitatRecommendations() {
               <MagicCard
                 key={r.id}
                 className={`lunar-detail-card ${isExpanded ? 'is-open' : ''}`}
-                radius={20}
+                radius={24}
                 glowColor="#164f91"
                 enableStars={true}
               >
