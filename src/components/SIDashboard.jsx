@@ -8,6 +8,7 @@ import { CombustionSim3D, CombustionTelemetryChart } from './CombustionSim3D';
 import { PsiFlightEnvelopeChart } from './PsiFlightEnvelopeChart';
 import FlowDuctSchematic from './FlowDuctSchematic';
 import LunarHabitatRecommendations from './LunarHabitatRecommendations';
+import OptionWheel from './OptionWheel';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -321,6 +322,7 @@ export default function SIDashboard() {
   const [selectedMaterialCode, setSelectedMaterialCode] = useState('PMMA');
   const [selectedShape, setSelectedShape] = useState('Rod');
   const [selectedInvestigation, setSelectedInvestigation] = useState('all');
+  const [materialViewMode, setMaterialViewMode] = useState('chips'); // 'chips' | 'wheel'
 
   // Lab Stage View Toggle: 3D WebGL vs 2D Flow Duct Schematic
   const [labStageMode, setLabStageMode] = useState('3d'); // '3d' | 'duct'
@@ -687,22 +689,77 @@ export default function SIDashboard() {
               </select>
             </div>
 
-            {/* 3. Material with real test count chips */}
+            {/* 3. Material with real test count chips & OptionWheel Dial */}
             <div className="si-filter-section">
-              <span className="si-filter-num-label">3 · Material</span>
-              <div className="si-mat-chips-grid">
-                {COVERAGE_MATRIX.map((mat) => (
+              <div className="si-filter-header-flex">
+                <span className="si-filter-num-label">3 · Material</span>
+                <div className="si-mat-mode-toggle" role="group" aria-label="Material selector view">
                   <button
-                    key={mat.code}
                     type="button"
-                    className={`si-mat-chip ${selectedMaterialCode === mat.code ? 'is-active' : ''}`}
-                    onClick={() => handleSelectMaterial(mat)}
+                    className={`si-mat-toggle-btn ${materialViewMode === 'chips' ? 'is-active' : ''}`}
+                    onClick={() => setMaterialViewMode('chips')}
                   >
-                    <span className="si-mat-chip-name">{mat.code}</span>
-                    <span className="si-mat-chip-count">{mat.totalTests}</span>
+                    Chips
                   </button>
-                ))}
+                  <button
+                    type="button"
+                    className={`si-mat-toggle-btn ${materialViewMode === 'wheel' ? 'is-active' : ''}`}
+                    onClick={() => setMaterialViewMode('wheel')}
+                  >
+                    3D Dial Wheel
+                  </button>
+                </div>
               </div>
+
+              {materialViewMode === 'chips' ? (
+                <div className="si-mat-chips-grid">
+                  {COVERAGE_MATRIX.map((mat) => (
+                    <button
+                      key={mat.code}
+                      type="button"
+                      className={`si-mat-chip ${selectedMaterialCode === mat.code ? 'is-active' : ''}`}
+                      onClick={() => handleSelectMaterial(mat)}
+                    >
+                      <span className="si-mat-chip-name">{mat.code}</span>
+                      <span className="si-mat-chip-count">{mat.totalTests}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="si-mat-wheel-card">
+                  <div className="si-wheel-header-info">
+                    <span className="si-wheel-selected-badge">{activeCoverage.code}</span>
+                    <span className="si-wheel-hint">Drag, scroll, or click to rotate</span>
+                  </div>
+                  <div className="si-mat-wheel-wrapper">
+                    <OptionWheel
+                      items={COVERAGE_MATRIX.map((m) => `${m.code} (${m.totalTests})`)}
+                      defaultSelected={Math.max(
+                        0,
+                        COVERAGE_MATRIX.findIndex((m) => m.code === selectedMaterialCode)
+                      )}
+                      textColor="#6b829e"
+                      activeColor="#164f91"
+                      fontSize={0.92}
+                      spacing={1.65}
+                      curve={0.8}
+                      tilt={5.5}
+                      blur={1.2}
+                      fade={0.32}
+                      minOpacity={0.12}
+                      smoothing={180}
+                      inset={26}
+                      draggable
+                      loop={false}
+                      onChange={(index) => {
+                        if (COVERAGE_MATRIX[index]) {
+                          handleSelectMaterial(COVERAGE_MATRIX[index]);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 4. Recorded conditions */}

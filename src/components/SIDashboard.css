@@ -350,6 +350,104 @@
   border-color: var(--si-primary);
 }
 
+/* Filter Header Flex & Mode Switcher */
+.si-filter-header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.si-mat-mode-toggle {
+  display: flex;
+  gap: 3px;
+  background: #edf3fa;
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid var(--si-line-subtle);
+}
+
+.si-mat-toggle-btn {
+  background: transparent;
+  border: none;
+  font-family: var(--si-sans);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--si-text-muted);
+  padding: 3px 9px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.si-mat-toggle-btn:hover {
+  color: var(--si-text-ink);
+}
+
+.si-mat-toggle-btn.is-active {
+  background: #ffffff;
+  color: var(--si-primary);
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(16, 43, 78, 0.08);
+}
+
+/* Material Wheel Card (OptionWheel container) */
+.si-mat-wheel-card {
+  background: #f8fbff;
+  border: 1px solid var(--si-line);
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem 0.65rem;
+  margin-top: 0.45rem;
+  box-shadow: inset 0 1px 4px rgba(16, 43, 78, 0.03);
+}
+
+.si-wheel-header-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.5rem 0.5rem;
+  border-bottom: 1px dashed var(--si-line);
+  margin-bottom: 0.25rem;
+}
+
+.si-wheel-selected-badge {
+  font-family: var(--si-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--si-primary);
+  background: #eaf1fb;
+  border: 1px solid #cbd8e8;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.si-wheel-hint {
+  font-size: 0.76rem;
+  color: var(--si-text-subtle);
+  font-style: italic;
+}
+
+.si-mat-wheel-wrapper {
+  position: relative;
+  height: 215px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.si-mat-wheel-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(248, 251, 255, 0.95) 0%,
+    rgba(248, 251, 255, 0) 22%,
+    rgba(248, 251, 255, 0) 78%,
+    rgba(248, 251, 255, 0.95) 100%
+  );
+}
+
 /* Quick Presets list */
 .si-quick-presets-box {
   margin-top: 1rem;
