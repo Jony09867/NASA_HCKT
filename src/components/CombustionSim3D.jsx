@@ -589,6 +589,9 @@ const FIRE_CLOUD_VERT = /* glsl */ `
       pointSize = (3.2 + uAirflow * 6.0) * sin(life * 3.14159);
     }
 
+    // Align particle cloud center with the vertical candle flame center
+    pos.y += 0.22;
+
     vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPos;
     gl_PointSize = pointSize * uPixelRatio * (5.2 / max(0.5, -mvPos.z));
@@ -838,10 +841,12 @@ export function CombustionSim3D({
     const floorRing = new THREE.Mesh(floorRingGeo, floorRingMat);
     floorRing.position.y = 0.01;
     gridGroup.add(floorRing);
+    gridGroup.position.set(0, -1.8, 0);
     worldGroup.add(gridGroup);
 
-    // Thin Scientific Diagnostic Gimbal Rings around Flame (No ugly wireframe triangle mesh!)
+    // Thin Scientific Diagnostic Gimbal Rings around Flame (Centered at flame reaction zone)
     const gimbalGroup = new THREE.Group();
+    gimbalGroup.position.set(0, 0.22, 0);
     const gimbalRingGeo1 = new THREE.RingGeometry(1.18, 1.2, 96);
     const gimbalRingMat1 = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
@@ -859,41 +864,67 @@ export function CombustionSim3D({
     gimbalGroup.add(gimbal2);
     worldGroup.add(gimbalGroup);
 
-    // 2. 3D Fuel Sample & CIR Metallic Sting Holder
+    // 2. 3D Fuel Sample & Vertical Candle Burner Mount (Burns from the bottom like a candle!)
     const sampleGroup = new THREE.Group();
     worldGroup.add(sampleGroup);
 
-    const fuelGeo = new THREE.CapsuleGeometry(0.19, 0.72, 24, 36);
-    fuelGeo.rotateZ(Math.PI / 2);
+    // Vertical Fuel Candle / Polymer Rod standing from the bottom
+    const fuelGeo = new THREE.CylinderGeometry(0.16, 0.18, 0.92, 32);
     const fuelMat = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#2b3a42'),
-      roughness: 0.35,
-      metalness: 0.2,
+      roughness: 0.42,
+      metalness: 0.15,
       emissive: new THREE.Color('#38bdf8'),
       emissiveIntensity: 0.35,
     });
     const fuelMesh = new THREE.Mesh(fuelGeo, fuelMat);
+    fuelMesh.position.set(0, -0.46, 0); // Top tip touches y = 0.0
     sampleGroup.add(fuelMesh);
 
-    const stingGeo = new THREE.CylinderGeometry(0.045, 0.065, 1.75, 16);
-    stingGeo.rotateZ(Math.PI / 2);
+    // Glowing pyrolyzing candle tip / wick char ring at the top
+    const tipGeo = new THREE.SphereGeometry(0.165, 24, 16);
+    const tipMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color('#ff8a58'),
+      emissive: new THREE.Color('#ff7b39'),
+      emissiveIntensity: 0.85,
+      roughness: 0.25,
+    });
+    const tipMesh = new THREE.Mesh(tipGeo, tipMat);
+    tipMesh.scale.set(1.0, 0.45, 1.0);
+    tipMesh.position.set(0, 0.0, 0);
+    sampleGroup.add(tipMesh);
+
+    // Burner Collar / Ring at the base of the fuel rod
+    const collarGeo = new THREE.CylinderGeometry(0.24, 0.26, 0.12, 32);
+    const collarMat = new THREE.MeshStandardMaterial({
+      color: 0x94a3b8,
+      metalness: 0.9,
+      roughness: 0.2,
+    });
+    const collarMesh = new THREE.Mesh(collarGeo, collarMat);
+    collarMesh.position.set(0, -0.92, 0);
+    sampleGroup.add(collarMesh);
+
+    // Metallic Aerospace Burner Base / Candle Holder underneath
+    const stingGeo = new THREE.CylinderGeometry(0.07, 0.11, 1.6, 24);
     const stingMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b,
-      roughness: 0.28,
-      metalness: 0.85,
+      color: 0x475569,
+      roughness: 0.25,
+      metalness: 0.88,
     });
     const stingMesh = new THREE.Mesh(stingGeo, stingMat);
-    stingMesh.position.set(-1.28, 0, 0);
+    stingMesh.position.set(0, -1.72, 0);
     sampleGroup.add(stingMesh);
 
     const ambientLight = new THREE.AmbientLight(0x94a3b8, 1.15);
     scene.add(ambientLight);
     const flameLight = new THREE.PointLight(0x38bdf8, 3.6, 9.0);
-    flameLight.position.set(0.15, 0.35, 0.5);
+    flameLight.position.set(0.0, 0.35, 0.45);
     worldGroup.add(flameLight);
 
-    // 3. 4 Nested Volumetric GLSL Shader Flame Shells
+    // 3. 4 Nested Volumetric GLSL Shader Flame Shells (Sits on top of the vertical candle rod!)
     const flameGroup = new THREE.Group();
+    flameGroup.position.set(0, 0.22, 0);
     worldGroup.add(flameGroup);
 
     const flameGeo = new THREE.SphereGeometry(0.76, 64, 64);
@@ -1052,15 +1083,21 @@ export function CombustionSim3D({
 
       // Adapt 3D sample geometry scale to material type (rod vs fabric slab)
       if (matCfg.shapeType === 'slab') {
-        fuelMesh.scale.set(1.15, 0.45, 1.35);
+        fuelMesh.scale.set(1.4, 1.0, 0.25);
+        tipMesh.scale.set(1.4, 0.45, 0.35);
       } else {
         fuelMesh.scale.set(1.0, 1.0, 1.0);
+        tipMesh.scale.set(1.0, 0.45, 1.0);
       }
       fuelMat.color.set(matCfg.sampleColor);
       fuelMat.emissive.set(isBlueSpherical ? '#38bdf8' : matCfg.emissiveColor);
       fuelMat.emissiveIntensity = st.physics?.isExtinguished
         ? 0.04
         : 0.22 + (smoothO2 / 100) * 0.45;
+      tipMat.emissive.set(isBlueSpherical ? '#38bdf8' : '#ff7b39');
+      tipMat.emissiveIntensity = st.physics?.isExtinguished
+        ? 0.05
+        : 0.65 + (smoothO2 / 100) * 0.55;
 
       // Update volumetric flame shell uniforms
       flameMaterials.forEach((shMat) => {
@@ -1108,6 +1145,10 @@ export function CombustionSim3D({
       cloudMat.dispose();
       fuelGeo.dispose();
       fuelMat.dispose();
+      tipGeo.dispose();
+      tipMat.dispose();
+      collarGeo.dispose();
+      collarMat.dispose();
       stingGeo.dispose();
       stingMat.dispose();
       floorRingGeo.dispose();
