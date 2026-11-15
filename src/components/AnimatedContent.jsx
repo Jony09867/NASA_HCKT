@@ -198,6 +198,7 @@ const AnimatedContent = ({
         start,
         once,
         onEnter: () => tl.play(),
+        onEnterBack: () => tl.play(),
         onLeaveBack: once
           ? undefined
           : () => {
@@ -257,3 +258,4 @@ const AnimatedContent = ({
 };
 
 export default AnimatedContent;
+

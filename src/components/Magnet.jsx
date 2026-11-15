@@ -400,8 +400,10 @@ export function magnetizeElement(element, options = {}) {
  * Magnetizes primary buttons across the page (desktop pointer only)
  * Throttled to prevent jitter and layout thrashing
  */
+let pageMagnetStarted = false;
 export function magnetizeAllPageButtons() {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || pageMagnetStarted) return;
+  pageMagnetStarted = true;
   const canHover = window.matchMedia?.('(hover: hover) and (pointer: fine)').matches ?? false;
   if (!canHover) return;
 
@@ -410,7 +412,7 @@ export function magnetizeAllPageButtons() {
     scheduled = false;
     for (const entry of registry) if (!entry.wrapper.isConnected) entry.dispose?.();
     const targets = document.querySelectorAll(
-      '[data-primary], #compare .specular-button, .btn-swap-columns, .btn-clear-compare'
+      'main button:not(.si-preset-card), main a.button, main a.primary-action, main a.card-source-link, main a.si-action-btn, main a.specular-button, [data-primary]'
     );
     targets.forEach(el => {
       if (!el.closest('.magnet-wrapper') && !el.dataset.magnetized && el.tagName !== 'INPUT' && el.tagName !== 'SELECT') {
@@ -424,7 +426,7 @@ export function magnetizeAllPageButtons() {
 
   // Watch for dynamic changes (throttled)
   let timer = null;
-  const targetRoot = document.getElementById('cards') || document.body;
+  const targetRoot = document.body;
   const observer = new MutationObserver(() => {
     if (timer) return;
     timer = setTimeout(() => {
@@ -435,7 +437,8 @@ export function magnetizeAllPageButtons() {
       }
     }, 250);
   });
-  observer.observe(targetRoot, { childList: true });
+  observer.observe(targetRoot, { childList: true, subtree: true });
 }
 
 export default Magnet;
+

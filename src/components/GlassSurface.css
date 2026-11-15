@@ -115,7 +115,6 @@ a.button:hover,
   box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
     0 4px 16px rgba(22, 79, 145, 0.28) !important;
-  transform: translateY(-1px) !important;
 }
 
 /* Secondary Buttons (Light Frosted Glass) */
@@ -155,7 +154,6 @@ a.button.secondary:hover,
   box-shadow:
     inset 0 1px 0 0 #ffffff,
     0 4px 14px rgba(22, 79, 145, 0.12) !important;
-  transform: translateY(-1px) !important;
 }
 
 button:active,
@@ -165,7 +163,6 @@ a.button:active,
 .primary-action:active,
 .si-action-btn:active,
 .chat-send-btn:active {
-  transform: translateY(0) !important;
   box-shadow:
     inset 0 1px 2px rgba(0, 0, 0, 0.18),
     0 1px 3px rgba(16, 43, 78, 0.1) !important;
