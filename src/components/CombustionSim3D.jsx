@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
+import GlassSurface from './GlassSurface';
 import './CombustionSim3D.css';
 
 export const GRAVITY_REGIMES = {
@@ -1203,27 +1204,33 @@ export function CombustionTelemetryChart({
           </h4>
         </div>
         <div className="c3d-viz-tabs" role="tablist">
-          <button
-            type="button"
-            className={chartTab === 'o2-curve' ? 'is-active' : ''}
-            onClick={() => setChartTab('o2-curve')}
-          >
-            O₂ vs Spread
-          </button>
-          <button
-            type="button"
-            className={chartTab === 'airflow-curve' ? 'is-active' : ''}
-            onClick={() => setChartTab('airflow-curve')}
-          >
-            Airflow Envelope
-          </button>
-          <button
-            type="button"
-            className={chartTab === 'cool-soot' ? 'is-active' : ''}
-            onClick={() => setChartTab('cool-soot')}
-          >
-            Cool Flame & Soot
-          </button>
+          <GlassSurface width="auto" height="auto" borderRadius={4} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+            <button
+              type="button"
+              className={chartTab === 'o2-curve' ? 'is-active' : ''}
+              onClick={() => setChartTab('o2-curve')}
+            >
+              O₂ vs Spread
+            </button>
+          </GlassSurface>
+          <GlassSurface width="auto" height="auto" borderRadius={4} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+            <button
+              type="button"
+              className={chartTab === 'airflow-curve' ? 'is-active' : ''}
+              onClick={() => setChartTab('airflow-curve')}
+            >
+              Airflow Envelope
+            </button>
+          </GlassSurface>
+          <GlassSurface width="auto" height="auto" borderRadius={4} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+            <button
+              type="button"
+              className={chartTab === 'cool-soot' ? 'is-active' : ''}
+              onClick={() => setChartTab('cool-soot')}
+            >
+              Cool Flame & Soot
+            </button>
+          </GlassSurface>
         </div>
       </div>
 

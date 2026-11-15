@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import GlassSurface from './GlassSurface';
 import './InteractiveFlameLab.css';
 
 /* ══════════════════════════════════════════════════════════════
@@ -481,37 +482,45 @@ export default function InteractiveFlameLab({
 
         {/* Action buttons */}
         <div className="flame-lab-actions">
-          <button
-            type="button"
-            className={`flame-action-btn primary ${applied ? 'applied' : ''}`}
-            onClick={handleApply}
-            disabled={!applyCallback}
-          >
-            {applied ? '✓ Applied to Simulator' : 'Apply to Mission Simulator'}
-          </button>
+          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.15} style={{ display: 'inline-flex' }}>
+            <button
+              type="button"
+              className={`flame-action-btn primary ${applied ? 'applied' : ''}`}
+              onClick={handleApply}
+              disabled={!applyCallback}
+            >
+              {applied ? '✓ Applied to Simulator' : 'Apply to Mission Simulator'}
+            </button>
+          </GlassSurface>
           {onInspectInExplorer && (
+            <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+              <button
+                type="button"
+                className="flame-action-btn secondary"
+                onClick={() => onInspectInExplorer('saffire-iii', o2)}
+              >
+                Inspect Saffire-III ↗
+              </button>
+            </GlassSurface>
+          )}
+          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
             <button
               type="button"
               className="flame-action-btn secondary"
-              onClick={() => onInspectInExplorer('saffire-iii', o2)}
+              onClick={handleReset}
             >
-              Inspect Saffire-III ↗
+              Reset
             </button>
-          )}
-          <button
-            type="button"
-            className="flame-action-btn secondary"
-            onClick={handleReset}
-          >
-            Reset
-          </button>
-          <button
-            type="button"
-            className={`flame-action-btn secondary ${isPlaying ? '' : 'paused-btn'}`}
-            onClick={() => setIsPlaying(!isPlaying)}
-          >
-            {isPlaying ? 'Pause' : 'Play'}
-          </button>
+          </GlassSurface>
+          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+            <button
+              type="button"
+              className={`flame-action-btn secondary ${isPlaying ? '' : 'paused-btn'}`}
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
+              {isPlaying ? 'Pause' : 'Play'}
+            </button>
+          </GlassSurface>
         </div>
       </div>
     </div>

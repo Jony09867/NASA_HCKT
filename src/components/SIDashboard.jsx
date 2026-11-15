@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Magnet from './Magnet';
-
+import GlassSurface from './GlassSurface';
 import SpotlightCard from './SpotlightCard';
 import AnimatedContent from './AnimatedContent';
 import CountUp from './CountUp';
@@ -341,35 +341,39 @@ export default function SIDashboard() {
 
                 </details>
                 <div className="si-rank-actions">
-                  
-<Magnet padding={35} maxOffset={5} magnetStrength={3}><button
-                    type="button"
-                    className="si-action-btn primary"
-                    onClick={() => handleInspectInExplorer(inv.id, inv.oxygen ? parseInt(inv.oxygen, 10) : oxygen)}
-                  >
-                    Inspect in Explorer ↗
-                  </button></Magnet>
+                  <Magnet padding={35} maxOffset={5} magnetStrength={3}>
+                    <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.15} style={{ display: 'inline-flex' }}>
+                      <button
+                        type="button"
+                        className="si-action-btn primary"
+                        onClick={() => handleInspectInExplorer(inv.id, inv.oxygen ? parseInt(inv.oxygen, 10) : oxygen)}
+                      >
+                        Inspect in Explorer ↗
+                      </button>
+                    </GlassSurface>
+                  </Magnet>
 
-                  
-<button
-                    type="button"
-                    className="si-action-btn secondary"
-                    onClick={() => askInvestigation(inv.name)}
-                  >
-                    Ask FLAME-SI
-                  </button>
+                  <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+                    <button
+                      type="button"
+                      className="si-action-btn secondary"
+                      onClick={() => askInvestigation(inv.name)}
+                    >
+                      Ask FLAME-SI
+                    </button>
+                  </GlassSurface>
 
                   {inv.sourceUrl && (
-                    
-<a
-                      href={inv.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="si-action-btn secondary"
-                    >
-                      NASA PSI Source ↗
-                    </a>
-
+                    <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+                      <a
+                        href={inv.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="si-action-btn secondary"
+                      >
+                        NASA PSI Source ↗
+                      </a>
+                    </GlassSurface>
                   )}
                 </div>
               </div>
@@ -381,42 +385,45 @@ export default function SIDashboard() {
       {/* Pillars of Fire Safety & Terrestrial Impact Tabs */}
       <div className="si-pillars-container">
         <AnimatedContent className="si-tabs-nav" >
-          
-<button
-            type="button"
-            className={`si-tab-btn ${activeTab === 'prevention' ? 'is-active' : ''}`}
-            onClick={() => setActiveTab('prevention')}
-          >
-            01. Prevention Protocols
-          </button>
+          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+            <button
+              type="button"
+              className={`si-tab-btn ${activeTab === 'prevention' ? 'is-active' : ''}`}
+              onClick={() => setActiveTab('prevention')}
+            >
+              01. Prevention Protocols
+            </button>
+          </GlassSurface>
 
-          
-<button
-            type="button"
-            className={`si-tab-btn ${activeTab === 'detection' ? 'is-active' : ''}`}
-            onClick={() => setActiveTab('detection')}
-          >
-            02. Detection Dynamics
-          </button>
+          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+            <button
+              type="button"
+              className={`si-tab-btn ${activeTab === 'detection' ? 'is-active' : ''}`}
+              onClick={() => setActiveTab('detection')}
+            >
+              02. Detection Dynamics
+            </button>
+          </GlassSurface>
 
-          
-<button
-            type="button"
-            className={`si-tab-btn ${activeTab === 'suppression' ? 'is-active' : ''}`}
-            onClick={() => setActiveTab('suppression')}
-          >
-            03. Suppression Architecture
-          </button>
+          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+            <button
+              type="button"
+              className={`si-tab-btn ${activeTab === 'suppression' ? 'is-active' : ''}`}
+              onClick={() => setActiveTab('suppression')}
+            >
+              03. Suppression Architecture
+            </button>
+          </GlassSurface>
 
-          
-<button
-            type="button"
-            className={`si-tab-btn ${activeTab === 'earth' ? 'is-active' : ''}`}
-            onClick={() => setActiveTab('earth')}
-          >
-            04. Earth Applications
-          </button>
-
+          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
+            <button
+              type="button"
+              className={`si-tab-btn ${activeTab === 'earth' ? 'is-active' : ''}`}
+              onClick={() => setActiveTab('earth')}
+            >
+              04. Earth Applications
+            </button>
+          </GlassSurface>
         </AnimatedContent>
 
         <AnimatedContent className="si-tab-content-panel" animateKey={activeTab} trigger="mount" distance={0} duration={0.2}>

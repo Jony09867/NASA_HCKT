@@ -6,6 +6,7 @@ import CircularText from './components/CircularText';
 import ScrollReveal from './components/ScrollReveal';
 import ParticleSaturn from './components/ParticleSaturn';
 import Magnet, { magnetizeAllPageButtons } from './components/Magnet';
+import GlassSurface, { glassifyAllPageButtons } from './components/GlassSurface';
 
 
 
@@ -61,9 +62,19 @@ function initReactHome() {
           scale={1}
           spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
         >
-          <a className="button" href="/explore/">
-            Explore investigations
-          </a>
+          <GlassSurface
+            width="auto"
+            height="auto"
+            borderRadius={8}
+            backgroundOpacity={0.12}
+            distortionScale={-140}
+            displace={0.4}
+            style={{ display: 'inline-flex' }}
+          >
+            <a className="button" href="/explore/" style={{ margin: 0 }}>
+              Explore investigations
+            </a>
+          </GlassSurface>
         </Magnet>
         <Magnet
           padding={35}
@@ -72,17 +83,28 @@ function initReactHome() {
           scale={1}
           spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
         >
-          <a
-            className="button"
-            href="/simulator/"
-            style={{
-              background: 'transparent',
-              borderColor: 'rgba(255, 255, 255, 0.18)',
-              color: '#d7ba9e',
-            }}
+          <GlassSurface
+            width="auto"
+            height="auto"
+            borderRadius={8}
+            backgroundOpacity={0.1}
+            distortionScale={-140}
+            displace={0.4}
+            style={{ display: 'inline-flex' }}
           >
-            Try the simulator <span>↗</span>
-          </a>
+            <a
+              className="button"
+              href="/simulator/"
+              style={{
+                margin: 0,
+                background: 'rgba(255, 255, 255, 0.7)',
+                borderColor: '#cbd8e8',
+                color: '#102b4e',
+              }}
+            >
+              Try the simulator <span>↗</span>
+            </a>
+          </GlassSurface>
         </Magnet>
       </div>
     );
@@ -174,7 +196,8 @@ function initReactHome() {
     );
   }
 
-
+  magnetizeAllPageButtons();
+  glassifyAllPageButtons();
 }
 
 if (document.readyState === 'loading') {
