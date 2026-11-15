@@ -1,0 +1,478 @@
+/* ============================================================================
+   NASA PSI Microgravity Flight Envelope & Mission Gap Map
+   High-Contrast NASA Design (Light & Dark Card Compatible)
+   ============================================================================ */
+
+.psi-env-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  color: #102b4e;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.psi-env-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.psi-env-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0284c7;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.psi-env-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.c3d-viz-card .psi-env-title {
+  color: #f1f5f9;
+}
+
+.psi-env-sub {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.c3d-viz-card .psi-env-sub {
+  color: #94a3b8;
+}
+
+.psi-env-stats {
+  display: flex;
+  gap: 8px;
+}
+
+.psi-stat-chip {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  min-width: 85px;
+}
+
+.c3d-viz-card .psi-stat-chip {
+  background: #161f22;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.psi-stat-chip span {
+  font-size: 9.5px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.psi-stat-chip strong {
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.c3d-viz-card .psi-stat-chip strong {
+  color: #f1f5f9;
+}
+
+.psi-stat-chip strong.psi-gap-val {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+/* SVG Wrapper */
+.psi-env-svg-wrap {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 8px 6px 8px;
+  overflow: hidden;
+}
+
+.c3d-viz-card .psi-env-svg-wrap {
+  background: #0f171a;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.psi-env-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Grid & Axes */
+.psi-grid-line {
+  stroke: #e2e8f0;
+  stroke-width: 1;
+}
+
+.c3d-viz-card .psi-grid-line {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+.psi-axis-tick {
+  font-size: 9.5px;
+  font-weight: 600;
+  fill: #64748b;
+  font-family: inherit;
+}
+
+.c3d-viz-card .psi-axis-tick {
+  fill: #94a3b8;
+}
+
+.psi-axis-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  fill: #475569;
+}
+
+.c3d-viz-card .psi-axis-title {
+  fill: #cbd5e1;
+}
+
+/* Microgravity Envelope Box */
+.psi-envelope-box {
+  fill: rgba(2, 132, 199, 0.04);
+  stroke: #0284c7;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.c3d-viz-card .psi-envelope-box {
+  fill: rgba(56, 189, 248, 0.05);
+  stroke: #38bdf8;
+}
+
+.psi-envelope-label {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #0284c7;
+  letter-spacing: 0.02em;
+}
+
+.c3d-viz-card .psi-envelope-label {
+  fill: #38bdf8;
+}
+
+/* Scatter Dots */
+.psi-scatter-dot {
+  cursor: pointer;
+  transition: r 0.15s ease, opacity 0.15s ease;
+}
+
+.psi-scatter-dot.is-solid {
+  fill: #059669;
+  stroke: #ffffff;
+  stroke-width: 0.75;
+}
+
+.c3d-viz-card .psi-scatter-dot.is-solid {
+  fill: #10b981;
+  stroke: #0f171a;
+}
+
+.psi-scatter-dot.is-fluid {
+  fill: #2563eb;
+  stroke: #ffffff;
+  stroke-width: 0.75;
+}
+
+.c3d-viz-card .psi-scatter-dot.is-fluid {
+  fill: #38bdf8;
+  stroke: #0f171a;
+}
+
+.psi-scatter-dot:hover,
+.psi-scatter-dot.is-hovered {
+  r: 6.5;
+  stroke: #dc2626;
+  stroke-width: 1.5;
+}
+
+/* Crosshair & Target Reticle */
+.psi-crosshair-line {
+  stroke: #dc2626;
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+  opacity: 0.85;
+}
+
+.psi-target-ring {
+  fill: none;
+  stroke: #dc2626;
+  stroke-width: 2;
+}
+
+.psi-target-center {
+  fill: #dc2626;
+}
+
+.psi-target-pulse {
+  fill: rgba(220, 38, 38, 0.15);
+  stroke: #dc2626;
+  stroke-width: 1;
+  animation: psiPulse 2s infinite ease-out;
+}
+
+@keyframes psiPulse {
+  0% {
+    r: 6;
+    opacity: 0.8;
+  }
+  70% {
+    r: 16;
+    opacity: 0;
+  }
+  100% {
+    r: 16;
+    opacity: 0;
+  }
+}
+
+/* Target Label Card */
+.psi-target-card {
+  fill: #ffffff;
+  stroke: #dc2626;
+  stroke-width: 1.2;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.c3d-viz-card .psi-target-card {
+  fill: #161f22;
+  stroke: #f87171;
+}
+
+.psi-target-text-head {
+  font-size: 9.5px;
+  font-weight: 700;
+  fill: #b91c1c;
+}
+
+.c3d-viz-card .psi-target-text-head {
+  fill: #fca5a5;
+}
+
+.psi-target-text-sub {
+  font-size: 8.5px;
+  font-weight: 600;
+  fill: #475569;
+}
+
+.c3d-viz-card .psi-target-text-sub {
+  fill: #cbd5e1;
+}
+
+.psi-target-text-sub.is-gap-text {
+  fill: #b91c1c;
+  font-weight: 700;
+}
+
+.c3d-viz-card .psi-target-text-sub.is-gap-text {
+  fill: #f87171;
+}
+
+/* Bottom Bar Section */
+.psi-bottom-head {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #1e293b;
+  letter-spacing: 0.02em;
+}
+
+.c3d-viz-card .psi-bottom-head {
+  fill: #e2e8f0;
+}
+
+.psi-range-bar {
+  opacity: 0.9;
+}
+
+.psi-range-bar.bar-orange {
+  fill: #ea580c;
+}
+
+.psi-range-bar.bar-blue {
+  fill: #2563eb;
+}
+
+.psi-range-bar.bar-cyan {
+  fill: #0284c7;
+}
+
+.psi-bar-caption {
+  font-size: 9.5px;
+  font-weight: 600;
+  fill: #475569;
+}
+
+.c3d-viz-card .psi-bar-caption {
+  fill: #94a3b8;
+}
+
+.psi-footer-cite {
+  font-size: 8px;
+  fill: #94a3b8;
+  font-style: italic;
+}
+
+/* Hover Tooltip */
+.psi-tooltip {
+  position: absolute;
+  transform: translate(-50%, -115%);
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 20;
+  min-width: 170px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.psi-tip-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 4px;
+  margin-bottom: 5px;
+}
+
+.psi-badge-type {
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.psi-badge-type.solid {
+  background: #065f46;
+  color: #a7f3d0;
+}
+
+.psi-badge-type.gas,
+.psi-badge-type.liquid {
+  background: #1e40af;
+  color: #bfdbfe;
+}
+
+.psi-tip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+  font-size: 10px;
+}
+
+.psi-tip-row span {
+  color: #94a3b8;
+}
+
+.psi-tip-outcome {
+  color: #38bdf8;
+}
+
+/* Footer & Legend */
+.psi-env-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.psi-legend-wrap {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: #475569;
+}
+
+.c3d-viz-card .psi-legend-wrap {
+  color: #94a3b8;
+}
+
+.psi-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.psi-dot-key {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.psi-dot-key.is-solid {
+  background: #059669;
+}
+
+.psi-dot-key.is-fluid {
+  background: #2563eb;
+}
+
+.psi-box-key {
+  width: 14px;
+  height: 9px;
+  border: 1.5px dashed #0284c7;
+  background: rgba(2, 132, 199, 0.1);
+  display: inline-block;
+}
+
+.psi-cross-key {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid #dc2626;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.psi-takeaway-box {
+  background: #f8fafc;
+  border-left: 3px solid #0284c7;
+  padding: 8px 12px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #334155;
+  border-radius: 0 6px 6px 0;
+}
+
+.c3d-viz-card .psi-takeaway-box {
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  border-left-color: #38bdf8;
+}
+
+.psi-takeaway-box strong {
+  color: #0f172a;
+}
+
+.c3d-viz-card .psi-takeaway-box strong {
+  color: #f8fafc;
+}

@@ -77,7 +77,8 @@ a.button,
   font-family: 'DM Sans', sans-serif !important;
   text-decoration: none !important;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  filter: none !important; /* CRITICAL: Never apply displacement filter directly to text */
+  filter: none !important;
+  /* CRITICAL: Never apply displacement filter directly to text */
 }
 
 /* Primary Glass Buttons (NASA Deep Blue) */

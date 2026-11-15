@@ -4,7 +4,7 @@ import FlameSIChat from './FlameSIChat';
 import SpotlightCard from './SpotlightCard';
 import AnimatedContent from './AnimatedContent';
 import CountUp from './CountUp';
-import { CombustionSim3D, CombustionTelemetryChart } from './CombustionSim3D';
+import { CombustionSim3D, CombustionTelemetryChart, PsiFlightEnvelopeChart } from './CombustionSim3D';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -682,7 +682,20 @@ export default function SIDashboard() {
             </div>
           </div>
 
-          {/* 4-Mode Dynamic Telemetry Chart */}
+          {/* Empirical NASA PSI Flight Envelope & Artemis Lunar Habitat Gap Map */}
+          <div className="si-envelope-wrapper-card" style={{ marginBottom: '2.5rem' }}>
+            <PsiFlightEnvelopeChart
+              oxygen={oxygen}
+              pressure={pressure}
+              gravityKey={gravityKey}
+              onSelectTestPoint={(pt) => {
+                setOxygen(pt.o2);
+                setPressure(Number((pt.pKpa / 6.89476).toFixed(1)));
+              }}
+            />
+          </div>
+
+          {/* 5-Mode Dynamic Telemetry Chart */}
           <div style={{ marginBottom: '2.5rem' }}>
             <CombustionTelemetryChart
               gravityKey={gravityKey}

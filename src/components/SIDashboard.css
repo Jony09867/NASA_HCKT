@@ -1209,3 +1209,17 @@
   border-radius: 6px;
   align-self: flex-start;
 }
+
+/* Empirical NASA PSI Flight Envelope Wrapper Card */
+.si-envelope-wrapper-card {
+  background: #ffffff;
+  border: 1px solid #cbd8e8;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(16, 43, 78, 0.05);
+  transition: border-color 0.2s ease;
+}
+
+.si-envelope-wrapper-card:hover {
+  border-color: #9ab4d3;
+}

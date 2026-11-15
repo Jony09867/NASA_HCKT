@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import './CombustionSim3D.css';
+import { PsiFlightEnvelopeChart } from './PsiFlightEnvelopeChart';
+
+export { PsiFlightEnvelopeChart };
 
 export const GRAVITY_REGIMES = {
   '0g': {
@@ -1713,7 +1716,9 @@ export function CombustionTelemetryChart({
               ? `Cabin Ventilation Flashover Envelope (${oxygen}% O₂ · ${gravityKey})`
               : chartTab === 'time-series'
               ? `Temporal Burn & FLEX Cool-Flame Temperature Trajectory (0–120s)`
-              : `Multi-Axis Mission Fire Hazard Breakdown (${mat.shortName} @ ${oxygen}% O₂)`}
+              : chartTab === 'hazard-radar'
+              ? `Multi-Axis Mission Fire Hazard Breakdown (${mat.shortName} @ ${oxygen}% O₂)`
+              : `NASA PSI Empirical Flight Envelope (${oxygen}% O₂ · ${(pressure * 6.895).toFixed(0)} kPa)`}
           </h4>
         </div>
         <div className="c3d-viz-tabs" role="tablist">
@@ -1744,6 +1749,13 @@ export function CombustionTelemetryChart({
             onClick={() => setChartTab('hazard-radar')}
           >
             Hazard Matrix
+          </button>
+          <button
+            type="button"
+            className={chartTab === 'psi-envelope' ? 'is-active' : ''}
+            onClick={() => setChartTab('psi-envelope')}
+          >
+            PSI Flight Envelope
           </button>
         </div>
       </div>
@@ -2030,6 +2042,16 @@ export function CombustionTelemetryChart({
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {chartTab === 'psi-envelope' && (
+        <div className="c3d-viz-body c3d-viz-envelope">
+          <PsiFlightEnvelopeChart
+            oxygen={oxygen}
+            pressure={pressure}
+            gravityKey={gravityKey}
+          />
         </div>
       )}
     </div>
