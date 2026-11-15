@@ -48,3 +48,241 @@ body[data-page=home] .hero{background:radial-gradient(ellipse at 75% 43%,#e2efff
 body[data-page=home] .hero-foot{color:#536c88}
 body[data-page=home] .saturn-wrap::before{background:radial-gradient(circle at 50% 50%,rgba(40,110,195,.22) 0%,rgba(76,146,220,.09) 44%,transparent 70%)}
 body[data-page=home] .saturn-wrap::before{background:radial-gradient(circle at 50% 50%,#dceeff 0%,rgba(220,238,255,.5) 44%,transparent 70%)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Light Theme Polish & Visual Hierarchy Refinements
+   Fixes contrast, unstyled boxes, mismatched inputs, and button palettes
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Evidence Comparison Empty Guide Card (replaces muddy gray box with clean white card) */
+body :is(.compare-empty-guide) {
+  background: #ffffff !important;
+  color: #102b4e !important;
+  border: 1px dashed #b9cbe0 !important;
+  border-radius: 12px !important;
+  padding: 60px 24px !important;
+  box-shadow: 0 4px 24px rgba(16, 43, 78, 0.06) !important;
+  text-align: center !important;
+}
+
+body .compare-empty-guide .guide-mark {
+  color: #c9272d !important;
+  font-size: 32px !important;
+  margin-bottom: 12px !important;
+  display: block !important;
+}
+
+body .compare-empty-guide h3 {
+  color: #102b4e !important;
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  margin: 0 0 10px !important;
+  letter-spacing: -0.02em !important;
+}
+
+body .compare-empty-guide p {
+  color: #4e637d !important;
+  font-size: 15px !important;
+  max-width: 540px !important;
+  margin: 0 auto 24px !important;
+  line-height: 1.65 !important;
+}
+
+body .compare-empty-guide .specular-button {
+  background: #164f91 !important;
+  color: #ffffff !important;
+  border: 1px solid #164f91 !important;
+  font-weight: 700 !important;
+  border-radius: 6px !important;
+  padding: 12px 24px !important;
+  box-shadow: 0 2px 12px rgba(22, 79, 145, 0.25) !important;
+  transition: all 0.2s ease !important;
+}
+
+body .compare-empty-guide .specular-button:hover {
+  background: #0c3971 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 18px rgba(22, 79, 145, 0.35) !important;
+}
+
+/* 2. Explore Search Input (replaces black background with unified white surface) */
+body section.explore .search-input-wrap input[type="search"] {
+  background: #ffffff !important;
+  color: #102b4e !important;
+  border: 1px solid #b9cbe0 !important;
+  border-radius: 6px !important;
+  box-shadow: inset 0 1px 3px rgba(16, 43, 78, 0.05) !important;
+}
+
+body section.explore .search-input-wrap input[type="search"]::placeholder {
+  color: #7b90a8 !important;
+}
+
+body section.explore .search-input-wrap input[type="search"]:focus {
+  border-color: #164f91 !important;
+  box-shadow: 0 0 0 3px rgba(22, 79, 145, 0.18) !important;
+}
+
+body section.explore .search-icon {
+  color: #5c748f !important;
+}
+
+/* 3. Primary Filters Grid (white inputs with crisp borders & focus ring) */
+body section.explore :is(.filters-primary-grid select, .advanced-grid select, .sort-wrap select) {
+  background: #ffffff !important;
+  color: #102b4e !important;
+  border: 1px solid #b9cbe0 !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+body section.explore :is(.filters-primary-grid select:focus, .advanced-grid select:focus, .sort-wrap select:focus) {
+  border-color: #164f91 !important;
+  box-shadow: 0 0 0 3px rgba(22, 79, 145, 0.18) !important;
+}
+
+body section.explore .select-wrapper::after {
+  color: #5c748f !important;
+}
+
+body section.explore .oxygen-input-wrapper input {
+  background: #ffffff !important;
+  color: #102b4e !important;
+  border: 1px solid #b9cbe0 !important;
+  border-radius: 6px !important;
+}
+
+body section.explore .oxygen-input-wrapper input:focus {
+  border-color: #164f91 !important;
+  box-shadow: 0 0 0 3px rgba(22, 79, 145, 0.18) !important;
+}
+
+body section.explore .oxygen-input-wrapper .input-suffix {
+  color: #c9272d !important;
+  font-weight: 700 !important;
+}
+
+/* 4. Advanced Filters Toggle */
+body .toggle-advanced-btn {
+  background: #ffffff !important;
+  color: #183b65 !important;
+  border: 1px solid #b9cbe0 !important;
+  border-radius: 6px !important;
+  padding: 10px 16px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+body .toggle-advanced-btn:hover {
+  background: #eef5fc !important;
+  border-color: #164f91 !important;
+  color: #164f91 !important;
+}
+
+/* 5. Clear All Filters Button */
+body section.explore .clear {
+  background: #164f91 !important;
+  color: #ffffff !important;
+  border: 1px solid #164f91 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 8px rgba(22, 79, 145, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+body section.explore .clear:hover {
+  background: #0c3971 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 14px rgba(22, 79, 145, 0.3) !important;
+}
+
+/* 6. Research in Progress Banner */
+body section.explore .notice {
+  background: #eef5fc !important;
+  color: #294969 !important;
+  border: 1px solid #c9dcf0 !important;
+  border-left: 4px solid #164f91 !important;
+  border-radius: 6px !important;
+}
+
+body section.explore .notice strong {
+  color: #102b4e !important;
+}
+
+/* 7. Investigation Cards in Light Theme */
+body section.explore .spotlight-card {
+  background: #ffffff !important;
+  border: 1px solid #cbd8e8 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 12px rgba(16, 43, 78, 0.04) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
+}
+
+body section.explore .spotlight-card:hover {
+  border-color: #164f91 !important;
+  box-shadow: 0 6px 20px rgba(22, 79, 145, 0.12) !important;
+  transform: translateY(-2px) !important;
+}
+
+body section.explore .spotlight-card.is-selected {
+  border-color: #164f91 !important;
+  background: #f0f6fd !important;
+  box-shadow: 0 0 0 2px rgba(22, 79, 145, 0.25) !important;
+}
+
+body section.explore .btn-compare {
+  background: #eef5fc !important;
+  color: #164f91 !important;
+  border: 1px solid #b9cbe0 !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+body section.explore .btn-compare:hover {
+  background: #164f91 !important;
+  color: #ffffff !important;
+  border-color: #164f91 !important;
+}
+
+body section.explore .btn-compare.is-selected {
+  background: #164f91 !important;
+  color: #ffffff !important;
+  border-color: #164f91 !important;
+}
+
+body section.explore .card-specs-grid {
+  background: #f4f8fd !important;
+  border: 1px solid #d5e3f2 !important;
+  border-radius: 6px !important;
+}
+
+body section.explore .spec-val.match {
+  color: #0d8a57 !important;
+  font-weight: 700 !important;
+}
+
+/* 8. Floating Selection Drawer Tray */
+body .selection-tray {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid #b6cbe1 !important;
+  box-shadow: 0 8px 30px rgba(16, 43, 78, 0.14) !important;
+  border-radius: 12px !important;
+}
+
+body .selection-tray .primary-action {
+  background: #164f91 !important;
+  color: #ffffff !important;
+  border: 1px solid #164f91 !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(22, 79, 145, 0.25) !important;
+  transition: all 0.2s ease !important;
+}
+
+body .selection-tray .primary-action:hover {
+  background: #0c3971 !important;
+}
+

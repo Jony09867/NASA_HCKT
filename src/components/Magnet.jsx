@@ -397,17 +397,24 @@ export function magnetizeElement(element, options = {}) {
 }
 
 /**
- * Magnetizes all buttons across the entire page (static + dynamic)
+ * Magnetizes primary buttons across the page (desktop pointer only)
+ * Throttled to prevent jitter and layout thrashing
  */
 export function magnetizeAllPageButtons() {
+  if (typeof window === 'undefined') return;
+  const canHover = window.matchMedia?.('(hover: hover) and (pointer: fine)').matches ?? false;
+  if (!canHover) return;
+
+  let scheduled = false;
   const query = () => {
+    scheduled = false;
     for (const entry of registry) if (!entry.wrapper.isConnected) entry.dispose?.();
     const targets = document.querySelectorAll(
-      '[data-primary], #compare .specular-button'
+      '[data-primary], #compare .specular-button, .btn-swap-columns, .btn-clear-compare'
     );
     targets.forEach(el => {
-      if (!el.closest('.magnet-wrapper') && !el.dataset.magnetized) {
-        magnetizeElement(el, { wrap: false, padding: 35, magnetStrength: 3, maxOffset: 5, tilt: 0, scale: 1 });
+      if (!el.closest('.magnet-wrapper') && !el.dataset.magnetized && el.tagName !== 'INPUT' && el.tagName !== 'SELECT') {
+        magnetizeElement(el, { wrap: false, padding: 25, magnetStrength: 4, maxOffset: 3, tilt: 0, scale: 1 });
       }
     });
   };
@@ -415,11 +422,20 @@ export function magnetizeAllPageButtons() {
   // Run initially
   query();
 
-  // Watch for dynamic changes (like cards rendered by app.js)
+  // Watch for dynamic changes (throttled)
+  let timer = null;
+  const targetRoot = document.getElementById('cards') || document.body;
   const observer = new MutationObserver(() => {
-    query();
+    if (timer) return;
+    timer = setTimeout(() => {
+      timer = null;
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(query);
+      }
+    }, 250);
   });
-  observer.observe(document.body, { childList: true, subtree: true });
+  observer.observe(targetRoot, { childList: true });
 }
 
 export default Magnet;
