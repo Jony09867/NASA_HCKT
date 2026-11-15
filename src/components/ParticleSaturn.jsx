@@ -155,7 +155,7 @@ const SATURN_VERTEX = /* glsl */ `
             float lift = (hash11(aSeed * 37.9) - 0.5) * 2.0 * uRingThickness;
             modelPos = vec3(cos(theta) * orbitRadius, lift, sin(theta) * orbitRadius);
             float lane = hash11(floor(orbitRadius * 46.0));
-            bright = (0.35 + lane * 0.95) * (0.6 + hash11(aSeed * 5.3) * 0.7);
+            bright = 0.80 + lane * 0.15 + hash11(aSeed * 5.3) * 0.05;
         }
 
         vec4 viewPos = modelViewMatrix * vec4(modelPos, 1.0);
@@ -211,7 +211,7 @@ const SATURN_FRAGMENT = /* glsl */ `
         vec3 col = vKind < 0.5 ? uCoreColor : uRingColor;
         float a = shape * vBright * (0.35 + uGlow);
 
-        gl_FragColor = vec4(col * a, a);
+        gl_FragColor = vec4(col, clamp(a, 0.0, 1.0));
     }
 `;
 
@@ -255,7 +255,7 @@ class SaturnScene {
         uGlow: { value: S.glow },
       },
       transparent: true,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       depthWrite: false,
       depthTest: false,
     });
@@ -518,3 +518,4 @@ export default function ParticleSaturn(props) {
     />
   );
 }
+
