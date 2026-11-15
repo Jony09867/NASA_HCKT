@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   LoaderCircleIcon,
   CircleCheckIcon,
@@ -17,9 +17,9 @@ import {
   MessageCircleDashedIcon,
   ArrowDownIcon,
   FlameIcon,
-  LineChartIcon,
-  FileTextIcon,
   LayersIcon,
+  Maximize2Icon,
+  MessageSquareIcon,
 } from 'lucide-react';
 import FadeContent from './FadeContent';
 import { Magnet } from './Magnet';
@@ -28,7 +28,7 @@ import CombustionSim3D, { CombustionTelemetryChart } from './CombustionSim3D';
 import './FlameSIChat.css';
 import { readSession, writeSession, CHAT_KEY } from '../session';
 
-// Extract simulation parameters from any English or Uzbek natural language query
+// Extract simulation parameters from any natural language query (English or Uzbek)
 export function parseCustomQueryToSimConfig(query = '') {
   const q = String(query).toLowerCase();
 
@@ -413,7 +413,7 @@ NASA’s microgravity combustion research directly powers everyday life-safety t
   },
 };
 
-// Pre-seeded Initial Multimodal Dialogue (Lunar Base 34% O2 / 1/6g PMMA)
+// Initial Pre-Seeded Multimodal Conversation
 const PRE_SEEDED_MESSAGES = [
   {
     id: 'seed-user-1',
@@ -425,7 +425,7 @@ const PRE_SEEDED_MESSAGES = [
     role: 'assistant',
     query: 'Evaluate Lunar Base 34% O2 with PMMA fuel: compare 0g microgravity vs 1/6g Lunar partial buoyancy and open flashover risks.',
     reasoning: `1. Parsing query parameters: 34% O₂ enriched atmosphere, 8.2 psi (56.5 kPa), 1/6g Lunar gravity vs 0g baseline.
-2. Calculating Oxygen Partial Pressure: P_O2 = (0.34 * 8.2) = 2.79 psi. Elevated oxygen concentration significantly accelerates chemical oxidation rates.
+2. Calculating Oxygen Partial Pressure: P_O2 = (0.34 * 8.2) = 2.79 psi. Elevated oxygen concentration significantly accelerates oxidation kinetics.
 3. Evaluating PMMA (Plexiglass, BASS-II #922) pyrolysis: Limiting Oxygen Index (LOI) drops to ~15.2% under low-gravity conditions.
 4. Analyzing Partial-Gravity Plume Dynamics: In 1/6g Lunar gravity, weak buoyant convection stretches the spherical diffusion flame into a hemispherical bell. Unlike Earth (where 1g natural updraft rapidly cools the flame base), weak lunar buoyancy cannot disperse heat effectively, creating a superheated local pyrolysis zone.
 5. Evaluating Forced Convection Flashover (NASA Saffire-III #1738): Cabin ventilation airflow >= 0.10 m/s supplies forced oxidizer flux, transitioning smoldering polymers into rapid open flashover.`,
@@ -474,7 +474,7 @@ Under the planned **Artemis Lunar Base Camp** atmospheric baseline, combustion p
 * **34% O₂ Enriched Acceleration:** The elevated 34% oxygen concentration raises flame temperatures to **~1040 K** and accelerates flame spread rate to **1.36x** over standard terrestrial baseline.
 * **Saffire-III Forced Flashover Warning:** Low-speed cabin airflow between **0.10–0.35 m/s** acts as a continuous oxidizer feeder. Life-support ventilation fans must automatically shut down immediately upon smoke detection to prevent open flashover.
 
-*Use the Modality Switcher tabs above to explore the full text analysis, interactive telemetry curves, and real-time 3D WebGL combustion simulation.*`,
+*Use the 3D Combustion Studio on the right to orbit the flame 360°, inspect telemetry curves, and adjust environmental parameters in real time.*`,
   },
 ];
 
@@ -503,6 +503,23 @@ export default function FlameSIChat() {
       ? 'Explain the findings and documented conditions of ' + name + '.'
       : String(readSession(CHAT_KEY, {})?.draft || '');
   });
+
+  // Current active simulation state loaded on the large 3D Studio Stage
+  const [activeSim, setActiveSim] = useState(() => {
+    const lastAsst = PRE_SEEDED_MESSAGES.find((m) => m.role === 'assistant');
+    return (
+      lastAsst?.simConfig || {
+        gravityKey: '1/6g',
+        materialKey: 'pmma',
+        oxygen: 34,
+        ventilation: 0.08,
+        pressure: 8.2,
+      }
+    );
+  });
+
+  // View Mode: 'studio' (Split Chat + 3D Stage), 'chat' (Chat Focus), 'stage' (3D Stage Focus)
+  const [viewMode, setViewMode] = useState('studio');
 
   useEffect(() => {
     writeSession(CHAT_KEY, { messages, draft: input });
@@ -533,7 +550,7 @@ export default function FlameSIChat() {
       }
       return;
     }
-    if (chatBodyRef.current && followLatest.current) {
+    if (chatBodyRef.current && followLatest.current && isStreaming) {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
     }
   }, [messages, isStreaming]);
@@ -644,12 +661,15 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
       };
     }
 
+    const nextConfig = matched.simConfig || parseCustomQueryToSimConfig(query);
+    setActiveSim(nextConfig);
+
     const assistantMsgId = `asst-${Date.now()}`;
     const partialAssistantMsg = {
       id: assistantMsgId,
       role: 'assistant',
       query: query,
-      simConfig: matched.simConfig || parseCustomQueryToSimConfig(query),
+      simConfig: nextConfig,
       reasoning: matched.reasoning,
       tools: matched.tools,
       plan: matched.plan,
@@ -660,7 +680,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
     sendTimer.current = setTimeout(() => {
       setMessages((prev) => [...prev, partialAssistantMsg]);
       setIsStreaming(false);
-    }, 850);
+    }, 700);
   };
 
   const handleCopy = (id, text) => {
@@ -687,216 +707,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
     followLatest.current = true;
   };
 
-  return (
-    <section className="flame-chat-container" aria-label="FLAME-SI research chat">
-      <header className="flame-chat-header">
-        <div>
-          <span className="chat-eyebrow">FLAME-SI / MULTIMODAL RESEARCH AI</span>
-          <h3>Combustion Research Assistant</h3>
-          <p>Text Analysis + Interactive Telemetry + 3D WebGL Live Simulation</p>
-        </div>
-
-        <GlassSurface
-          as="button"
-          type="button"
-          onClick={handleReset}
-          aria-label="Reset conversation"
-          title="Reset conversation"
-          className="flame-reset-btn"
-          borderRadius={8}
-        >
-          <RotateCwIcon size={17} />
-        </GlassSurface>
-      </header>
-
-      <div className="chat-scroll-shell">
-        <div
-          className="flame-chat-body"
-          ref={chatBodyRef}
-          aria-busy={isStreaming}
-          onClick={handleTagClick}
-          onScroll={(e) => {
-            const el = e.currentTarget;
-            const near = el.scrollHeight - el.scrollTop - el.clientHeight < 70;
-            followLatest.current = near;
-            setShowLatest(!near);
-          }}
-        >
-          {messages.length === 0 && (
-            <div className="chat-empty">
-              <div className="chat-empty-icon">
-                <MessageCircleDashedIcon size={28} />
-              </div>
-              <h4>What would you like to explore?</h4>
-              <p>
-                Discover NASA combustion experiments, compare mission conditions, and explore fire
-                safety research with real-time 3D simulation.
-              </p>
-              <div className="chat-starters">
-                {SUGGESTIONS.slice(0, 3).map((item) => (
-                  <GlassSurface
-                    as="button"
-                    key={item.key}
-                    type="button"
-                    onClick={() => handleSend(item.label)}
-                    borderRadius={8}
-                  >
-                    {item.label}
-                    <ArrowUpIcon size={14} />
-                  </GlassSurface>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {messages.map((msg) => (
-            <FadeContent key={msg.id} trigger="mount" duration={0.2} blur={false}>
-              {msg.role === 'user' ? (
-                <div className="chat-msg user">
-                  <div className="bubble-user">{msg.text}</div>
-                </div>
-              ) : (
-                <article className="chat-msg assistant">
-                  <div className="assistant-label">
-                    <SparklesIcon size={14} /> FLAME-SI <span>Multimodal Intelligence</span>
-                  </div>
-
-                  {/* Multimodal Interactive Bundle */}
-                  <AssistantInteractiveBundle
-                    msg={msg}
-                    onTagClick={handleTagClick}
-                    onCopy={handleCopy}
-                    copiedId={copiedId}
-                    onFeedback={handleFeedback}
-                    feedback={feedback}
-                  />
-                </article>
-              )}
-            </FadeContent>
-          ))}
-
-          {isStreaming && (
-            <div className="chat-loading" role="status">
-              <LoaderCircleIcon size={16} className="chat-spin" />
-              Synthesizing multimodal research & 3D WebGL physics…
-            </div>
-          )}
-        </div>
-
-        {showLatest && (
-          <GlassSurface
-            as="button"
-            type="button"
-            className="chat-scroll-latest"
-            aria-label="Scroll to latest message"
-            borderRadius={8}
-            onClick={() => {
-              const el = chatBodyRef.current;
-              el.scrollTop = el.scrollHeight;
-              followLatest.current = true;
-              setShowLatest(false);
-            }}
-          >
-            <ArrowDownIcon size={16} />
-          </GlassSurface>
-        )}
-      </div>
-
-      <div className="chat-input-area">
-        <form
-          className="chat-input-box"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
-        >
-          <textarea
-            className="chat-textarea"
-            aria-label="Message FLAME-SI"
-            placeholder="Ask about microgravity, 34% O2, cool flames, or lunar combustion…"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            rows={2}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-                e.preventDefault();
-                e.currentTarget.form.requestSubmit();
-              }
-            }}
-          />
-
-          <div className="chat-input-footer">
-            <details className="chat-context">
-              <summary aria-label="Add mission context" title="Add mission context">
-                <PlusIcon size={18} />
-              </summary>
-              <div className="chat-context-menu">
-                <span>MISSION SCENARIOS</span>
-                {SUGGESTIONS.map((item) => (
-                  <button
-                    type="button"
-                    key={item.key}
-                    onClick={(e) => {
-                      setInput(item.label);
-                      e.currentTarget.closest('details').open = false;
-                    }}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </details>
-
-            <span className="chat-mode">
-              <GlobeIcon size={13} /> NASA CIR & PSI Engine · 3D WebGL
-            </span>
-
-            <Magnet padding={35} maxOffset={5} magnetStrength={3} disabled={isStreaming || !input.trim()}>
-              <GlassSurface
-                as="button"
-                type="submit"
-                className="chat-send-btn"
-                aria-label="Send message"
-                disabled={isStreaming || !input.trim()}
-                borderRadius={8}
-              >
-                {isStreaming ? (
-                  <LoaderCircleIcon size={17} className="chat-spin" />
-                ) : (
-                  <ArrowUpIcon size={19} />
-                )}
-              </GlassSurface>
-            </Magnet>
-          </div>
-        </form>
-
-        <p className="chat-input-hint">
-          Multimodal research AI · Enter to send · Shift + Enter for a new line
-        </p>
-      </div>
-    </section>
-  );
-}
-
-// Multimodal Interactive Bundle Component with Modality Switcher
-export function AssistantInteractiveBundle({
-  msg,
-  onCopy,
-  copiedId,
-  onFeedback,
-  feedback,
-}) {
-  const [activeModality, setActiveModality] = useState('all'); // 'all', 'text', 'visualize', 'sim'
-
-  const initialSim = useMemo(() => {
-    return msg.simConfig || parseCustomQueryToSimConfig(msg.query || msg.text);
-  }, [msg]);
-
-  const [liveSim, setLiveSim] = useState(initialSim);
-
-  // Synchronize 3D slider changes live with the telemetry chart
-  const handleSimStateChange = (params) => {
-    setLiveSim((prev) => ({
+  const handleStageSimChange = (params) => {
+    setActiveSim((prev) => ({
       ...prev,
       gravityKey: params.gravityKey || prev.gravityKey,
       materialKey: params.materialKey || prev.materialKey,
@@ -906,184 +718,395 @@ export function AssistantInteractiveBundle({
     }));
   };
 
-  const showText = activeModality === 'all' || activeModality === 'text';
-  const showVisualize = activeModality === 'all' || activeModality === 'visualize';
-  const showSim = activeModality === 'all' || activeModality === 'sim';
-
   return (
-    <div className="assistant-interactive-bundle">
-      {/* Modality Switcher Tabs (Text, Visualize, 3D Simulation) */}
-      <div className="assistant-modality-bar" role="tablist" aria-label="Response Modalities">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeModality === 'all'}
-          className={`modality-tab ${activeModality === 'all' ? 'is-active' : ''}`}
-          onClick={() => setActiveModality('all')}
-        >
-          <LayersIcon size={14} /> ✦ Text + Visualize + 3D Sim
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeModality === 'text'}
-          className={`modality-tab ${activeModality === 'text' ? 'is-active' : ''}`}
-          onClick={() => setActiveModality('text')}
-        >
-          <FileTextIcon size={14} /> 📝 Text Analysis
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeModality === 'visualize'}
-          className={`modality-tab ${activeModality === 'visualize' ? 'is-active' : ''}`}
-          onClick={() => setActiveModality('visualize')}
-        >
-          <LineChartIcon size={14} /> 📊 Visualize Data
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeModality === 'sim'}
-          className={`modality-tab ${activeModality === 'sim' ? 'is-active' : ''}`}
-          onClick={() => setActiveModality('sim')}
-        >
-          <FlameIcon size={14} /> 🔥 3D Simulation
-        </button>
-      </div>
+    <div className={`flame-studio-workspace view--${viewMode}`}>
+      {/* ══════════════════════════════════════════════════════════════════════
+         LEFT PANE: Research Dialogue & Text Analysis Thread
+         ══════════════════════════════════════════════════════════════════════ */}
+      <section className="flame-chat-pane flame-chat-container" aria-label="FLAME-SI Research Chat">
+        <header className="flame-chat-header">
+          <div>
+            <span className="chat-eyebrow">FLAME-SI / RESEARCH AI</span>
+            <h3>Combustion Dialogue</h3>
+            <p>Multimodal Text + Live 3D Simulation Sync</p>
+          </div>
 
-      <div className="assistant-bundle-panel">
-        {/* 1. Text Analysis (Chain-of-Thought + Scientific explanation + NASA PSI Sources) */}
-        {showText && (
-          <div className="assistant-bundle-section">
-            {msg.reasoning && (
-              <details className="chat-trace" open={activeModality === 'text'}>
-                <summary>
-                  <CircleCheckIcon size={15} /> Chain-of-Thought & PSI Derivation{' '}
-                  <ChevronDownIcon size={14} />
-                </summary>
-                <div className="trace-content">
-                  {msg.reasoning}
-                  {msg.tools?.length > 0 && (
-                    <div className="trace-steps-list">
-                      <span className="trace-demo-label">
-                        NASA PSI Engine Query · Telemetry Sync
-                      </span>
-                      {msg.tools.map((tool, i) => (
-                        <details key={i} className="chat-tool" open>
-                          <summary>
-                            <TerminalIcon size={14} />
-                            <code>{tool.cmd}</code>
-                          </summary>
-                          <pre>{tool.output}</pre>
-                        </details>
+          <div className="chat-header-actions">
+            <div className="stage-view-toggles" role="group" aria-label="Studio View Toggles">
+              <button
+                type="button"
+                className={`view-toggle-btn ${viewMode === 'studio' ? 'is-active' : ''}`}
+                onClick={() => setViewMode('studio')}
+                title="Split Studio View (Chat on left, 3D on right)"
+              >
+                <LayersIcon size={13} /> Studio
+              </button>
+              <button
+                type="button"
+                className={`view-toggle-btn ${viewMode === 'chat' ? 'is-active' : ''}`}
+                onClick={() => setViewMode('chat')}
+                title="Chat Only View"
+              >
+                <MessageSquareIcon size={13} /> Chat
+              </button>
+              <button
+                type="button"
+                className={`view-toggle-btn ${viewMode === 'stage' ? 'is-active' : ''}`}
+                onClick={() => setViewMode('stage')}
+                title="Full 3D Stage"
+              >
+                <Maximize2Icon size={13} /> 3D Stage
+              </button>
+            </div>
+
+            <GlassSurface
+              as="button"
+              type="button"
+              onClick={handleReset}
+              aria-label="Reset conversation"
+              title="Reset conversation"
+              className="flame-reset-btn"
+              borderRadius={8}
+            >
+              <RotateCwIcon size={16} />
+            </GlassSurface>
+          </div>
+        </header>
+
+        <div className="chat-scroll-shell">
+          <div
+            className="flame-chat-body"
+            ref={chatBodyRef}
+            aria-busy={isStreaming}
+            onClick={handleTagClick}
+            onScroll={(e) => {
+              const el = e.currentTarget;
+              const near = el.scrollHeight - el.scrollTop - el.clientHeight < 70;
+              followLatest.current = near;
+              setShowLatest(!near);
+            }}
+          >
+            {messages.length === 0 && (
+              <div className="chat-empty">
+                <div className="chat-empty-icon">
+                  <MessageCircleDashedIcon size={28} />
+                </div>
+                <h4>What would you like to explore?</h4>
+                <p>
+                  Discover NASA microgravity combustion experiments, compare mission envelopes,
+                  and watch the 3D chamber on the right react live.
+                </p>
+                <div className="chat-starters">
+                  {SUGGESTIONS.slice(0, 3).map((item) => (
+                    <GlassSurface
+                      as="button"
+                      key={item.key}
+                      type="button"
+                      onClick={() => handleSend(item.label)}
+                      borderRadius={8}
+                    >
+                      {item.label}
+                      <ArrowUpIcon size={14} />
+                    </GlassSurface>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {messages.map((msg) => (
+              <FadeContent key={msg.id} trigger="mount" duration={0.2} blur={false}>
+                {msg.role === 'user' ? (
+                  <div className="chat-msg user">
+                    <div className="bubble-user">{msg.text}</div>
+                  </div>
+                ) : (
+                  <article className="chat-msg assistant">
+                    <div className="assistant-label">
+                      <SparklesIcon size={14} /> FLAME-SI <span>Multimodal Intelligence</span>
+                    </div>
+
+                    {/* Active In 3D Stage Sync Pill */}
+                    {msg.simConfig && (
+                      <button
+                        type="button"
+                        className="stage-sync-pill"
+                        onClick={() => {
+                          setActiveSim(msg.simConfig);
+                          if (window.innerWidth < 1024) setViewMode('stage');
+                        }}
+                        title="Load these exact parameters onto the 3D Stage"
+                      >
+                        <FlameIcon size={13} />
+                        <span>
+                          Synced in 3D Stage: {msg.simConfig.gravityKey} · {msg.simConfig.oxygen}% O₂ ·{' '}
+                          {msg.simConfig.materialKey.toUpperCase()}
+                        </span>
+                        <ArrowUpIcon size={12} style={{ transform: 'rotate(45deg)' }} />
+                      </button>
+                    )}
+
+                    {/* Chain of Thought / PSI Derivation Notes */}
+                    {msg.reasoning && (
+                      <details className="chat-trace">
+                        <summary>
+                          <CircleCheckIcon size={15} /> Chain-of-Thought & PSI Derivation{' '}
+                          <ChevronDownIcon size={14} />
+                        </summary>
+                        <div className="trace-content">
+                          {msg.reasoning}
+                          {msg.tools?.length > 0 && (
+                            <div className="trace-steps-list">
+                              <span className="trace-demo-label">
+                                NASA PSI Engine Query · Telemetry Sync
+                              </span>
+                              {msg.tools.map((tool, i) => (
+                                <details key={i} className="chat-tool" open>
+                                  <summary>
+                                    <TerminalIcon size={14} />
+                                    <code>{tool.cmd}</code>
+                                  </summary>
+                                  <pre>{tool.output}</pre>
+                                </details>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    )}
+
+                    {/* Scientific Explanation Text */}
+                    <div className="assistant-text">
+                      <ChatText text={msg.text} />
+                    </div>
+
+                    {/* Discussion Points */}
+                    {msg.plan?.length > 0 && (
+                      <details className="chat-plan">
+                        <summary>
+                          <RouteIcon size={14} /> Review discussion points{' '}
+                          <ChevronDownIcon size={14} />
+                        </summary>
+                        <ul>
+                          {msg.plan.map((step, i) => (
+                            <li key={i}>{step}</li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
+
+                    {/* Verified NASA PSI Citations */}
+                    <div className="sources-bar">
+                      {msg.sources?.map((source, i) => (
+                        <a
+                          key={i}
+                          className="source-pill"
+                          href={source.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <GlobeIcon size={12} />
+                          {source.title} ↗
+                        </a>
                       ))}
                     </div>
-                  )}
+
+                    <div className="msg-footer">
+                      <button
+                        type="button"
+                        aria-label="Copy response"
+                        onClick={() => handleCopy(msg.id, msg.text)}
+                      >
+                        {copiedId === msg.id ? <CheckIcon size={15} /> : <CopyIcon size={15} />}
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Helpful response"
+                        aria-pressed={feedback[msg.id] === 'up'}
+                        onClick={() => handleFeedback(msg.id, 'up')}
+                      >
+                        <ThumbsUpIcon size={15} />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Unhelpful response"
+                        aria-pressed={feedback[msg.id] === 'down'}
+                        onClick={() => handleFeedback(msg.id, 'down')}
+                      >
+                        <ThumbsDownIcon size={15} />
+                      </button>
+                    </div>
+                  </article>
+                )}
+              </FadeContent>
+            ))}
+
+            {isStreaming && (
+              <div className="chat-loading" role="status">
+                <LoaderCircleIcon size={16} className="chat-spin" />
+                Synthesizing NASA research & 3D WebGL physics…
+              </div>
+            )}
+          </div>
+
+          {showLatest && (
+            <GlassSurface
+              as="button"
+              type="button"
+              className="chat-scroll-latest"
+              aria-label="Scroll to latest message"
+              borderRadius={8}
+              onClick={() => {
+                const el = chatBodyRef.current;
+                el.scrollTop = el.scrollHeight;
+                followLatest.current = true;
+                setShowLatest(false);
+              }}
+            >
+              <ArrowDownIcon size={16} />
+            </GlassSurface>
+          )}
+        </div>
+
+        {/* Input Bar */}
+        <div className="chat-input-area">
+          <form
+            className="chat-input-box"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
+          >
+            <textarea
+              className="chat-textarea"
+              aria-label="Message FLAME-SI"
+              placeholder="Ask about microgravity, 34% O2, cool flames, or lunar combustion…"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              rows={2}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  e.currentTarget.form.requestSubmit();
+                }
+              }}
+            />
+
+            <div className="chat-input-footer">
+              <details className="chat-context">
+                <summary aria-label="Add mission context" title="Add mission context">
+                  <PlusIcon size={18} />
+                </summary>
+                <div className="chat-context-menu">
+                  <span>MISSION SCENARIOS</span>
+                  {SUGGESTIONS.map((item) => (
+                    <button
+                      type="button"
+                      key={item.key}
+                      onClick={(e) => {
+                        setInput(item.label);
+                        e.currentTarget.closest('details').open = false;
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
                 </div>
               </details>
-            )}
 
-            <div className="assistant-text">
-              <ChatText text={msg.text} />
-            </div>
+              <span className="chat-mode">
+                <GlobeIcon size={13} /> NASA PSI · 3D WebGL
+              </span>
 
-            {msg.plan?.length > 0 && (
-              <details className="chat-plan">
-                <summary>
-                  <RouteIcon size={14} /> Review discussion points <ChevronDownIcon size={14} />
-                </summary>
-                <ul>
-                  {msg.plan.map((step, i) => (
-                    <li key={i}>{step}</li>
-                  ))}
-                </ul>
-              </details>
-            )}
-
-            <div className="sources-bar">
-              {msg.sources?.map((source, i) => (
-                <a
-                  key={i}
-                  className="source-pill"
-                  href={source.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <Magnet padding={35} maxOffset={5} magnetStrength={3} disabled={isStreaming || !input.trim()}>
+                <GlassSurface
+                  as="button"
+                  type="submit"
+                  className="chat-send-btn"
+                  aria-label="Send message"
+                  disabled={isStreaming || !input.trim()}
+                  borderRadius={8}
                 >
-                  <GlobeIcon size={12} />
-                  {source.title} ↗
-                </a>
-              ))}
+                  {isStreaming ? (
+                    <LoaderCircleIcon size={17} className="chat-spin" />
+                  ) : (
+                    <ArrowUpIcon size={19} />
+                  )}
+                </GlassSurface>
+              </Magnet>
             </div>
-          </div>
-        )}
+          </form>
 
-        {/* 2. Interactive Telemetry Data Visualization (O2 vs Spread, Airflow Envelope, Cool Flame) */}
-        {showVisualize && (
-          <div className="assistant-bundle-section">
-            <div className="assistant-bundle-heading">
-              <LineChartIcon size={15} />
-              <span>Interactive Telemetry Curves & Extinction Envelopes</span>
-            </div>
-            <div className="bundle-chart-wrap">
-              <CombustionTelemetryChart
-                gravityKey={liveSim.gravityKey}
-                materialKey={liveSim.materialKey}
-                oxygen={liveSim.oxygen}
-                ventilation={liveSim.ventilation}
-                pressure={liveSim.pressure}
-              />
-            </div>
-          </div>
-        )}
+          <p className="chat-input-hint">
+            Enter to send · Shift + Enter for newline · Live synced with 3D Stage
+          </p>
+        </div>
+      </section>
 
-        {/* 3. 3D Live WebGL Simulation (Three.js CIR Chamber, Soot particles, 360° orbit) */}
-        {showSim && (
-          <div className="assistant-bundle-section">
-            <div className="assistant-bundle-heading">
-              <FlameIcon size={15} />
-              <span>Real-Time 3D WebGL Combustion Chamber (CIR)</span>
-            </div>
-            <div className="bundle-sim-wrap">
-              <CombustionSim3D
-                initialGravity={liveSim.gravityKey}
-                initialMaterial={liveSim.materialKey}
-                initialOxygen={liveSim.oxygen}
-                initialVentilation={liveSim.ventilation}
-                initialPressure={liveSim.pressure}
-                compact={true}
-                onStateChange={handleSimStateChange}
-              />
-            </div>
+      {/* ══════════════════════════════════════════════════════════════════════
+         RIGHT PANE: Full-Page 3D WebGL Combustion Chamber & Telemetry Studio
+         ══════════════════════════════════════════════════════════════════════ */}
+      <section className="flame-stage-pane" aria-label="3D Combustion Chamber and Telemetry Studio">
+        <div className="stage-top-bar">
+          <div className="stage-title-wrap">
+            <span className="stage-badge">
+              <span className="pulse-dot" />
+              COMBUSTION INTEGRATED RACK (CIR) · 3D WEBGL STUDIO
+            </span>
+            <h3>Microgravity Combustion Simulation & PSI Telemetry</h3>
           </div>
-        )}
-      </div>
 
-      <div className="msg-footer">
-        <button
-          type="button"
-          aria-label="Copy response"
-          onClick={() => onCopy(msg.id, msg.text)}
-        >
-          {copiedId === msg.id ? <CheckIcon size={15} /> : <CopyIcon size={15} />}
-        </button>
-        <button
-          type="button"
-          aria-label="Helpful response"
-          aria-pressed={feedback[msg.id] === 'up'}
-          onClick={() => onFeedback(msg.id, 'up')}
-        >
-          <ThumbsUpIcon size={15} />
-        </button>
-        <button
-          type="button"
-          aria-label="Unhelpful response"
-          aria-pressed={feedback[msg.id] === 'down'}
-          onClick={() => onFeedback(msg.id, 'down')}
-        >
-          <ThumbsDownIcon size={15} />
-        </button>
-      </div>
+          <div className="stage-view-toggles" role="group" aria-label="Studio View Toggles">
+            <button
+              type="button"
+              className={`view-toggle-btn ${viewMode === 'studio' ? 'is-active' : ''}`}
+              onClick={() => setViewMode('studio')}
+              title="Split Studio View (Chat on left, 3D on right)"
+            >
+              <LayersIcon size={13} /> Studio
+            </button>
+            <button
+              type="button"
+              className={`view-toggle-btn ${viewMode === 'chat' ? 'is-active' : ''}`}
+              onClick={() => setViewMode('chat')}
+              title="Chat Only View"
+            >
+              <MessageSquareIcon size={13} /> Chat
+            </button>
+            <button
+              type="button"
+              className={`view-toggle-btn ${viewMode === 'stage' ? 'is-active' : ''}`}
+              onClick={() => setViewMode('stage')}
+              title="Full 3D Stage"
+            >
+              <Maximize2Icon size={13} /> 3D Stage
+            </button>
+          </div>
+        </div>
+
+        <div className="stage-scroll-body">
+          {/* Full-Scale 3D WebGL Combustion Chamber */}
+          <CombustionSim3D
+            initialGravity={activeSim.gravityKey}
+            initialMaterial={activeSim.materialKey}
+            initialOxygen={activeSim.oxygen}
+            initialVentilation={activeSim.ventilation}
+            initialPressure={activeSim.pressure}
+            compact={false}
+            onStateChange={handleStageSimChange}
+          />
+
+          {/* Interactive Scientific Telemetry Curves & Extinction Envelopes */}
+          <div className="stage-chart-wrap">
+            <CombustionTelemetryChart
+              gravityKey={activeSim.gravityKey}
+              materialKey={activeSim.materialKey}
+              oxygen={activeSim.oxygen}
+              ventilation={activeSim.ventilation}
+              pressure={activeSim.pressure}
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
