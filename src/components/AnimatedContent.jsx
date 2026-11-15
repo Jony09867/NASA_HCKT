@@ -198,6 +198,8 @@ const AnimatedContent = ({
         start,
         once,
         onEnter: () => tl.play(),
+        // A restored scroll position or a fast reverse scroll can enter from below.
+        onEnterBack: () => tl.play(),
         onLeaveBack: once
           ? undefined
           : () => {
@@ -205,6 +207,11 @@ const AnimatedContent = ({
               tl.reverse();
             }
       });
+
+      // Do not leave content hidden when mounting after its trigger point,
+      // such as browser scroll restoration or a direct anchor navigation.
+      const viewportBottom = scroller ? scroller.getBoundingClientRect().bottom : window.innerHeight;
+      if (el.getBoundingClientRect().top < viewportBottom * (1 - threshold)) tl.progress(1);
     }, el);
 
     // Keyboard navigation must never land on a still-hidden control.
@@ -257,3 +264,4 @@ const AnimatedContent = ({
 };
 
 export default AnimatedContent;
+
