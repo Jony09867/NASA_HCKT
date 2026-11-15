@@ -207,15 +207,24 @@ export function computeCombustionPhysics({
   } else if (isCoolFlame) {
     regimeTitle = 'FLEX COOL-FLAME REGIME (600–800 K)';
     regimeCode = 'COOL_FLAME';
-  } else if (ventilation >= 0.14) {
-    regimeTitle = '3D FORCED-CONVECTION WAKE CONE';
-    regimeCode = 'FORCED_WAKE';
-  } else if (gravityKey === '1/6g') {
-    regimeTitle = '3D LUNAR PARTIAL-BUOYANCY PLUME';
-    regimeCode = 'LUNAR_PLUME';
   } else if (gravityKey === '1g') {
-    regimeTitle = '3D BUOYANT TEARDROP PLUME';
+    regimeTitle =
+      ventilation >= 0.14
+        ? '3D BUOYANT TEARDROP PLUME (VENTILATED)'
+        : '3D BUOYANT TEARDROP PLUME';
     regimeCode = 'EARTH_TEARDROP';
+  } else if (gravityKey === '1/6g') {
+    regimeTitle =
+      ventilation >= 0.14
+        ? '3D LUNAR PARTIAL-BUOYANCY PLUME (VENTILATED)'
+        : '3D LUNAR PARTIAL-BUOYANCY PLUME';
+    regimeCode = 'LUNAR_PLUME';
+  } else if (ventilation >= 0.14) {
+    regimeTitle = '3D FORCED-CONVECTION DRIFT FLAME (0g)';
+    regimeCode = 'FORCED_WAKE';
+  } else {
+    regimeTitle = '3D SPHERICAL DIFFUSION FLAME';
+    regimeCode = 'SPHERICAL_0G';
   }
 
   // Radar metrics (0-100) for multi-axis situational assessment
@@ -332,38 +341,47 @@ const VOLUMETRIC_FLAME_VERT = /* glsl */ `
     }
     pos *= shellScale;
 
-    // Buoyant vertical teardrop / bell elongation (1/6g Lunar & 1g Earth)
-    float upperMask = smoothstep(-0.55, 0.9, vLocalPos.y);
+    // Buoyant vertical teardrop elongation (1/6g Lunar & 1g Earth)
+    // Hot gases rise upwards (+Y) from the candle tip, forming an authentic upward-pointing flame!
+    float upperMask = smoothstep(-0.40, 0.80, vLocalPos.y);
     if (buoyancy > 0.01) {
-      float stretchY = 1.0 + buoyancy * (1.35 + o2Norm * 0.35) * upperMask;
-      float heightRatio = clamp((vLocalPos.y + 0.35) / 1.35, 0.0, 1.0);
-      float coneTaper = 1.0 - buoyancy * 0.62 * pow(heightRatio, 1.3);
-      float neckPinch = 1.0 - buoyancy * 0.16 * exp(-pow((vLocalPos.y + 0.45) * 2.8, 2.0));
+      float stretchY = 1.0 + buoyancy * (1.45 + o2Norm * 0.40) * upperMask;
       pos.y *= stretchY;
-      pos.x *= coneTaper * neckPinch;
-      pos.z *= coneTaper * neckPinch;
-      pos.y += buoyancy * 0.35 * upperMask;
+      pos.y += buoyancy * 0.30 * upperMask;
+
+      // Candle teardrop taper: width narrows smoothly towards the apex tip at the top (+Y)
+      float apexTaper = clamp(1.0 - (vLocalPos.y + 0.25) * 0.72, 0.08, 1.0);
+      float coneTaper = mix(1.0, apexTaper, buoyancy * upperMask);
+      float baseNeck = 1.0 - buoyancy * 0.18 * exp(-pow((vLocalPos.y + 0.45) * 2.8, 2.0));
+      pos.x *= coneTaper * baseNeck;
+      pos.z *= coneTaper * baseNeck;
     }
 
-    // Forced convection downstream wake deformation (+X cabin ventilation)
-    float wakeMask = smoothstep(-0.7, 0.95, vLocalPos.x);
-    if (wind > 0.02) {
-      float stretchX = 1.0 + wind * (1.75 + o2Norm * 0.4) * wakeMask;
-      float leadingCompress = vLocalPos.x < 0.0 ? (1.0 - min(0.4, wind * 0.3)) : 1.0;
-      float tailTaper = 1.0 - min(0.55, wind * 0.35) * pow(wakeMask, 1.25);
-      pos.x = pos.x * stretchX * leadingCompress + wind * 0.48 * max(0.0, upperMask * 0.5 + wakeMask);
-      pos.y *= (1.0 - min(0.30, wind * 0.20) * wakeMask);
-      pos.z *= tailTaper;
+    // Cross-ventilation airflow deflection (Tilt):
+    // Airflow blowing along +X tilts the vertical flame downstream.
+    // The base stays anchored at the candle wick; the rising flame leans with the breeze.
+    // The flame tip ALWAYS points UPWARDS (+Y), leaning gracefully downstream!
+    if (wind > 0.01) {
+      float heightFromWick = max(0.0, pos.y + 0.35);
+      float tilt = wind * (0.32 + o2Norm * 0.12);
+      pos.x += heightFromWick * tilt;
+      pos.y -= tilt * 0.08 * max(0.0, pos.x);
+
+      // In 0g microgravity (no buoyancy), airflow gently drifts the rounded diffusion sphere downstream
+      if (buoyancy < 0.01) {
+        pos.x += wind * 0.30;
+        pos.x *= (1.0 + wind * 0.12);
+      }
     }
 
     // Organic living flame motion: only activates with buoyancy or forced airflow!
-    // In 0g microgravity (NASA ACME s-Flame / FLEX), the spherical diffusion flame is calm and stationary.
-    float dispAmp = (buoyancy * 0.065 + wind * 0.07) * (0.25 + 0.75 * max(upperMask, wakeMask));
-    pos.x += turb * dispAmp * (1.0 + wind * 1.3);
-    pos.y += turb * dispAmp * (1.0 + buoyancy * 1.3);
-    pos.z += turb * dispAmp * 0.75;
+    // In 0g quiescent microgravity, the spherical diffusion flame is calm and stationary.
+    float dispAmp = (buoyancy * 0.065 + wind * 0.06) * (0.2 + 0.8 * upperMask);
+    pos.x += turb * dispAmp * (1.0 + wind * 1.1);
+    pos.y += turb * dispAmp * (1.0 + buoyancy * 1.2);
+    pos.z += turb * dispAmp * 0.7;
 
-    vHeat = clamp(0.28 + upperMask * buoyancy * 0.58 + wakeMask * wind * 0.5 + turb * 0.16, 0.0, 1.0);
+    vHeat = clamp(0.30 + upperMask * buoyancy * 0.52 + turb * 0.14, 0.0, 1.0);
 
     vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
     vViewPos = -mvPos.xyz;
@@ -424,8 +442,8 @@ const VOLUMETRIC_FLAME_FRAG = /* glsl */ `
     plumeCol = mix(plumeCol, innerGold, pow(coreGlow, 1.5) * (0.6 + o2Norm * 0.28));
     plumeCol = mix(plumeCol, hotWhite, pow(coreGlow, 2.8) * (0.5 + o2Norm * 0.4));
 
-    // Blue leading-edge / base reaction cup
-    float cupMask = smoothstep(0.15, -0.65, vLocalPos.y * (0.65 + buoyancy) + vLocalPos.x * wind * 0.75);
+    // Blue base reaction cup at the candle wick
+    float cupMask = smoothstep(0.12, -0.55, vLocalPos.y * (0.75 + buoyancy * 0.4) + vLocalPos.x * wind * 0.35);
     plumeCol = mix(plumeCol, baseCupBlue, cupMask * (0.68 - o2Norm * 0.22));
 
     float radiativeBlend = clamp(buoyancy * 0.88 + wind * 0.78, 0.0, 1.0);
@@ -520,28 +538,28 @@ const FIRE_CLOUD_VERT = /* glsl */ `
 
       pos = dir * baseR;
 
-      // Morph sphere into 1/6g bell or 1g teardrop plume
+      // Upward buoyant rise & candle flame taper in gravity (1/6g & 1g)
       float upper = smoothstep(-0.4, 0.9, dir.y);
       if (buoyancy > 0.01) {
-        float rise = life * buoyancy * (1.40 + o2Norm * 0.35);
+        float rise = life * buoyancy * (1.35 + o2Norm * 0.35);
         pos.y = pos.y * (1.0 + buoyancy * 1.1 * upper) + rise * upper;
-        float taper = 1.0 - buoyancy * 0.55 * clamp(pos.y / 2.2, 0.0, 0.92);
+        float taper = 1.0 - buoyancy * 0.60 * clamp(pos.y / 2.0, 0.0, 0.92);
         pos.x *= taper;
         pos.z *= taper;
-        // Thermal buoyancy gentle wave (only with buoyant updraft)
-        pos.x += sin(uTime * 1.2 + pos.y * 1.6 + aSeed * 6.28) * 0.035 * buoyancy * upper;
-        pos.z += cos(uTime * 1.1 + pos.y * 1.6 + aSeed * 6.28) * 0.035 * buoyancy * upper;
+        // Thermal buoyancy gentle wave
+        pos.x += sin(uTime * 1.2 + pos.y * 1.6 + aSeed * 6.28) * 0.03 * buoyancy * upper;
+        pos.z += cos(uTime * 1.1 + pos.y * 1.6 + aSeed * 6.28) * 0.03 * buoyancy * upper;
       }
 
-      // Morph into Forced Convection Trailing Wake (+X)
-      float wake = smoothstep(-0.6, 0.9, dir.x);
-      if (wind > 0.02) {
-        float driftX = life * wind * (1.95 + o2Norm * 0.4);
-        pos.x = pos.x * (1.0 + wind * 1.2 * wake) + driftX * (0.35 + 0.65 * wake);
-        float wakeTaper = 1.0 - min(0.52, wind * 0.3) * clamp(pos.x / 2.6, 0.0, 0.9);
-        pos.y *= wakeTaper;
-        pos.z *= wakeTaper;
-        pos.y += sin(uTime * 1.4 + pos.x * 1.6 + aSeed * 6.28) * 0.025 * wind * wake;
+      // Airflow cross-ventilation deflection:
+      // Particles lean downwind (+X) as they rise upwards (+Y)
+      if (wind > 0.01) {
+        float heightFromBase = max(0.0, pos.y + 0.3);
+        float tilt = wind * (0.32 + o2Norm * 0.12);
+        pos.x += heightFromBase * tilt;
+        if (buoyancy < 0.01) {
+          pos.x += wind * 0.30;
+        }
       }
 
       vHeat = clamp(1.0 - life * 0.55 + upper * buoyancy * 0.25, 0.0, 1.0);
@@ -551,17 +569,18 @@ const FIRE_CLOUD_VERT = /* glsl */ `
       }
     } else if (aLayer < 1.5) {
       // LAYER 1: Soot Agglomerates & Thermal Plume Aerosols (SAME-R physics)
-      float life = fract(aPhase + uTime * (0.12 + buoyancy * 0.22 + wind * 0.45));
+      // Soot rises upwards from the flame tip and drifts in the cabin ventilation
+      float life = fract(aPhase + uTime * (0.12 + buoyancy * 0.22 + wind * 0.35));
       vLife = life;
 
       vec3 dir = aBaseDir;
-      float startR = 0.58 + hash1(aSeed * 7.3) * 0.45;
+      float startR = 0.55 + hash1(aSeed * 7.3) * 0.42;
       pos = dir * startR;
 
-      // Radial diffusion in 0g + buoyant lift in 1/6g & 1g + wind advection
-      pos += dir * (life * 0.85 * (1.0 - buoyancy * 0.55));
-      pos.y += life * buoyancy * 2.1;
-      pos.x += life * (0.14 + wind * 2.6);
+      // Thermal rise above candle flame tip
+      pos.y += life * (0.45 + buoyancy * 1.95);
+      // Downstream drift with cabin airflow
+      pos.x += (pos.y + 0.2) * (wind * 0.75) + life * (wind * 0.65);
       pos.z += sin(uTime * 0.9 + aSeed * 6.28) * 0.03 * (buoyancy + wind) * life;
 
       vHeat = clamp(1.0 - life * 1.15, 0.0, 1.0);
