@@ -6,3 +6,41 @@
 
 body[data-page=compare] section.compare{display:block;width:100%;min-width:0}.compare-container{width:100%;min-width:0}.compare-head-row{flex-wrap:wrap}.compare-toolbar{margin-top:8px}.evidence-table{width:100%;min-width:0}.evidence-header-cell,.evidence-cell{min-width:0;overflow-wrap:anywhere}
 @media(max-width:700px){body:not([data-page=home]) section.explore,body:not([data-page=home]) section.compare{padding:36px 5% 70px!important}section.explore .count{display:none}.notice{display:block}.notice strong{display:block;margin-bottom:4px}.compare-head-row h2{font-size:36px}.compare-toolbar{gap:8px}.compare-toolbar>*{font-size:11px}.evidence-cell.val-col:before{display:block;color:#78b7ff;font-size:10px;margin-bottom:6px}.evidence-cell.val-col:nth-child(2):before{content:'INVESTIGATION 01'}.evidence-cell.val-col:nth-child(3):before{content:'INVESTIGATION 02'}}
+/* NASA-inspired light theme shared by every page */
+:root{--bg:#f5f8fc;--ink:#102b4e;--muted:#4e637d;--line:#cbd8e8;--orange:#d3292f;color-scheme:light}
+body,.site-header,body[data-page=chat],section.explore,.compare{background:#f5f8fc!important;color:#102b4e!important}
+.site-header,.how-it-works,.site-footer{border-color:#cbd8e8!important}.site-header nav,.site-header nav a,.site-footer,.site-footer a,.brand,.nav-toggle{color:#183b65!important}.site-header nav a[aria-current=page],.eyebrow,.orange,.mark,.steps-grid span{color:#c9272d!important}.site-header [data-selection-count]{background:#dceafd;color:#153e75}.nav-toggle{border-color:#b4c8de!important} .badge{color:#345579;border-color:#a9bfd8}
+p,.section-head p,.about p{color:#4e637d}.hero h1,.hero h1 em,.about h2,.about em{color:#102b4e}.hero .hero-muted{color:#466887}.about{background:#e8f1fb;color:#102b4e}.orbit{border-color:#afc4dc}.art-label{color:#365777}.art-note{color:#c9272d}.how-it-works .steps-grid>a{background:#fff;border-color:#cbd8e8}.button,.primary-action{background:#164f91!important;color:white!important}.button:hover,.primary-action:hover{background:#0c3971!important}
+section.explore .notice{background:#e2eefb;color:#294969;border-color:#d3292f}.selection-tray{background:#fff;color:#183b65;border-color:#b6cbe1;box-shadow:0 8px 25px #163d651c}.investigation-details,.investigation-details summary{color:#284967}.investigation-details dt{color:#135194}
+/* Explore and comparison surfaces */
+body :is(.filters-container,.advanced-filters-panel,.card,.evidence-table,.evidence-header-cell,.evidence-cell,.compare-empty,.slot){background-color:#fff;color:#173657;border-color:#ccdaea}
+body :is(.card h3,.card h4,.card strong,.evidence-table h3,.evidence-table strong){color:#102b4e}
+body :is(.card p,.card span,.evidence-cell,.evidence-header-cell,.filter-feedback){color:#4e637d}
+body :is(.filters-container input,.filters-container select,.filters-container button,.compare-toolbar button){background-color:#fff;color:#173657;border-color:#b9cbe0}
+body :is(.btn-compare,.clear,.specular-button,.si-action-btn.primary){background:#164f91!important;color:#fff!important;border-color:#164f91!important}
+/* Simulator */
+body .si-dashboard-section{color:#102b4e}body .si-dashboard-section :is(h2,h3,h4,.si-preset-title,.si-metric-row span:last-child){color:#102b4e!important}
+body .si-dashboard-section :is(p,.si-preset-label,.si-preset-specs,.si-control-group label,.si-metric-row span:first-child,.si-result-details summary,.si-tag){color:#4e637d}
+body .si-dashboard-section :is(.si-preset-card.rb-spotlight-card,.si-gauge-panel,.si-rank-card,.si-pillars-container,.si-pillar-card){background:#fff!important;border-color:#cbd8e8!important;box-shadow:none}
+body .si-dashboard-section .si-preset-card.is-active{background:#e6f0fd!important;border-color:#164f91!important}
+body .si-dashboard-section :is(.si-eyebrow-badge,.si-rank-num,.si-pillar-badge,.si-tab-btn.is-active){background:#e6f0fd;color:#174f90;border-color:#b9cfea}
+body .si-dashboard-section :is(.si-rank-insight,.si-tag){background:#eef4fb;color:#294969;border-color:#9cbce0}
+body .si-dashboard-section :is(.si-action-btn.secondary,.si-tab-btn){color:#174b82;border-color:#c5d5e6}body .si-meter-bar{background:#dce6f2}body .si-rank-match{color:#177047}
+/* Chat */
+body .flame-chat-container{--chat-line:#cfdeec;background:#fff;color:#102b4e;border-color:#cbd8e8}
+body .flame-chat-container :is(h3,h4,strong,.assistant-text,.chat-textarea){color:#102b4e}
+body .flame-chat-container :is(p,.chat-mode,.chat-input-hint,.assistant-label span,.chat-trace,.chat-plan,.trace-demo-label,.msg-footer button){color:#4e637d}
+body .flame-chat-container :is(.chat-starters button,.bubble-user,.chat-input-box,.chat-empty-icon,.source-pill,.chat-context-menu,.chat-tool pre,.chat-scroll-latest){background:#eef4fb;color:#173657;border-color:#c4d6e8}
+body .flame-chat-container :is(.chat-context-menu button,.chat-context>summary,.flame-reset-btn){color:#173657;border-color:#c4d6e8}
+body .flame-chat-container :is(.chat-eyebrow,.assistant-label,.inv-action-tag){color:#155399}body .flame-chat-container .chat-send-btn{background:#164f91;color:#fff}
+@media(max-width:700px){body .site-header #site-nav{background:#fff;border-color:#cbd8e8}}
+body section.explore :is(.spotlight-card,.card-content,.search-input-wrap,.count){background:#fff!important;color:#173657!important;border-color:#c5d6e8!important;box-shadow:none}
+body section.explore :is(.card-specs-grid,.card-topic-tag,.card-eyebrow-badge){background:#edf4fc!important;color:#294969!important;border-color:#ccdaea!important}
+body section.explore :is(.spotlight-card h3,.spec-val,.search-input-wrap input){color:#102b4e!important}
+body section.explore :is(.card-objective,.spec-label,.card-platform-tag,.search-input-wrap input::placeholder){color:#4e637d!important}
+body .evidence-category-header{background:#e4eef9!important;color:#174f90!important;border-color:#cbd8e8!important}
+body .evidence-cell.field-name{background:#edf4fb!important;color:#355776!important;border-color:#cbd8e8!important}
+body .evidence-table :is(.evidence-cell,.evidence-header-cell){border-color:#cbd8e8!important}
+body .comparability-notice{background:#edf4fb!important;color:#345575!important;border-color:#bfd3e9!important}
+body .si-header h2 strong{color:#155399!important}
+
