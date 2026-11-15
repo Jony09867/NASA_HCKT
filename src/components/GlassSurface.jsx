@@ -750,50 +750,7 @@ const GlassSurface = ({
       <svg className="glass-surface__filter" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id={filterId} colorInterpolationFilters="sRGB" x="0%" y="0%" width="100%" height="100%">
-            <feImage ref={feImageRef} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
-
-            <feDisplacementMap ref={redChannelRef} in="SourceGraphic" in2="map" id="redchannel" result="dispRed" />
-            <feColorMatrix
-              in="dispRed"
-              type="matrix"
-              values="1 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 1 0"
-              result="red"
-            />
-
-            <feDisplacementMap
-              ref={greenChannelRef}
-              in="SourceGraphic"
-              in2="map"
-              id="greenchannel"
-              result="dispGreen"
-            />
-            <feColorMatrix
-              in="dispGreen"
-              type="matrix"
-              values="0 0 0 0 0
-                      0 1 0 0 0
-                      0 0 0 0 0
-                      0 0 0 1 0"
-              result="green"
-            />
-
-            <feDisplacementMap ref={blueChannelRef} in="SourceGraphic" in2="map" id="bluechannel" result="dispBlue" />
-            <feColorMatrix
-              in="dispBlue"
-              type="matrix"
-              values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 1 0 0
-                      0 0 0 1 0"
-              result="blue"
-            />
-
-            <feBlend in="red" in2="green" mode="screen" result="rg" />
-            <feBlend in="rg" in2="blue" mode="screen" result="output" />
-            <feGaussianBlur ref={gaussianBlurRef} in="output" stdDeviation="0.7" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="0" result="output" />
           </filter>
         </defs>
       </svg>
@@ -825,35 +782,10 @@ const GlassSurface = ({
 };
 
 /**
- * Automatically applies the GlassSurface visual effect and styling
- * to all primary buttons and interactive controls across the DOM.
+ * Disabled to keep native NASA buttons crisp, solid, and free of tacky glass distortions
  */
 export function glassifyAllPageButtons() {
-  if (typeof window === 'undefined') return;
-  const query = () => {
-    const buttons = document.querySelectorAll(
-      'button:not([data-no-glass]), a.button, .specular-button, .btn-compare, .primary-action, .btn-swap-columns, .btn-clear-compare, .clear'
-    );
-    buttons.forEach(btn => {
-      if (!btn.dataset.glassified) {
-        btn.dataset.glassified = 'true';
-        btn.classList.add('glass-surface-btn');
-      }
-    });
-  };
-  query();
-  const targetRoot = document.getElementById('cards') || document.body;
-  if (targetRoot && window.MutationObserver) {
-    let timer = null;
-    const observer = new MutationObserver(() => {
-      if (timer) return;
-      timer = setTimeout(() => {
-        timer = null;
-        query();
-      }, 200);
-    });
-    observer.observe(targetRoot, { childList: true, subtree: true });
-  }
+  // No-op: do not pollute native buttons with glass overlays
 }
 
 export default GlassSurface;
