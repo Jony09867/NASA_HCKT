@@ -80,7 +80,7 @@
       </div>
 
       <div class="notice">
-        <strong>Research in progress.</strong> Verified NASA Physical Science Informatics (PSI) research data. Results reflect documented mission test envelopes.
+        <strong>Research in progress.</strong> Investigation details are being checked against NASA sources. Reported conditions may describe an overview rather than an individual test.
       </div>
 
       <div class="filters-container">
@@ -96,7 +96,7 @@
             <select id="sort-select" aria-label="Sort investigations">
               <option value="relevant">Most relevant</option>
               <option value="name">Name (A–Z)</option>
-              <option value="oxygen">Nearest Oxygen %</option>
+              <option value="oxygen" disabled>Nearest Oxygen % (awaiting review)</option>
               <option value="platform">Platform</option>
             </select>
           </div>
@@ -134,11 +134,13 @@
           <label>
             <span>TARGET O₂ (%)</span>
             <div class="oxygen-input-wrapper">
-              <input id="oxygen" type="number" min="0" max="100" step="0.5" placeholder="e.g. 21" aria-label="Target oxygen percentage">
+              <input id="oxygen" type="number" min="0" max="100" step="0.5" placeholder="Awaiting source review" aria-label="Target oxygen percentage" aria-describedby="oxygen-review-note" disabled title="Oxygen matching is unavailable until conditions and measurement bases are verified">
               <span class="input-suffix">%</span>
             </div>
           </label>
         </div>
+
+        <p class="condition-review-note" id="oxygen-review-note">Oxygen matching is temporarily unavailable while the measurement basis and sources are reviewed.</p>
 
         <!-- Toolbar with Advanced Filters Toggle & Clear Button -->
         <div class="filters-actions-bar">
@@ -181,29 +183,25 @@
               </div>
             </label>
 
-            <label>
-              <span>AIRFLOW CONDITION</span>
-              <div class="select-wrapper">
-                <select id="airflow-filter" aria-label="Filter by airflow">
-                  <option value="">All airflow speeds</option>
-                </select>
-              </div>
-            </label>
-
-            <label>
-              <span>CHAMBER PRESSURE</span>
-              <div class="select-wrapper">
-                <select id="pressure-filter" aria-label="Filter by pressure">
-                  <option value="">All pressure ranges</option>
-                </select>
-              </div>
-            </label>
+            <fieldset class="range-filter" id="airflow-range">
+              <legend>AIRFLOW SPEED <span>(m/s)</span></legend>
+              <div class="range-inputs"><label>Minimum <input id="airflow-min" type="number" min="0" step="any" aria-describedby="airflow-help"></label><label>Maximum <input id="airflow-max" type="number" min="0" step="any" aria-describedby="airflow-help"></label></div>
+              <label class="range-check"><input id="airflow-unknown" type="checkbox" checked> Include unknown or unverified</label>
+              <label class="range-check"><input id="airflow-quiescent" type="checkbox"> Also include unverified “quiescent” reports</label>
+              <p id="airflow-help" class="range-help">Waiting for source-verified airflow data.</p>
+            </fieldset>
+            <fieldset class="range-filter" id="pressure-range">
+              <legend>CHAMBER PRESSURE <span>(kPa)</span></legend>
+              <div class="range-inputs"><label>Minimum <input id="pressure-min" type="number" min="0" step="any" aria-describedby="pressure-help"></label><label>Maximum <input id="pressure-max" type="number" min="0" step="any" aria-describedby="pressure-help"></label></div>
+              <label class="range-check"><input id="pressure-unknown" type="checkbox" checked> Include unknown or unverified</label>
+              <p id="pressure-help" class="range-help">Waiting for source-verified pressure data.</p>
+            </fieldset>
           </div>
 
           <div class="oxygen-audit-note">
             <span class="info-mark">ℹ</span>
             <div>
-              <strong>Oxygen Matching Audit:</strong> A target falling within a documented range (e.g., 16%–21% vol O₂ in N₂) indicates the overall experimental test matrix operated across those conditions, not that this exact point was an isolated discrete test. Measurement basis: vol% at ambient test pressure. Oxygen levels are presented for scientific comparison, not as a simplified fire-risk score.
+              <strong>About these conditions:</strong> Reported values may refer to an investigation overview, not a specific test. Numeric matching is available only after the value, units, measurement basis and source are reviewed. A range overlap does not prove every point was tested.
             </div>
           </div>
         </div>
@@ -250,6 +248,11 @@
         <h2>Better knowledge.<br><em>Safer exploration.</em></h2>
       </div>
       <p>Understanding combustion in microgravity helps researchers study fire safety for future space missions. This independent hackathon project aims to make research easier to explore.</p>
+      <div class="impact-cards" aria-label="Why this research matters">
+        <article><span aria-hidden="true">01 / RESEARCH</span><h3>Understand fire behavior</h3><p>Microgravity research helps scientists study how flames grow, spread, and go out under different conditions.</p><a href="https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/" target="_blank" rel="noopener noreferrer">READ NASA SOURCE ↗</a></article>
+        <article><span aria-hidden="true">02 / DETECTION</span><h3>Improve smoke detection</h3><p>DAFT helped researchers evaluate particle-measuring instruments in support of future smoke research.</p><a href="https://www1.grc.nasa.gov/wp-content/uploads/DAFT_Quad.pdf" target="_blank" rel="noopener noreferrer">READ NASA SOURCE ↗</a></article>
+        <article><span aria-hidden="true">03 / LESSONS</span><h3>Learn from real events</h3><p>Historical incidents show why fire detection, emergency response, and spacecraft design matter.</p><a href="https://www.nasa.gov/history/25-years-ago-fire-aboard-space-station-mir/" target="_blank" rel="noopener noreferrer">READ NASA SOURCE ↗</a></article>
+      </div>
       <div id="react-about-cta">
         <a href="https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/?tab=details" target="_blank" rel="noopener">VIEW THE CHALLENGE ↗</a>
       </div>

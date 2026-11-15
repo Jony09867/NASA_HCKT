@@ -25,8 +25,48 @@
   const facilitySelect = document.querySelector('#facility-filter');
   const gravitySelect = document.querySelector('#gravity-filter');
   const geometrySelect = document.querySelector('#geometry-filter');
-  const airflowSelect = document.querySelector('#airflow-filter');
-  const pressureSelect = document.querySelector('#pressure-filter');
+  const rangeControls = Object.fromEntries(['airflow', 'pressure'].map(key => [key, {
+    min: document.querySelector(`#${key}-min`), max: document.querySelector(`#${key}-max`),
+    includeUnknown: document.querySelector(`#${key}-unknown`), includeQuiescent: document.querySelector(`#${key}-quiescent`), help: document.querySelector(`#${key}-help`)
+  }]));
+
+  // Numeric conditions are usable only after a reviewer supplies structured, sourced evidence.
+  // Example: pressureRange: { verified: true, min: 90, max: 100, unit: 'kPa', basis: 'absolute', scope: 'test', sourceUrl: 'https://...' }
+  function reviewedRange(item, key) {
+    const value = item && item[`${key}Range`];
+    if (!value || value.verified !== true || !isValidHttpUrl(value.sourceUrl) || !['test', 'investigation_range'].includes(value.scope) || !value.basis) return null;
+    if (value.basis !== (key === 'pressure' ? 'absolute' : 'speed')) return null;
+    const conversions = key === 'pressure' ? { kPa: 1, Pa: 0.001, atm: 101.325 } : { 'm/s': 1, 'cm/s': 0.01 };
+    const factor = conversions[value.unit];
+    if (factor === undefined || typeof value.min !== 'number' || typeof value.max !== 'number' || !Number.isFinite(value.min) || !Number.isFinite(value.max) || value.min < 0 || value.max < value.min) return null;
+    return { min: value.min * factor, max: value.max * factor };
+  }
+  function gravityCategory(value) {
+    const str = String(value || '').toLowerCase();
+    if (/microgravity/.test(str)) return 'microgravity';
+    if (/reduced gravity|partial gravity/.test(str)) return 'reduced';
+    if (/normal gravity|earth gravity|(?:^|\s)1g(?:\s|$)/.test(str)) return 'normal';
+    return 'unknown';
+  }
+  function getRangeFilter(key) {
+    const c = rangeControls[key];
+    return { min: c.min.value === '' ? null : Number(c.min.value), max: c.max.value === '' ? null : Number(c.max.value), includeUnknown: c.includeUnknown.checked, includeQuiescent: Boolean(c.includeQuiescent && c.includeQuiescent.checked) };
+  }
+  function rangeIsActive(range) { return range.min !== null || range.max !== null || !range.includeUnknown || range.includeQuiescent; }
+  function matchesRange(item, key, filter) {
+    if (filter.min !== null && filter.max !== null && filter.min > filter.max) return false;
+    const range = reviewedRange(item, key);
+    if (!range) return filter.includeUnknown || (key === 'airflow' && filter.includeQuiescent && /quiescent/i.test(String(item.airflow || '')));
+    return (filter.min === null || range.max >= filter.min) && (filter.max === null || range.min <= filter.max);
+  }
+  function resetRange(key) {
+    const c = rangeControls[key]; c.min.value = ''; c.max.value = ''; c.max.setCustomValidity(''); c.max.removeAttribute('aria-invalid'); c.help.textContent = c.min.disabled ? 'Numeric search is unavailable until values, units and sources are reviewed. Records remain visible.' : 'Matches overlap with reviewed reported ranges; unknown or unverified records can be included.'; c.includeUnknown.checked = true; if (c.includeQuiescent) c.includeQuiescent.checked = false;
+  }
+  function describeRange(key, filter) {
+    const unit = key === 'pressure' ? 'kPa' : 'm/s';
+    const bounds = filter.min !== null || filter.max !== null ? `${filter.min ?? 'any'}–${filter.max ?? 'any'} ${unit}` : 'any';
+    return `${bounds}${filter.includeUnknown ? ' (includes unknown)' : filter.includeQuiescent ? ' (includes quiescent reports)' : ' (reviewed only)'}`;
+  }
 
   // Feedback & Containers
   const activeFiltersContainer = document.querySelector('#active-filters');
@@ -115,10 +155,20 @@
     populateSelect(topicSelect, getUniqueValues('topic'), 'All research topics');
     populateSelect(platformSelect, getUniqueValues('platform'), 'All platforms');
     populateSelect(facilitySelect, getUniqueValues('facility'), 'All facilities');
-    populateSelect(gravitySelect, getUniqueValues('gravity'), 'All gravity levels');
+    const gravityLabels = { microgravity: 'Microgravity', reduced: 'Reduced gravity', normal: 'Normal gravity', unknown: 'Unknown' };
+    const categories = [...new Set(data.map(item => gravityCategory(item.gravity)))];
+    gravitySelect.innerHTML = '<option value="">All gravity conditions</option>';
+    Object.entries(gravityLabels).filter(([key]) => categories.includes(key)).forEach(([key, label]) => {
+      const option = document.createElement('option'); option.value = key; option.textContent = label; gravitySelect.appendChild(option);
+    });
     populateSelect(geometrySelect, getUniqueValues('geometry'), 'All fuel geometries');
-    populateSelect(airflowSelect, getUniqueValues('airflow'), 'All airflow speeds');
-    populateSelect(pressureSelect, getUniqueValues('pressure'), 'All pressure ranges');
+    Object.entries(rangeControls).forEach(([key, control]) => {
+      const hasReviewed = data.some(item => reviewedRange(item, key));
+      control.min.disabled = !hasReviewed; control.max.disabled = !hasReviewed;
+      control.help.textContent = hasReviewed
+        ? 'Matches overlap with reviewed reported ranges; unknown or unverified records can be included.'
+        : 'Numeric search is unavailable until values, units and sources are reviewed. Records remain visible.';
+    });
   }
 
   // --- Toast Notification ---
@@ -208,7 +258,7 @@
     if (filters.platform) chips.push({ key: 'platform', label: `Platform: ${filters.platform}`, id: 'chip-platform' });
     if (filters.targetOxygen !== null) chips.push({ key: 'oxygen', label: `Target O₂: ${filters.targetOxygen}% (nearest)`, id: 'chip-oxygen' });
     if (filters.facility) chips.push({ key: 'facility', label: `Facility: ${filters.facility}`, id: 'chip-facility' });
-    if (filters.gravity) chips.push({ key: 'gravity', label: `Gravity: ${filters.gravity}`, id: 'chip-gravity' });
+    if (filters.gravity) chips.push({ key: 'gravity', label: `Gravity: ${gravitySelect.selectedOptions[0].textContent}`, id: 'chip-gravity' });
     if (filters.geometry) chips.push({ key: 'geometry', label: `Geometry: ${filters.geometry}`, id: 'chip-geometry' });
     if (filters.airflow) chips.push({ key: 'airflow', label: `Airflow: ${filters.airflow}`, id: 'chip-airflow' });
     if (filters.pressure) chips.push({ key: 'pressure', label: `Pressure: ${filters.pressure}`, id: 'chip-pressure' });
@@ -271,12 +321,9 @@
     } else if (key === 'geometry' && geometrySelect) {
       geometrySelect.value = '';
       geometrySelect.focus();
-    } else if (key === 'airflow' && airflowSelect) {
-      airflowSelect.value = '';
-      airflowSelect.focus();
-    } else if (key === 'pressure' && pressureSelect) {
-      pressureSelect.value = '';
-      pressureSelect.focus();
+    } else if (key === 'airflow' || key === 'pressure') {
+      resetRange(key);
+      rangeControls[key].includeUnknown.focus();
     }
     render();
   }
@@ -293,8 +340,7 @@
     if (facilitySelect) facilitySelect.value = '';
     if (gravitySelect) gravitySelect.value = '';
     if (geometrySelect) geometrySelect.value = '';
-    if (airflowSelect) airflowSelect.value = '';
-    if (pressureSelect) pressureSelect.value = '';
+    resetRange('airflow'); resetRange('pressure');
     render();
     if (searchInput) searchInput.focus();
   }
@@ -357,8 +403,8 @@
     const currentFacility = facilitySelect ? facilitySelect.value : '';
     const currentGravity = gravitySelect ? gravitySelect.value : '';
     const currentGeometry = geometrySelect ? geometrySelect.value : '';
-    const currentAirflow = airflowSelect ? airflowSelect.value : '';
-    const currentPressure = pressureSelect ? pressureSelect.value : '';
+    const currentAirflow = getRangeFilter('airflow');
+    const currentPressure = getRangeFilter('pressure');
 
     const targetOxygen = (oxygenInput && oxygenInput.value.trim() !== '' && !isNaN(parseFloat(oxygenInput.value)))
       ? parseFloat(oxygenInput.value)
@@ -384,10 +430,10 @@
 
       // Advanced filters
       if (currentFacility && item.facility !== currentFacility) return false;
-      if (currentGravity && item.gravity !== currentGravity) return false;
+      if (currentGravity && gravityCategory(item.gravity) !== currentGravity) return false;
       if (currentGeometry && item.geometry !== currentGeometry) return false;
-      if (currentAirflow && item.airflow !== currentAirflow) return false;
-      if (currentPressure && item.pressure !== currentPressure) return false;
+      if (!matchesRange(item, 'airflow', currentAirflow)) return false;
+      if (!matchesRange(item, 'pressure', currentPressure)) return false;
 
       return true;
     });
@@ -421,7 +467,7 @@
     // 3. Telemetry Feedback & Counters
     const hasAnyFilter = Boolean(
       q || currentFuel || currentTopic || currentPlatform || targetOxygen !== null ||
-      currentFacility || currentGravity || currentGeometry || currentAirflow || currentPressure
+      currentFacility || currentGravity || currentGeometry || rangeIsActive(currentAirflow) || rangeIsActive(currentPressure)
     );
 
     if (countEl) {
@@ -444,8 +490,8 @@
       facility: currentFacility,
       gravity: currentGravity,
       geometry: currentGeometry,
-      airflow: currentAirflow,
-      pressure: currentPressure
+      airflow: rangeIsActive(currentAirflow) ? describeRange('airflow', currentAirflow) : '',
+      pressure: rangeIsActive(currentPressure) ? describeRange('pressure', currentPressure) : ''
     });
 
     // 5. Empty States Handling
@@ -845,8 +891,17 @@
   if (facilitySelect) facilitySelect.addEventListener('change', render);
   if (gravitySelect) gravitySelect.addEventListener('change', render);
   if (geometrySelect) geometrySelect.addEventListener('change', render);
-  if (airflowSelect) airflowSelect.addEventListener('change', render);
-  if (pressureSelect) pressureSelect.addEventListener('change', render);
+  Object.values(rangeControls).forEach(control => {
+    [control.min, control.max].forEach(input => input.addEventListener('input', () => {
+      const invalid = control.min.value !== '' && control.max.value !== '' && Number(control.min.value) > Number(control.max.value);
+      control.max.setCustomValidity(invalid ? 'Maximum must be greater than or equal to minimum.' : '');
+      control.max.setAttribute('aria-invalid', String(invalid));
+      control.help.textContent = invalid ? 'Maximum must be greater than or equal to minimum.' : 'Matches overlap with reviewed reported ranges; unknown or unverified records can be included.';
+      render();
+    }));
+    control.includeUnknown.addEventListener('change', render);
+    if (control.includeQuiescent) control.includeQuiescent.addEventListener('change', render);
+  });
 
   if (clearBtn) clearBtn.addEventListener('click', clearAllFilters);
 

@@ -247,3 +247,14 @@
     transform: none;
   }
 }
+
+/* Supporting sources in Why it matters. */
+.about{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.85fr);column-gap:8%;align-items:start}
+.about>.eyebrow,.about>#react-about-reveal,.about>p,.about>#react-about-cta{grid-column:1}
+.about>.impact-cards{grid-column:2;grid-row:1 / span 4;display:grid;gap:12px;align-self:center}
+.about .impact-cards article{padding:20px 22px;border:1px solid #a3b39e;background:rgba(244,248,237,.34)}
+.about .impact-cards article>span{font-size:10px;font-weight:700;letter-spacing:.13em;color:#a13b1d}
+.about .impact-cards h3{margin:9px 0;font-size:21px;line-height:1.2;color:#15201b}
+.about .impact-cards p{margin:0;color:#35483c;font-size:14px;line-height:1.55}
+.about .impact-cards a{margin-top:12px;font-size:10px;color:#253c30}
+@media(max-width:900px){.about{display:block}.about>.impact-cards{margin-top:35px}.about>#react-about-cta{margin-top:26px}}

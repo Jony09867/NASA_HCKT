@@ -8,7 +8,7 @@ window.EXPERIMENTS = [
     recordType: "Investigation Overview",
     topic: "Flame Spread & Suppression",
     platform: "International Space Station (ISS)",
-    facility: "Combustion Integrated Rack (CIR) / MDCA",
+    facility: "Microgravity Science Glovebox (MSG)",
     fuel: "Solid PMMA",
     geometry: "Flat fuel slabs & cylindrical cast rods",
     dimensions: "10 cm length × 1.0–2.0 cm width",
