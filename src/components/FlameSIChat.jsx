@@ -433,6 +433,9 @@ export default function FlameSIChat({
   oxygen = 34,
   pressure = 10.2,
   gravity = '0.166g (Lunar)',
+  gravityKey = '1/6g',
+  ventilation = 0.1,
+  materialKey = 'pmma',
   activeTab = 'prevention',
   onApplyPreset,
   onSetAtmosphere,
@@ -457,13 +460,14 @@ I synthesize findings from decades of NASA flight experiments—including **BASS
 
 * **Physics-grounded analysis:** Evaluates oxygen partial pressure (PO₂), buoyancy-free extinction limits, and ventilation velocity thresholds.
 * **Human-accessible insights:** Technical metrics are clearly interpreted with intuitive real-world context and operational safety directives.
-* **Full Autonomous Control:** I can directly control the Mission Simulator, filter the Explore Library, run Dual-Rack comparisons, or mount interactive physics experiments.
+* **Full Autonomous Control:** I can directly control the 3D Combustion Chamber, filter the Explore Library, run Dual-Rack comparisons, or mount interactive physics experiments.
 
 Select a mission scenario below, ask any combustion question, or issue direct commands like *"Set oxygen to 40%"* or *"Search library for PMMA"*!`,
       actions: [
-        { label: 'Open Interactive Flame Dynamics Lab', type: 'toggle_flame_lab', primary: true },
+        { label: '3D Combustion Simulator & Telemetry', type: 'switch_view', view: 'simulator', primary: true },
+        { label: 'Open In-Chat Flame Physics Lab', type: 'toggle_flame_lab' },
         { label: 'Load Artemis Lunar Base (34% O₂)', type: 'apply_preset', preset: 'moon' },
-        { label: 'Browse All 10 NASA PSI Experiments', type: 'scroll_section', section: 'explore' },
+        { label: 'Browse Verified NASA Experiments', type: 'scroll_section', section: 'explore' },
       ],
     },
   ]);
@@ -682,7 +686,7 @@ Select a mission scenario below, ask any combustion question, or issue direct co
     }
 
     // 5. Open Interactive Flame Lab command: "open flame lab" / "flame simulator"
-    if (qLower.includes('flame lab') || qLower.includes('flame simulator') || qLower.includes('chamber')) {
+    if (qLower.includes('flame lab') || qLower.includes('flame simulator') || (qLower.includes('chamber') && !qLower.includes('3d'))) {
       setShowFlameLab(true);
       const cmdReply = {
         id: `asst-${Date.now()}`,
@@ -698,6 +702,34 @@ Select a mission scenario below, ask any combustion question, or issue direct co
         actions: [
           { label: 'Apply Lab Parameters to Simulator', type: 'apply_preset', preset: 'moon', primary: true },
           { label: 'Browse NASA Flight Library', type: 'scroll_section', section: 'explore' },
+        ],
+      };
+      setExpandedTrace((prev) => ({ ...prev, [cmdReply.id]: true }));
+      setTimeout(() => {
+        setMessages((prev) => [...prev, cmdReply]);
+        setIsStreaming(false);
+      }, 500);
+      return;
+    }
+
+    // 6. 3D Combustion Chamber & Telemetry command: "3d", "3d sim", "telemetry"
+    if (qLower.includes('3d') || qLower.includes('telemetry') || (qLower.includes('simulation') && !qLower.includes('flame'))) {
+      if (onSwitchView) onSwitchView('simulator');
+      const cmdReply = {
+        id: `asst-${Date.now()}`,
+        role: 'assistant',
+        reasoning: 'Autonomous Action: Switching console view to 3D Mission Hazard Simulator and Telemetry Chart.',
+        tools: [{ cmd: 'view-switch --mode="simulator"', output: '3D Combustion Chamber Active' }],
+        plan: ['Switched view to 3D Simulator', 'Loaded interactive Three.js chamber and live telemetry charts'],
+        sources: [{ title: 'NASA CIR / BASS-II / FLEX Flight Data', url: 'https://psi.nasa.gov/' }],
+        text: `### 3D Mission Combustion Chamber Activated
+
+* **3D Visualizer:** The full 3D WebGL combustion chamber is now active in the main console with orbit controls.
+* **Telemetry Charts:** Real-time curves for **Flame Temperature**, **LOI Extinction**, **Spread Rate**, and **Cool Flame / Soot Dynamics** are live.`,
+        actions: [
+          { label: 'Switch Back to FLAME-SI Chat', type: 'switch_view', view: 'chat', primary: true },
+          { label: 'Open In-Chat Flame Physics Lab', type: 'toggle_flame_lab' },
+          { label: 'Inspect BASS-II in Library', type: 'search_explore', query: 'BASS-II', o2: 21 },
         ],
       };
       setExpandedTrace((prev) => ({ ...prev, [cmdReply.id]: true }));

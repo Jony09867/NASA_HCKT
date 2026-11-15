@@ -25,10 +25,11 @@ const arbitrate = () => {
   let nearest = Infinity;
   let closest = Infinity;
   for (const entry of registry) {
+    if (!entry.wrapper.isConnected) { entry.dispose?.(); continue; }
     const s = entry.settings.current;
     let near = null;
-    if (field.pointer && !s.disabled && !entry.reduce) {
-      near = reach(entry.wrapper.getBoundingClientRect(), field.pointer);
+    if (field.pointer && !s.disabled && !entry.reduce && !entry.wrapper.matches(":disabled") && entry.wrapper.getClientRects().length) {
+      near = reach(entry.measureRect?.() ?? entry.wrapper.getBoundingClientRect(), field.pointer);
       if (near.outside > s.padding) near = null;
     }
     if (!s.exclusive) {
@@ -259,11 +260,13 @@ export function magnetizeElement(element, options = {}) {
   };
   const settingsRef = { current: settings };
 
+  const noWrap = options.wrap === false;
+  const savedStyle = { translate: element.style.translate, transitionProperty: element.style.transitionProperty, willChange: element.style.willChange };
   let wrapper = element;
   let inner = element;
 
   // Wrap in a stationary inline-block container if not already in one
-  if (!element.parentElement.classList.contains('magnet-wrapper')) {
+  if (!noWrap && !element.parentElement.classList.contains('magnet-wrapper')) {
     const wrap = document.createElement('span');
     wrap.className = 'magnet-wrapper';
     wrap.style.position = 'relative';
@@ -275,8 +278,11 @@ export function magnetizeElement(element, options = {}) {
     inner = element;
   }
 
-  inner.style.willChange = 'transform';
-  inner.style.display = 'inline-block';
+  inner.style.willChange = noWrap ? 'translate' : 'transform';
+  if (noWrap) {
+    // Individual translate preserves absolute positioning and existing hover transforms.
+    inner.style.transitionProperty = 'color, background-color, border-color, box-shadow, opacity, transform';
+  } else inner.style.display = 'inline-block';
 
   const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   const current = { x: 0, y: 0, tiltX: 0, tiltY: 0, scale: 1 };
@@ -303,7 +309,7 @@ export function magnetizeElement(element, options = {}) {
     const target = { x: 0, y: 0, tiltX: 0, tiltY: 0, scale: 1 };
     if (s.disabled || reduce || !field.pointer) return { target, engaged: false };
     if (s.exclusive && field.owner !== entry) return { target, engaged: false };
-    const rect = wrapper.getBoundingClientRect();
+    const rect = entry.measureRect();
     const { dx, dy, outside } = reach(rect, field.pointer);
     if (outside > s.padding) return { target, engaged: false };
     const pull = s.padding > 0 ? 1 - smoothstep(s.padding * 0.5, s.padding, outside) : 1;
@@ -328,6 +334,11 @@ export function magnetizeElement(element, options = {}) {
 
   const apply = () => {
     const { x, y, tiltX, tiltY, scale } = current;
+    if (noWrap) {
+      inner.style.translate = Math.abs(x) < 0.01 && Math.abs(y) < 0.01 ? savedStyle.translate : 
+        x.toFixed(2) + 'px ' + y.toFixed(2) + 'px';
+      return;
+    }
     const turned = Math.abs(tiltX) > 0.01 || Math.abs(tiltY) > 0.01;
     inner.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)${
       turned ? ` perspective(800px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)` : ''
@@ -363,7 +374,21 @@ export function magnetizeElement(element, options = {}) {
     if (!raf) raf = requestAnimationFrame(frame);
   }
 
-  const entry = { wrapper, settings: settingsRef, reduce, wake, active: false };
+  const entry = {
+    wrapper, settings: settingsRef, reduce, wake, active: false,
+    measureRect() {
+      const rect = wrapper.getBoundingClientRect();
+      return noWrap ? { left: rect.left - current.x, top: rect.top - current.y, width: rect.width, height: rect.height } : rect;
+    },
+    dispose() {
+      cancelAnimationFrame(raf);
+      registry.delete(entry);
+      if (field.owner === entry) field.owner = null;
+      if (noWrap) Object.assign(inner.style, savedStyle);
+      wrapper.removeAttribute('data-magnet-active');
+      delete element.dataset.magnetized;
+    }
+  };
   registry.add(entry);
   if (!detach) detach = attach();
 }
@@ -373,12 +398,13 @@ export function magnetizeElement(element, options = {}) {
  */
 export function magnetizeAllPageButtons() {
   const query = () => {
+    for (const entry of registry) if (!entry.wrapper.isConnected) entry.dispose?.();
     const targets = document.querySelectorAll(
-      'header nav a, header .badge, header .brand, .clear, .card button, .card a, #cards button, #cards a, button[data-id]'
+      'header nav a, header .badge, header .brand, #explore button, #explore a[href], #compare button, #compare a[href], .compare-toast-close'
     );
     targets.forEach(el => {
       if (!el.closest('.magnet-wrapper') && !el.dataset.magnetized) {
-        magnetizeElement(el, { padding: 65, magnetStrength: 2.3, tilt: 5, scale: 1.04 });
+        magnetizeElement(el, { wrap: false, padding: 35, magnetStrength: 3, maxOffset: 5, tilt: 0, scale: 1 });
       }
     });
   };

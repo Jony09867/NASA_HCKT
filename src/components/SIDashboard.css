@@ -19,7 +19,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.15em;
@@ -82,7 +82,7 @@
   background: transparent;
   border: none;
   color: #9f9b94;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.82rem;
   padding: 0.6rem 1.25rem;
   border-radius: 8px;
@@ -108,7 +108,7 @@
 
 /* --- Environment Selector Grid --- */
 .si-preset-label {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   color: #8c8880;
@@ -124,7 +124,13 @@
   margin-bottom: 2.5rem;
 }
 
-.si-preset-card {
+.si-preset-card.rb-spotlight-card {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font: inherit;
+  min-width: 0;
+  width: 100%;
   padding: 1.25rem;
   text-align: left;
   cursor: pointer;
@@ -134,12 +140,24 @@
   gap: 0.5rem;
 }
 
-.si-preset-card:hover {
-  /* hover styling is handled by SpotlightCard inline styles */
+.si-preset-card.rb-spotlight-card {
+  background-color: #151a1a;
+  box-shadow: none;
 }
 
 .si-preset-card.is-active {
-  /* active styling is handled by SpotlightCard inline styles */
+  border-color: #ff8a58;
+  background-color: #211b18;
+  box-shadow: 0 0 24px rgba(255, 138, 88, 0.1);
+}
+
+.si-preset-card:focus-visible {
+  outline: 2px solid #ffe0bd;
+  outline-offset: 4px;
+}
+
+.si-preset-card > .si-preset-desc {
+  display: block;
 }
 
 .si-preset-title {
@@ -152,7 +170,7 @@
 }
 
 .si-preset-specs {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.8rem;
   color: #d7ba9e;
   display: flex;
@@ -203,7 +221,7 @@
 
 .si-gauge-header h3 {
   font-size: 0.9rem;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #9f9b94;
@@ -212,7 +230,7 @@
 
 .si-hazard-demo-badge {
   display: block;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   color: #8c8880;
@@ -229,7 +247,7 @@
   font-size: clamp(3.5rem, 6vw, 4.5rem);
   font-weight: 700;
   line-height: 1;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   letter-spacing: -0.04em;
   display: inline-block;
   transition: color 0.3s ease;
@@ -239,7 +257,7 @@
   font-size: 0.75rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   margin-top: 0.5rem;
   display: block;
 }
@@ -285,7 +303,7 @@
 }
 
 .si-metric-row span:last-child {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   color: #f7f3ed;
   font-weight: 600;
 }
@@ -309,7 +327,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.78rem;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   color: #9f9b94;
 }
 
@@ -378,7 +396,7 @@
 }
 
 .si-rank-num {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -389,7 +407,7 @@
 }
 
 .si-rank-match {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.75rem;
   color: #34d399;
 }
@@ -408,7 +426,7 @@
 }
 
 .si-tag {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.72rem;
   color: #a7a29a;
   background: rgba(255, 255, 255, 0.05);
@@ -431,7 +449,7 @@
   color: #ff8a58;
   display: block;
   font-size: 0.75rem;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 0.25rem;
@@ -444,7 +462,7 @@
 }
 
 .si-action-btn {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -501,7 +519,7 @@
   background: transparent;
   border: 1px solid transparent;
   color: #8c8880;
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.82rem;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -551,11 +569,29 @@
 }
 
 .si-pillar-badge {
-  font-family: var(--font-mono, monospace);
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.7rem;
   color: #ff8a58;
   background: rgba(255, 138, 88, 0.1);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   display: inline-block;
+}
+
+/* Match the homepage typography; keep numeric columns stable. */
+.si-dashboard-section,
+.si-dashboard-section button,
+.si-dashboard-section input,
+.si-dashboard-section textarea,
+.si-dashboard-section select {
+  font-family: 'DM Sans', sans-serif;
+}
+.si-dashboard-section h2,
+.si-dashboard-section h3,
+.si-dashboard-section h4 {
+  font-family: 'Space Grotesk', sans-serif;
+}
+.si-dashboard-section .si-hazard-score-value,
+.si-dashboard-section .si-metric-row span:last-child {
+  font-variant-numeric: tabular-nums;
 }
