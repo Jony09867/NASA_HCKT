@@ -595,3 +595,44 @@
 .si-dashboard-section .si-metric-row span:last-child {
   font-variant-numeric: tabular-nums;
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   3D WebGL Combustion Integrated Rack (CIR) Showcase Styles
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.si-sim3d-showcase {
+  margin: 2.5rem 0 3.5rem;
+  padding: 1.75rem;
+  background: #ffffff;
+  border: 1px solid #cbd8e8;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(16, 43, 78, 0.06);
+}
+
+.si-sim3d-showcase-head {
+  margin-bottom: 1.5rem;
+}
+
+.si-sim3d-showcase-head h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #102b4e;
+  margin: 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.si-sim3d-showcase-head p {
+  color: #4e637d;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 820px;
+}
+
+.si-sim3d-chart-wrap {
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #cbd8e8;
+}

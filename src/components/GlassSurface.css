@@ -39,13 +39,6 @@
   z-index: 2;
   font: inherit;
   color: inherit;
-  filter: none !important;
-  text-shadow: none !important;
-}
-
-.glass-surface__content * {
-  filter: none !important;
-  text-shadow: none !important;
 }
 
 /* Subtle, refined glass background without heavy dirty bevel shadows */

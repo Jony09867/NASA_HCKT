@@ -172,7 +172,7 @@ body .toggle-advanced-btn {
   background: #ffffff !important;
   color: #183b65 !important;
   border: 1px solid #b9cbe0 !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   padding: 10px 16px !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
@@ -189,7 +189,7 @@ body section.explore .clear {
   background: #164f91 !important;
   color: #ffffff !important;
   border: 1px solid #164f91 !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   box-shadow: 0 2px 8px rgba(22, 79, 145, 0.2) !important;
   transition: all 0.2s ease !important;
 }
@@ -238,7 +238,7 @@ body section.explore .btn-compare {
   background: #eef5fc !important;
   color: #164f91 !important;
   border: 1px solid #b9cbe0 !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
 }
@@ -280,7 +280,7 @@ body .selection-tray .primary-action {
   background: #164f91 !important;
   color: #ffffff !important;
   border: 1px solid #164f91 !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   font-weight: 700 !important;
   box-shadow: 0 2px 8px rgba(22, 79, 145, 0.25) !important;
   transition: all 0.2s ease !important;
