@@ -11,6 +11,7 @@ import LunarHabitatRecommendations from './LunarHabitatRecommendations';
 import OptionWheel from './OptionWheel';
 import MagicBento from './MagicBento';
 import Stepper, { Step } from './Stepper';
+import ScrubField from './ScrubField';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -390,6 +391,11 @@ export default function SIDashboard() {
   const [ventilation, setVentilation] = useState(0.08);
   const [gravityKey, setGravityKey] = useState('1/6g');
   const [materialKey, setMaterialKey] = useState('pmma');
+
+  // Artemis Target Atmosphere Interactive Scrubbing
+  const [artemisO2, setArtemisO2] = useState(34);
+  const [artemisPressure, setArtemisPressure] = useState(10.2);
+  const [artemisGravity, setArtemisGravity] = useState(0.16);
 
   // Ranking Tab Controls
   const [rankingMission, setRankingMission] = useState('moon');
@@ -779,6 +785,47 @@ export default function SIDashboard() {
                           </button>
                         ))}
                       </div>
+
+                      <div className="si-stepper-scrub-row" style={{ marginTop: '0.85rem' }}>
+                        <div className="si-stepper-scrub-item">
+                          <span className="si-stepper-scrub-label">Fine-tune O₂:</span>
+                          <ScrubField
+                            label="O₂"
+                            suffix="%"
+                            value={oxygen}
+                            defaultValue={34}
+                            min={10}
+                            max={100}
+                            step={1}
+                            size="sm"
+                            accent="#164f91"
+                            chipColor="#ffffff"
+                            onChange={(val) => {
+                              setOxygen(val);
+                              setActivePreset('custom');
+                            }}
+                          />
+                        </div>
+                        <div className="si-stepper-scrub-item">
+                          <span className="si-stepper-scrub-label">Fine-tune Pressure:</span>
+                          <ScrubField
+                            label="Press"
+                            suffix="psi"
+                            value={pressure}
+                            defaultValue={10.2}
+                            min={2}
+                            max={30}
+                            step={0.1}
+                            size="sm"
+                            accent="#164f91"
+                            chipColor="#ffffff"
+                            onChange={(val) => {
+                              setPressure(val);
+                              setActivePreset('custom');
+                            }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </Step>
 
@@ -802,6 +849,29 @@ export default function SIDashboard() {
                           </button>
                         ))}
                       </div>
+
+                      <div className="si-stepper-scrub-row" style={{ marginTop: '0.85rem' }}>
+                        <div className="si-stepper-scrub-item">
+                          <span className="si-stepper-scrub-label">Precision Flow Scrub:</span>
+                          <ScrubField
+                            label="Flow"
+                            suffix="cm/s"
+                            value={Number((ventilation * 100).toFixed(1))}
+                            defaultValue={8}
+                            min={0}
+                            max={50}
+                            step={0.5}
+                            size="sm"
+                            accent="#164f91"
+                            chipColor="#ffffff"
+                            onChange={(val) => {
+                              setVentilation(val / 100);
+                              setActivePreset('custom');
+                            }}
+                          />
+                        </div>
+                      </div>
+
                       <div className="si-stepper-meta-note">
                         Opposed flow: <strong>{(ventilation * 100).toFixed(1)} cm/s</strong> across sample duct
                       </div>
@@ -969,6 +1039,73 @@ export default function SIDashboard() {
                           <small>{p.specs}</small>
                         </button>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Precision Atmospheric Scrubbing with React Bits ScrubField */}
+                  <div className="si-scrub-section-box">
+                    <div className="si-scrub-section-header">
+                      <span className="si-subfilter-label">Precision Chamber Scrubbing:</span>
+                      <span className="si-scrub-drag-hint">Drag chip to scrub · Click to type</span>
+                    </div>
+                    <div className="si-scrub-chips-grid">
+                      <div className="si-scrub-chip-item">
+                        <span className="si-scrub-chip-title">Oxygen Concentration</span>
+                        <ScrubField
+                          label="O₂"
+                          suffix="%"
+                          value={oxygen}
+                          defaultValue={34}
+                          min={10}
+                          max={100}
+                          step={1}
+                          size="md"
+                          accent="#164f91"
+                          chipColor="#ffffff"
+                          onChange={(val) => {
+                            setOxygen(val);
+                            setActivePreset('custom');
+                          }}
+                        />
+                      </div>
+                      <div className="si-scrub-chip-item">
+                        <span className="si-scrub-chip-title">Chamber Pressure</span>
+                        <ScrubField
+                          label="Press"
+                          suffix="psi"
+                          value={pressure}
+                          defaultValue={10.2}
+                          min={2}
+                          max={30}
+                          step={0.1}
+                          size="md"
+                          accent="#164f91"
+                          chipColor="#ffffff"
+                          onChange={(val) => {
+                            setPressure(val);
+                            setActivePreset('custom');
+                          }}
+                        />
+                      </div>
+                      <div className="si-scrub-chip-item">
+                        <span className="si-scrub-chip-title">Opposed Airflow</span>
+                        <ScrubField
+                          label="Flow"
+                          suffix="cm/s"
+                          value={Number((ventilation * 100).toFixed(1))}
+                          defaultValue={8}
+                          min={0}
+                          max={50}
+                          step={0.5}
+                          size="md"
+                          accent="#164f91"
+                          chipColor="#ffffff"
+                          onChange={(val) => {
+                            setVentilation(val / 100);
+                            setActivePreset('custom');
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1195,22 +1332,87 @@ export default function SIDashboard() {
           ========================================================================= */}
       {activeMainTab === 'lunar' && (
         <div className="si-lunar-view-wrap">
-          {/* Quick Action Banner */}
+          {/* Quick Action Banner with Tactile ScrubFields */}
           <div className="si-lunar-action-banner">
-            <div>
-              <strong>Artemis Target Condition: 34% O₂ · 10.2 psi (70.3 kPa) · 0.16 g (Lunar)</strong>
-              <p>
-                Zero solid-fuel PSI flight tests were conducted at 0.16g or at 34% O₂. Click below to inspect our
-                validated 3D Navier-Stokes extrapolation for this exact atmosphere.
+            <div className="si-lunar-banner-info">
+              <div className="si-lunar-banner-badge-row">
+                <span className="si-lunar-env-pill">NASA Artemis Target Baseline</span>
+                <span className="si-lunar-env-sub">Tactile Parameter Extrapolation</span>
+              </div>
+              <strong className="si-lunar-banner-title">
+                Artemis Target Condition: {artemisO2}% O₂ · {artemisPressure} psi ({(artemisPressure * 6.89476).toFixed(1)} kPa) · {artemisGravity} g (Lunar)
+              </strong>
+              <p className="si-lunar-banner-desc">
+                Zero solid-fuel PSI flight tests were conducted at {artemisGravity}g or at {artemisO2}% O₂. Drag the precision scrub chips below or launch our validated 3D Navier-Stokes extrapolation:
               </p>
+              <div className="si-lunar-scrubbers-row">
+                <div className="si-lunar-scrub-field-wrap">
+                  <span className="si-scrub-field-caption">Oxygen Fraction</span>
+                  <ScrubField
+                    label="O₂"
+                    suffix="%"
+                    value={artemisO2}
+                    defaultValue={34}
+                    min={10}
+                    max={100}
+                    step={1}
+                    size="sm"
+                    accent="#164f91"
+                    chipColor="#ffffff"
+                    onChange={setArtemisO2}
+                  />
+                </div>
+                <div className="si-lunar-scrub-field-wrap">
+                  <span className="si-scrub-field-caption">Cabin Pressure</span>
+                  <ScrubField
+                    label="Press"
+                    suffix="psi"
+                    value={artemisPressure}
+                    defaultValue={10.2}
+                    min={2}
+                    max={30}
+                    step={0.1}
+                    size="sm"
+                    accent="#164f91"
+                    chipColor="#ffffff"
+                    onChange={setArtemisPressure}
+                  />
+                </div>
+                <div className="si-lunar-scrub-field-wrap">
+                  <span className="si-scrub-field-caption">Lunar Gravity</span>
+                  <ScrubField
+                    label="Gravity"
+                    suffix="g"
+                    value={artemisGravity}
+                    defaultValue={0.16}
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    size="sm"
+                    accent="#164f91"
+                    chipColor="#ffffff"
+                    onChange={setArtemisGravity}
+                  />
+                </div>
+              </div>
             </div>
-            <button
-              type="button"
-              className="si-banner-action-btn"
-              onClick={() => handleLaunchInLab('pmma', '1/6g', 34, 10.2)}
-            >
-              Simulate Artemis Atmosphere in 3D Lab ↗
-            </button>
+            <div className="si-lunar-banner-cta">
+              <button
+                type="button"
+                className="si-banner-action-btn"
+                onClick={() =>
+                  handleLaunchInLab(
+                    'pmma',
+                    artemisGravity === 0 ? '0g' : artemisGravity === 1 ? '1g' : '1/6g',
+                    artemisO2,
+                    artemisPressure
+                  )
+                }
+              >
+                Simulate Artemis Atmosphere in 3D Lab ↗
+              </button>
+              <span className="si-banner-cta-caption">Extrapolates 3D Navier-Stokes flame directly in lab</span>
+            </div>
           </div>
 
           <LunarHabitatRecommendations />
@@ -1281,7 +1483,24 @@ export default function SIDashboard() {
                     <div key={crit.key} className="si-weight-slider-unit">
                       <div className="si-weight-label-row">
                         <span>{crit.label}</span>
-                        <b>× {weights[crit.key]}</b>
+                        <ScrubField
+                          label="Weight"
+                          suffix="×"
+                          value={weights[crit.key]}
+                          defaultValue={weights[crit.key]}
+                          min={0}
+                          max={3}
+                          step={1}
+                          size="sm"
+                          accent="#164f91"
+                          chipColor="#ffffff"
+                          onChange={(val) =>
+                            setWeights((prev) => ({
+                              ...prev,
+                              [crit.key]: val,
+                            }))
+                          }
+                        />
                       </div>
                       <input
                         type="range"

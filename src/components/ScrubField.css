@@ -1,0 +1,189 @@
+/* ============================================================================
+   React Bits: ScrubField Component Styles
+   Enhanced for FLAME-SI Unified NASA Light Theme
+   Draggable scrub chip with rubber-band bounds, ghost delta pill, and dirty ring.
+   ============================================================================ */
+
+.scrub-field {
+  --sf-accent: #164f91;
+  --sf-chip: #ffffff;
+  --sf-ghost-ink: #ffffff;
+  --sf-h: 34px;
+  --sf-fs: 13px;
+  --sf-r: 8px;
+  --sf-w: 136px;
+  --sf-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: var(--sf-w);
+  height: var(--sf-h);
+  padding: 0 8px 0 4px;
+  border-radius: var(--sf-r);
+  background: var(--sf-chip);
+  border: 1px solid #cbd8e8;
+  color: #102b4e;
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: var(--sf-fs);
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(16, 43, 78, 0.05);
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.scrub-field:hover {
+  border-color: #8bb2df;
+  box-shadow: 0 2px 6px rgba(22, 79, 145, 0.12);
+}
+
+.scrub-field[data-dirty='true'] {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sf-accent) 55%, transparent);
+  border-color: var(--sf-accent);
+  transition-duration: 0ms;
+}
+
+.scrub-field[data-typing='true'] {
+  background: #ffffff;
+  border-color: var(--sf-accent);
+  box-shadow: 0 0 0 2px rgba(22, 79, 145, 0.2);
+  cursor: text;
+}
+
+.scrub-field__track {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scrub-field__fill {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--sf-accent) 14%, transparent);
+  transform-origin: left center;
+}
+
+.scrub-field[data-disabled='true'] {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+.scrub-field__handle {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 6px;
+  border-radius: calc(var(--sf-r) - 2px);
+  color: #164f91;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: inherit;
+  transition:
+    color 120ms ease,
+    transform 160ms var(--sf-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .scrub-field:not([data-disabled='true']):hover .scrub-field__handle {
+    color: #0c3971;
+  }
+}
+
+.scrub-field:not([data-disabled='true']):not([data-typing='true']):active .scrub-field__handle,
+.scrub-field[data-dragging='true'] .scrub-field__handle {
+  transform: scale(0.96);
+  color: #0c3971;
+}
+
+.scrub-field__input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #102b4e;
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  cursor: inherit;
+  transition: color 120ms ease;
+}
+
+.scrub-field[data-typing='true'] .scrub-field__input {
+  cursor: text;
+}
+
+.scrub-field[data-over='true'] .scrub-field__input {
+  color: #d3292f;
+}
+
+.scrub-field__suffix {
+  color: #4e637d;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding-left: 2px;
+}
+
+.scrub-field__ghost {
+  position: absolute;
+  top: -6px;
+  left: 0;
+  translate: 0 -100%;
+  transform-origin: 50% 100%;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--sf-accent);
+  color: var(--sf-ghost-ink);
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.95;
+  box-shadow: 0 4px 12px rgba(16, 43, 78, 0.25);
+  transition:
+    opacity 125ms var(--sf-ease-out),
+    scale 125ms var(--sf-ease-out);
+  z-index: 100;
+}
+
+.scrub-field[data-dragging='true'] .scrub-field__ghost {
+  opacity: 1;
+  scale: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrub-field .scrub-field__handle {
+    transform: none;
+    transition: color 120ms ease;
+  }
+
+  .scrub-field .scrub-field__ghost {
+    scale: 1;
+    transition: opacity 200ms ease;
+  }
+}

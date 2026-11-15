@@ -102,13 +102,28 @@
   box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
 }
 
+.lunar-glance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
 .lunar-glance-title {
-  margin: 0 0 1rem 0;
-  font-size: 1.2rem;
+  margin: 0;
+  font-size: 1.25rem;
   font-weight: 700;
   font-family: 'Space Grotesk', sans-serif;
   color: #102b4e;
   letter-spacing: -0.02em;
+}
+
+.lunar-glance-subtitle {
+  font-size: 0.8rem;
+  color: #4e637d;
+  font-weight: 500;
 }
 
 .lunar-glance-list {
@@ -156,9 +171,23 @@
   flex: 1;
 }
 
+.lunar-glance-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #164f91;
+  border: 1px solid #cbd8e8;
+  white-space: nowrap;
+}
+
 .lunar-glance-arrow {
   font-size: 0.9rem;
-  color: #8294a8;
+  color: #164f91;
+  font-weight: 700;
 }
 
 /* Detailed Recommendation Cards */

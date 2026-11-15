@@ -112,7 +112,13 @@ export const LUNAR_RECOMMENDATIONS = [
 
 export function LunarHabitatRecommendations() {
   const [expandedId, setExpandedId] = useState('R1');
+  const [stepperStep, setStepperStep] = useState(1);
   const [viewMode, setViewMode] = useState('stepper'); // 'stepper' | 'accordion'
+
+  const handleGlanceSelect = (id, idx) => {
+    setExpandedId(id);
+    setStepperStep(idx + 1);
+  };
 
   return (
     <div className="lunar-rec-container">
@@ -141,10 +147,9 @@ export function LunarHabitatRecommendations() {
         </div>
         <h2 className="lunar-rec-title">What this means for a lunar habitat</h2>
         <p className="lunar-rec-sub">
-          The planned Artemis base operates at <strong>30–34% oxygen and 10.2 psi (70.3 kPa)</strong> at one-sixth
-          Earth gravity (0.16g): higher oxygen than any solid fuel in NASA's public PSI tables was burned in, at a
-          partial gravity never tested on orbit. These five engineering directives synthesize the empirical evidence
-          that does exist.
+          A lunar habitat is planned at about <strong>30–34% oxygen and 10.2 psi (70.3 kPa)</strong>, at one-sixth
+          of Earth's gravity (0.16g): more oxygen than any solid in NASA's PSI tables was burned in, at a gravity PSI
+          never tested. These five recommendations follow from the empirical evidence that does exist.
         </p>
       </div>
 
@@ -152,9 +157,39 @@ export function LunarHabitatRecommendations() {
       <div className="lunar-rec-callout">
         <div className="lunar-callout-icon">ℹ</div>
         <div className="lunar-callout-text">
-          <strong>How to apply these directives:</strong> Each item outlines the operational hazard, physical
-          mechanisms from NASA flight tests, and actionable engineering rules. These are evidence-backed research
-          directives derived from PSI and NTRS flight datasets.
+          <strong>How to read this page:</strong> Each recommendation lists its evidence, with the NASA test or document
+          it comes from, and says plainly how strong that evidence is. These are research suggestions drafted from the
+          data, not safety requirements or a material certification.
+        </div>
+      </div>
+
+      {/* At a glance summary list (Matching user specification & enhancing with direct navigation) */}
+      <div className="lunar-at-a-glance">
+        <div className="lunar-glance-header">
+          <h4 className="lunar-glance-title">At a glance</h4>
+          <span className="lunar-glance-subtitle">Select any directive to jump directly into its analysis</span>
+        </div>
+        <div className="lunar-glance-list">
+          {LUNAR_RECOMMENDATIONS.map((r, idx) => {
+            const isSelected = viewMode === 'stepper' ? stepperStep === idx + 1 : expandedId === r.id;
+            return (
+              <div
+                key={r.id}
+                className={`lunar-glance-item ${isSelected ? 'is-active' : ''}`}
+                onClick={() => handleGlanceSelect(r.id, idx)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') handleGlanceSelect(r.id, idx);
+                }}
+              >
+                <span className="lunar-glance-code">{r.code}</span>
+                <span className="lunar-glance-text">{r.title}</span>
+                <span className="lunar-glance-tag">{r.severity}</span>
+                <span className="lunar-glance-arrow">{isSelected ? '▼' : '→'}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -162,7 +197,8 @@ export function LunarHabitatRecommendations() {
         /* Interactive Animated Stepper View */
         <div className="lunar-stepper-view-wrap">
           <Stepper
-            initialStep={1}
+            step={stepperStep}
+            onStepChange={setStepperStep}
             indicator="numbers"
             orientation="horizontal"
             theme="light"
@@ -240,86 +276,74 @@ export function LunarHabitatRecommendations() {
           </Stepper>
         </div>
       ) : (
-        <>
-          {/* At a glance summary list */}
-          <div className="lunar-at-a-glance">
-            <h4 className="lunar-glance-title">At a Glance · 5 Safety Directives</h4>
-            <div className="lunar-glance-list">
-              {LUNAR_RECOMMENDATIONS.map((r) => (
+        /* Detailed Recommendation Cards Accordion List */
+        <div className="lunar-cards-list">
+          {LUNAR_RECOMMENDATIONS.map((r) => {
+            const isExpanded = expandedId === r.id;
+            return (
+              <div key={r.id} className={`lunar-detail-card ${isExpanded ? 'is-open' : ''}`}>
                 <div
-                  key={r.id}
-                  className={`lunar-glance-item ${expandedId === r.id ? 'is-active' : ''}`}
-                  onClick={() => setExpandedId(r.id)}
+                  className="lunar-card-head"
+                  onClick={() => setExpandedId(isExpanded ? '' : r.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') setExpandedId(isExpanded ? '' : r.id);
+                  }}
                 >
-                  <span className="lunar-glance-code">{r.code}</span>
-                  <span className="lunar-glance-text">{r.title}</span>
-                  <span className="lunar-glance-arrow">{expandedId === r.id ? '▼' : '→'}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Detailed Recommendation Cards */}
-          <div className="lunar-cards-list">
-            {LUNAR_RECOMMENDATIONS.map((r) => {
-              const isExpanded = expandedId === r.id;
-              return (
-                <div key={r.id} className={`lunar-detail-card ${isExpanded ? 'is-open' : ''}`}>
-                  <div className="lunar-card-head" onClick={() => setExpandedId(isExpanded ? '' : r.id)}>
-                    <div className="lunar-card-head-left">
-                      <span className="lunar-card-badge-code">{r.code}</span>
-                      <div>
-                        <h3 className="lunar-card-title">{r.title}</h3>
-                        <span className="lunar-card-meta-tag">{r.badge}</span>
-                      </div>
-                    </div>
-                    <div className="lunar-card-head-right">
-                      <span className="lunar-badge-severity">{r.severity}</span>
-                      <span className="lunar-toggle-btn">{isExpanded ? 'Collapse ▴' : 'Inspect Directive ▾'}</span>
+                  <div className="lunar-card-head-left">
+                    <span className="lunar-card-badge-code">{r.code}</span>
+                    <div>
+                      <h3 className="lunar-card-title">{r.title}</h3>
+                      <span className="lunar-card-meta-tag">{r.badge}</span>
                     </div>
                   </div>
-
-                  {isExpanded && (
-                    <div className="lunar-card-body">
-                      {/* Punchy Core Hazard Callout */}
-                      <div className="lunar-core-hazard-banner">
-                        <span className="lunar-hazard-tag">CORE HAZARD</span>
-                        <p className="lunar-hazard-lead">{r.coreHazard}</p>
-                      </div>
-
-                      {/* Physical Explanation */}
-                      <div className="lunar-summary-box">
-                        <strong>Physical Mechanism:</strong>
-                        <p>{r.summary}</p>
-                      </div>
-
-                      {/* Bulleted Key Evidence Points */}
-                      <div className="lunar-keypoints-box">
-                        <strong>Flight Data & Experimental Evidence:</strong>
-                        <ul className="lunar-bullet-list">
-                          {r.keyPoints.map((pt, idx) => (
-                            <li key={idx}>{pt}</li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {/* Actionable Engineering Directive */}
-                      <div className="lunar-directive-box">
-                        <strong>Artemis Habitation Mandate:</strong>
-                        <p>{r.directive}</p>
-                      </div>
-
-                      {/* Citation Footer */}
-                      <div className="lunar-citation-box">
-                        <span>Evidence Citation:</span> <code>{r.citation}</code>
-                      </div>
-                    </div>
-                  )}
+                  <div className="lunar-card-head-right">
+                    <span className="lunar-badge-severity">{r.severity}</span>
+                    <span className="lunar-toggle-btn">{isExpanded ? 'Collapse ▴' : 'Inspect Directive ▾'}</span>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-        </>
+
+                {isExpanded && (
+                  <div className="lunar-card-body">
+                    {/* Punchy Core Hazard Callout */}
+                    <div className="lunar-core-hazard-banner">
+                      <span className="lunar-hazard-tag">CORE HAZARD</span>
+                      <p className="lunar-hazard-lead">{r.coreHazard}</p>
+                    </div>
+
+                    {/* Physical Explanation */}
+                    <div className="lunar-summary-box">
+                      <strong>Physical Mechanism:</strong>
+                      <p>{r.summary}</p>
+                    </div>
+
+                    {/* Bulleted Key Evidence Points */}
+                    <div className="lunar-keypoints-box">
+                      <strong>Flight Data & Experimental Evidence:</strong>
+                      <ul className="lunar-bullet-list">
+                        {r.keyPoints.map((pt, idx) => (
+                          <li key={idx}>{pt}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Actionable Engineering Directive */}
+                    <div className="lunar-directive-box">
+                      <strong>Artemis Habitation Mandate:</strong>
+                      <p>{r.directive}</p>
+                    </div>
+
+                    {/* Citation Footer */}
+                    <div className="lunar-citation-box">
+                      <span>Evidence Citation:</span> <code>{r.citation}</code>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
