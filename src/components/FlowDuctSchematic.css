@@ -1,17 +1,18 @@
 /* ============================================================================
    BASS-II Hardware Flow Duct Schematic CSS
-   Editorial Nature / NASA Scientific Paper Theme
+   Unified NASA Light Theme Combo: #f5f8fc, #102b4e, #164f91, #cbd8e8
    ============================================================================ */
 
 .flow-duct-card {
   display: flex;
   flex-direction: column;
   background: #ffffff;
-  border: 1px solid #e7e3dc;
+  border: 1px solid #cbd8e8;
   border-radius: 12px;
   padding: 1.25rem;
-  box-shadow: 0 2px 8px rgba(28, 25, 23, 0.04);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 0 2px 8px rgba(16, 43, 78, 0.04);
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #102b4e;
 }
 
 .flow-duct-header {
@@ -27,7 +28,7 @@
   display: block;
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: #164f91;
   text-transform: uppercase;
   margin-bottom: 0.25rem;
@@ -37,17 +38,17 @@
   margin: 0;
   font-size: 1.15rem;
   font-weight: 700;
-  font-family: 'Newsreader', Georgia, serif;
-  color: #1c1917;
-  letter-spacing: -0.01em;
+  font-family: 'Space Grotesk', sans-serif;
+  color: #102b4e;
+  letter-spacing: -0.015em;
 }
 
 .flow-duct-g-badge {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #c25934;
-  background: #fdf5f2;
-  border: 1px solid #f2cdc3;
+  color: #164f91;
+  background: #eef5fc;
+  border: 1px solid #b9cfea;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
   align-self: flex-start;
@@ -55,9 +56,9 @@
 
 /* Accordion */
 .flow-duct-accordion {
-  border: 1px solid #e7e3dc;
+  border: 1px solid #cbd8e8;
   border-radius: 6px;
-  background: #faf9f6;
+  background: #f8fbff;
   margin-bottom: 1rem;
   overflow: hidden;
 }
@@ -72,27 +73,27 @@
   border: none;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #44403c;
+  color: #102b4e;
   cursor: pointer;
   text-align: left;
   transition: background 0.15s ease;
 }
 
 .flow-duct-accordion-btn:hover {
-  background: #f4f1ea;
+  background: #eef5fc;
 }
 
 .flow-duct-acc-icon {
   font-size: 0.65rem;
-  color: #78716c;
+  color: #164f91;
 }
 
 .flow-duct-accordion-body {
   padding: 0 0.85rem 0.85rem;
   font-size: 0.82rem;
-  color: #57534e;
+  color: #4e637d;
   line-height: 1.55;
-  border-top: 1px solid #ede8e1;
+  border-top: 1px solid #cbd8e8;
 }
 
 .flow-duct-accordion-body p {
@@ -100,17 +101,17 @@
 }
 
 .flow-duct-ntrs-cite {
-  margin-top: 0.65rem;
+  font-family: 'Space Grotesk', monospace;
   font-size: 0.75rem;
-  font-style: italic;
-  color: #78716c;
+  color: #164f91;
+  margin-top: 0.65rem;
 }
 
-/* SVG Canvas Wrap */
+/* Canvas Wrap */
 .flow-duct-canvas-wrap {
   width: 100%;
-  background: #faf9f6;
-  border: 1px solid #e7e3dc;
+  background: #f8fbff;
+  border: 1px solid #cbd8e8;
   border-radius: 8px;
   padding: 1rem;
   display: flex;
@@ -120,30 +121,29 @@
 
 .flow-duct-svg {
   width: 100%;
-  max-width: 520px;
+  max-width: 580px;
   height: auto;
-  display: block;
 }
 
-/* SVG Elements */
+/* SVG Blueprint Styling */
 .duct-boundary-box {
   fill: #ffffff;
-  stroke: #cbd5e1;
+  stroke: #94a3b8;
   stroke-width: 1.5;
+  stroke-dasharray: 4 2;
 }
 
 .duct-label-dim {
-  font-size: 11px;
-  font-weight: 600;
   fill: #64748b;
-  font-family: inherit;
+  font-size: 11px;
+  font-family: 'Space Grotesk', monospace;
+  font-weight: 600;
 }
 
 .duct-label-state {
+  fill: #64748b;
   font-size: 12px;
-  font-weight: 600;
-  fill: #94a3b8;
-  font-family: inherit;
+  font-family: 'Space Grotesk', monospace;
 }
 
 .duct-flow-arrow {
@@ -156,83 +156,79 @@
 }
 
 .duct-speed-text {
-  font-size: 13px;
-  font-weight: 700;
   fill: #0284c7;
+  font-size: 12px;
   font-family: 'Space Grotesk', monospace;
+  font-weight: 700;
 }
 
 .duct-speed-sub {
-  font-size: 10.5px;
-  font-weight: 600;
-  fill: #0284c7;
-  font-family: inherit;
+  fill: #64748b;
+  font-size: 10px;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .duct-igniter-wire {
-  stroke: #ea580c;
+  stroke: #d3292f;
   stroke-width: 2.5;
   stroke-linecap: round;
 }
 
 .duct-igniter-label {
+  fill: #d3292f;
   font-size: 11px;
+  font-family: 'Space Grotesk', monospace;
   font-weight: 700;
-  fill: #ea580c;
-  font-family: inherit;
 }
 
 .duct-centerline {
-  stroke: #94a3b8;
+  stroke: #cbd5e1;
   stroke-width: 1;
-  stroke-dasharray: 4 3;
-  opacity: 0.6;
+  stroke-dasharray: 6 3;
 }
 
 .duct-rod-sample {
   fill: #e2e8f0;
-  stroke: #334155;
-  stroke-width: 1.6;
+  stroke: #475569;
+  stroke-width: 1.5;
 }
 
 .duct-flame-cap {
-  fill: #ffedd5;
-  stroke: #ea580c;
+  fill: rgba(255, 123, 57, 0.45);
+  stroke: #ff7b39;
   stroke-width: 1.5;
 }
 
 .duct-dim-line {
-  stroke: #475569;
+  stroke: #64748b;
   stroke-width: 1;
 }
 
 .duct-dim-tick {
-  stroke: #475569;
-  stroke-width: 1.5;
+  stroke: #64748b;
+  stroke-width: 1;
 }
 
 .duct-dim-text {
-  font-size: 11.5px;
-  font-weight: 700;
-  fill: #1e293b;
+  fill: #102b4e;
+  font-size: 11px;
   font-family: 'Space Grotesk', monospace;
+  font-weight: 700;
 }
 
 .duct-mount-clamp {
-  fill: #475569;
+  fill: #334155;
 }
 
 .duct-mount-post {
   fill: #64748b;
 }
 
-/* Footer Reference */
 .flow-duct-footer {
   display: flex;
   justify-content: space-between;
   margin-top: 0.75rem;
-  font-size: 0.75rem;
-  color: #78716c;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: #8294a8;
+  font-family: 'DM Sans', sans-serif;
 }
