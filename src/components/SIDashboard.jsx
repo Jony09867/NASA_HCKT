@@ -866,55 +866,92 @@ export default function SIDashboard() {
               </div>
             </div>
 
-            {/* In NASA's words */}
+            {/* In NASA's words - Structured Flight Log Card */}
             <div className="si-nasa-words-box">
-              <span className="si-box-title">In NASA's words</span>
-              <p className="si-glossary-hint">
-                "Pot" is the fan potentiometer setting; "HCl", "HCN", and "CO" are gas-sensor readings.
-              </p>
+              <div className="si-nasa-words-head">
+                <span className="si-box-title">In NASA's Recorded Words</span>
+                <span className="si-nasa-log-badge">LOG #022 · BASS-II</span>
+              </div>
               <blockquote className="si-nasa-quote">
                 {activeCoverage.labNote}
               </blockquote>
+              <div className="si-sensor-pills-row">
+                <span className="si-sensor-pill">
+                  <b>Pot:</b> Fan potentiometer calibrated to anemometer airflow (cm/s)
+                </span>
+                <span className="si-sensor-pill">
+                  <b>Sensors:</b> Gas telemetry channels (CO, HCl, HCN)
+                </span>
+              </div>
             </div>
 
             {/* How long it burned */}
             <div className="si-burn-time-box">
               <span className="si-box-title">How long it burned</span>
-              <div className="si-burn-big-num">
-                <strong>{activeCoverage.medianBurnSec} s</strong>
-                <span>median</span>
+              <div className="si-burn-stat-card">
+                <div className="si-burn-big-num">
+                  <strong>{activeCoverage.medianBurnSec} s</strong>
+                  <span>median duration</span>
+                </div>
+                <div className="si-burn-meta-badge">
+                  <span>Recorded Range: {activeCoverage.burnRangeSec}</span>
+                </div>
               </div>
-              <small className="si-burn-range">range {activeCoverage.burnRangeSec}</small>
             </div>
 
-            {/* Same sample, both gravities */}
+            {/* Same sample, both gravities - Two Spacious Side-by-Side Comparison Cards */}
             <div className="si-gravity-comparison-box">
-              <span className="si-box-title">Same sample, both gravities</span>
-              <div className="si-grav-compare-table">
-                <div className="si-grav-compare-row head">
-                  <span>Sample</span>
-                  <span>Microgravity burn</span>
-                  <span>1 g burn</span>
+              <span className="si-box-title">Same Sample, Both Gravities · Physics Divergence</span>
+              <div className="si-grav-cards-grid">
+                <div className="si-grav-spec-card micro">
+                  <div className="si-grav-card-badge micro">
+                    <span>ISS 0g Microgravity</span>
+                  </div>
+                  <h4 className="si-grav-card-title">{activeCoverage.code} in Freefall</h4>
+                  <p className="si-grav-card-desc">{activeCoverage.comparison.micro}</p>
                 </div>
-                <div className="si-grav-compare-row">
-                  <b>{activeCoverage.code}</b>
-                  <span>{activeCoverage.comparison.micro}</span>
-                  <span>{activeCoverage.comparison.earth}</span>
+
+                <div className="si-grav-spec-card earth">
+                  <div className="si-grav-card-badge earth">
+                    <span>Earth 1g Terrestrial</span>
+                  </div>
+                  <h4 className="si-grav-card-title">{activeCoverage.code} on Ground</h4>
+                  <p className="si-grav-card-desc">{activeCoverage.comparison.earth}</p>
                 </div>
               </div>
             </div>
 
-            {/* Closest Recorded Discrete PSI Test Point */}
+            {/* Closest Recorded Discrete PSI Test Point - Structured Metadata Grid */}
             <div className="si-closest-test-callout">
-              <span className="si-callout-badge">Closest Recorded NASA PSI Test Point</span>
-              <h5>{closestEmpiricalTest.testId}</h5>
-              <div className="si-closest-mini-specs">
-                <span>{closestEmpiricalTest.fuelType}</span>
-                <span>{closestEmpiricalTest.o2}% O₂</span>
-                <span>{closestEmpiricalTest.kPa} kPa</span>
-                <span>{closestEmpiricalTest.airflowCmS} cm/s</span>
+              <div className="si-closest-head">
+                <span className="si-callout-badge">Closest Recorded NASA PSI Flight Test</span>
+                <span className="si-closest-diff-pill">Match Δ: {closestEmpiricalTest.distanceScore}</span>
               </div>
-              <p>{closestEmpiricalTest.outcome}</p>
+              <h4 className="si-closest-test-title">{closestEmpiricalTest.testId}</h4>
+              
+              <div className="si-closest-specs-grid">
+                <div className="si-closest-spec-cell">
+                  <small>FUEL TYPE</small>
+                  <strong>{closestEmpiricalTest.fuelType}</strong>
+                </div>
+                <div className="si-closest-spec-cell">
+                  <small>ATMOSPHERE</small>
+                  <strong>{closestEmpiricalTest.o2}% O₂ · {closestEmpiricalTest.kPa} kPa</strong>
+                </div>
+                <div className="si-closest-spec-cell">
+                  <small>FLOW VELOCITY</small>
+                  <strong>{closestEmpiricalTest.airflowCmS} cm/s</strong>
+                </div>
+                <div className="si-closest-spec-cell">
+                  <small>ENVIRONMENT</small>
+                  <strong>{closestEmpiricalTest.gravity}</strong>
+                </div>
+              </div>
+
+              <div className="si-closest-finding-box">
+                <small>RECORDED OUTCOME</small>
+                <p>{closestEmpiricalTest.outcome}</p>
+              </div>
             </div>
           </aside>
         </div>

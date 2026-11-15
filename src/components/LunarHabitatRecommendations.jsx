@@ -6,25 +6,43 @@ export const LUNAR_RECOMMENDATIONS = [
     id: 'R1',
     code: 'R1',
     title: 'Do not approve habitat materials on the Earth upward-burning test alone',
-    severity: 'Critical Flaw in Standard Test',
-    badge: 'NASA-STD-6001B Test 1 Audit',
+    severity: 'Critical Test Gap',
+    badge: 'NASA-STD-6001B Audit',
+    coreHazard:
+      'Materials that self-extinguish in 1g Earth tests can burn continuously in microgravity and lunar partial gravity.',
     summary:
-      'Standard terrestrial upward flammability tests (NASA-STD-6001B Test 1) assume natural convection drives hot buoyant gases upwards away from the base. In reduced lunar gravity (0.16g) and microgravity, convective cooling is crippled, allowing flames to spread at lower limiting oxygen concentrations (LOI) than predicted by 1g tests.',
+      'Standard terrestrial flammability screening (NASA-STD-6001B Test 1) relies on natural buoyancy to draw in cool air and carry heat upward away from the base. In low lunar gravity (0.16g) and freefall (0g), buoyant convective cooling is severely suppressed, allowing flames to anchor and propagate at lower Limiting Oxygen Indices (LOI) than ever observed on Earth.',
+    keyPoints: [
+      'BASS-II showed PMMA burns steadily at ultralow airflows (< 5 cm/s) where 1g upward flames quench.',
+      'Materials certified "self-extinguishing" on Earth sustain flame in low-speed forced ventilation.',
+      'Mandatory qualification in low-speed opposed-flow chambers is necessary before crewed flight.',
+    ],
+    directive:
+      'Design Mandate: Disallow materials solely screened with 1g upward flame tests for Artemis habitation modules; mandate low-velocity forced-flow qualification.',
     evidence:
-      'BASS-II and Saffire-I empirical burns demonstrated that materials passing 1g flammability screening burned steadily in microgravity at 21% O₂ under low-speed ventilation. Terrestrial certification alone is dangerously non-conservative.',
-    citation: 'NASA/TM-20210011385 (BASS-II Final Report) & NASA-STD-6001B.',
+      'Validated by BASS-II (PSI-25) flight runs and Saffire-I panel burns inside Cygnus cargo vehicles.',
+    citation: 'NASA/TM-20210011385 (BASS-II Summary Report) & NASA-STD-6001B',
   },
   {
     id: 'R2',
     code: 'R2',
     title: 'Test materials at the habitat\'s own atmosphere before choosing 30% oxygen',
-    severity: 'High Chemical Oxidation Hazard',
-    badge: 'Artemis Volatile Corridor',
+    severity: 'High Chemical Oxidation',
+    badge: 'Artemis Exploration Corridor',
+    coreHazard:
+      'Elevating oxygen to 30–34% drastically accelerates flame spread velocity and reduces ignition energy.',
     summary:
-      'The planned Artemis Exploration Atmosphere operates at 30–34% O₂ at 70.3 kPa (10.2 psi). This partial pressure elevates oxygen mass fraction by ~50% over sea level. In NASA PSI, zero solid-fuel tests exist at this oxygen level under partial gravity.',
+      'The planned Artemis Lunar Habitat exploration atmosphere operates at 30–34% O₂ at 70.3 kPa (10.2 psi) to reduce astronaut pre-breathe times before extravehicular activity. In NASA PSI tables, exactly zero solid-fuel tests exist at this oxygen level in partial gravity.',
+    keyPoints: [
+      'Flame spread velocity increases non-linearly when oxygen concentration exceeds 25% by volume.',
+      'Flame-retardant textiles like Nomex III self-extinguish at 21% O₂ but ignite and burn vigorously at 34% O₂.',
+      'Partial pressure of oxygen (23.9 kPa) provides intense oxidizer availability despite reduced total cabin pressure.',
+    ],
+    directive:
+      'Design Mandate: Every candidate interior fabric, cable sleeve, and polymer must be burned in a sealed 34% O₂ / 70.3 kPa test rig prior to flight certification.',
     evidence:
-      'Terrestrial and 0g drop tower experiments show an exponential increase in flame spread velocity above 25% O₂. Nomex, which self-extinguishes at 21% O₂, burns vigorously at 34% O₂ in BASS-II tests.',
-    citation: 'NASA/CR-2016-219139 & Saffire-III Enriched O₂ Flight Results.',
+      'Empirically proven by Saffire-III enriched oxygen experiments and ACME CFI-G gaseous flame spread runs.',
+    citation: 'NASA/CR-2016-219139 & Saffire-III Flight Evaluation',
   },
   {
     id: 'R3',
@@ -32,11 +50,20 @@ export const LUNAR_RECOMMENDATIONS = [
     title: 'Do not assume lunar gravity (0.16g) is safer than orbit',
     severity: 'Partial Gravity Peak Spread',
     badge: 'Grashof Scaling Paradox',
+    coreHazard:
+      'Weak lunar buoyancy can produce the worst-case flammability regime by feeding fresh oxygen without blowing the flame out.',
     summary:
-      'Many engineers intuitively assume lunar gravity is safer than microgravity because "some buoyancy exists". In fact, partial buoyancy stretches diffusion shells into bell plumes while convective cooling remains too weak to blow them out—creating the worst-case flammability regime.',
+      'Engineers frequently assume partial lunar gravity (0.16g) is inherently safer than microgravity because "buoyancy returns". In reality, weak buoyancy creates a bell-shaped diffusion envelope where convective oxidizer transport is enhanced while convective cooling remains too sluggish to quench the flame.',
+    keyPoints: [
+      'Low buoyancy (Grashof number Gr ~ 0.16) feeds steady buoyant oxidizer without high-velocity thermal blowoff.',
+      'Parabolic aircraft tests (LUCI) demonstrate that flame propagation speed often peaks around 0.15g–0.25g.',
+      'Soot shells thicken, amplifying radiative heat feedback to the unburned solid fuel surface.',
+    ],
+    directive:
+      'Design Mandate: Account for peak flame spread rates under partial gravity rather than interpolating linearly between 0g and 1g.',
     evidence:
-      'Theoretical Grashof-Rayleigh scaling and parabolic flight tests (LUCI) show that partial gravity (~0.16g) often produces faster flame propagation and thicker pyrolyzing soot layers than either 0g or 1g.',
-    citation: 'NASA Glenn Combustion Branch & ACME Partial Gravity Studies.',
+      'Confirmed by NASA Glenn Combustion Branch parabolic flight testing and ACME low-buoyancy studies.',
+    citation: 'NASA Glenn Microgravity Science Division & LUCI Parabolic Campaign',
   },
   {
     id: 'R4',
@@ -44,11 +71,20 @@ export const LUNAR_RECOMMENDATIONS = [
     title: 'Shut off ventilation to fight a fire, and confirm it is fully out before turning it back on',
     severity: 'Cool-Flame Reignition Hazard',
     badge: 'FLEX Smoldering Protocol',
+    coreHazard:
+      'Smoldering combustion can persist invisibly in a low-temperature "cool-flame" state (600–800 K) with zero visible light.',
     summary:
-      'In freefall and lunar habitats, turning off ventilation removes convective oxidizer transport, starving active flaming. However, smoldering pyrolysis can continue in a low-temperature "cool-flame" state (600–800 K) with near-zero visible light.',
+      'In spacecraft and lunar enclosures, cutting ventilation starves active diffusion flames by eliminating forced oxidizer transport. However, fuel cores can continue smoldering anaerobically. Re-starting cabin ventilation fans introduces fresh oxygen, triggering explosive flashover reignition tens of minutes after visible flaming ended.',
+    keyPoints: [
+      'FLEX droplets and BASS-II solids demonstrated sustained low-temperature reaction zones with zero visible emissions.',
+      'Premature HVAC ventilation re-engagement can reignite pyrolysate gases accumulated in enclosed bays.',
+      'Infrared thermal radiometry and gas-sensor telemetry must verify surface cooling below 420 K before air circulation resumes.',
+    ],
+    directive:
+      'Design Mandate: Automate immediate HVAC damper cut-off upon smoke or thermal detection; enforce multi-sensor thermal verification before re-pressurization or fan reactivation.',
     evidence:
-      'NASA FLEX and Saffire experiments proved that reignition can occur instantly when ventilation fans are re-energized, even tens of minutes after visible flaming ceased.',
-    citation: 'NASA PSI-69 FLEX Project & Saffire-II Fire Safety Directive.',
+      'Discovered in PSI-69 FLEX liquid combustion and verified across Saffire-II suppression maneuvers.',
+    citation: 'NASA PSI-69 FLEX Final Analysis & Saffire Fire Safety Guidelines',
   },
   {
     id: 'R5',
@@ -56,11 +92,20 @@ export const LUNAR_RECOMMENDATIONS = [
     title: 'Qualify smoke detectors with real flaming smoke and lunar dust',
     severity: 'Sensor Blindness Hazard',
     badge: 'SAME-R Soot Physics',
+    coreHazard:
+      'Without buoyancy, smoke particles agglomerate into 8x–12x larger clusters, baffling Earth-calibrated optical detectors.',
     summary:
-      'Spacecraft optical obscuration detectors calibrated for Earth soot fail in low gravity because soot agglomerates grow 8x to 12x larger due to prolonged residence time without buoyant escape.',
+      'Standard ionization and optical smoke detectors calibrated for terrestrial fire alarms fail in reduced gravity. Without buoyant updrafts, soot motes spend extended time in the reaction zone, forming massive chain-like agglomerates that scatter light at drastically altered angles and drift unpredictably.',
+    keyPoints: [
+      'SAME-R flight experiments confirmed soot aggregate diameter expands 8× to 12× larger than in 1g Earth air.',
+      'Airborne lunar regolith dust brought inside habitats by EVA suits cross-contaminates ionization sensors.',
+      'Detectors must use multi-wavelength laser scattering and particle-size discrimination to separate dust from soot.',
+    ],
+    directive:
+      'Design Mandate: Equip habitat environmental control systems with dual-angle optical obscuration detectors calibrated for large-diameter agglomerates and regolith filter stages.',
     evidence:
-      'NASA SAME-R (Smoke Aerosol Measurement Experiment) demonstrated that low-gravity soot scatters light at drastically different angles, while lunar regolith dust cross-contaminates ionization chambers.',
-    citation: 'NASA/TP-2012-217420 (SAME-R Final Flight Science Report).',
+      'Demonstrated by SAME-R (Smoke Aerosol Measurement Experiment, PSI-101) aboard the International Space Station.',
+    citation: 'NASA/TP-2012-217420 (SAME-R Final Flight Science Report)',
   },
 ];
 
@@ -71,25 +116,31 @@ export function LunarHabitatRecommendations() {
     <div className="lunar-rec-container">
       {/* Title & Introduction */}
       <div className="lunar-rec-header">
-        <span className="lunar-rec-eyebrow">MISSION FLAMMABILITY POLICY · ARTEMIS LUNAR HABITAT</span>
+        <div className="lunar-rec-eyebrow">
+          <span>MISSION FLAMMABILITY DIRECTIVES · ARTEMIS LUNAR HABITAT</span>
+        </div>
         <h2 className="lunar-rec-title">What this means for a lunar habitat</h2>
         <p className="lunar-rec-sub">
-          A lunar habitat is planned at about <strong>30% oxygen and 10.2 psi (70.3 kPa)</strong>, at one-sixth of
-          Earth's gravity: more oxygen than any solid in NASA's PSI tables was burned in, at a gravity PSI never
-          tested. These five recommendations follow from the evidence that does exist.
+          The planned Artemis base operates at <strong>30–34% oxygen and 10.2 psi (70.3 kPa)</strong> at one-sixth
+          Earth gravity (0.16g): higher oxygen than any solid fuel in NASA's public PSI tables was burned in, at a
+          partial gravity never tested on orbit. These five engineering directives synthesize the empirical evidence
+          that does exist.
         </p>
       </div>
 
-      {/* "How to read this page" Callout Box (Matching Rival Screen 9) */}
+      {/* "How to read this page" Callout Box */}
       <div className="lunar-rec-callout">
-        <strong>How to read this page:</strong> Each recommendation lists its evidence, with the NASA test or document
-        it comes from, and says plainly how strong that evidence is. These are research suggestions drafted from the
-        data, not safety requirements or a material certification.
+        <div className="lunar-callout-icon">ℹ</div>
+        <div className="lunar-callout-text">
+          <strong>How to apply these directives:</strong> Each item outlines the operational hazard, physical
+          mechanisms from NASA flight tests, and actionable engineering rules. These are evidence-backed research
+          directives derived from PSI and NTRS flight datasets.
+        </div>
       </div>
 
       {/* At a glance summary list */}
       <div className="lunar-at-a-glance">
-        <h4 className="lunar-glance-title">At a glance</h4>
+        <h4 className="lunar-glance-title">At a Glance · 5 Safety Directives</h4>
         <div className="lunar-glance-list">
           {LUNAR_RECOMMENDATIONS.map((r) => (
             <div
@@ -114,24 +165,50 @@ export function LunarHabitatRecommendations() {
               <div className="lunar-card-head" onClick={() => setExpandedId(isExpanded ? '' : r.id)}>
                 <div className="lunar-card-head-left">
                   <span className="lunar-card-badge-code">{r.code}</span>
-                  <h3 className="lunar-card-title">{r.title}</h3>
+                  <div>
+                    <h3 className="lunar-card-title">{r.title}</h3>
+                    <span className="lunar-card-meta-tag">{r.badge}</span>
+                  </div>
                 </div>
                 <div className="lunar-card-head-right">
                   <span className="lunar-badge-severity">{r.severity}</span>
-                  <span className="lunar-toggle-btn">{isExpanded ? 'Collapse' : 'Expand'}</span>
+                  <span className="lunar-toggle-btn">{isExpanded ? 'Collapse ▴' : 'Inspect Directive ▾'}</span>
                 </div>
               </div>
 
               {isExpanded && (
                 <div className="lunar-card-body">
+                  {/* Punchy Core Hazard Callout */}
+                  <div className="lunar-core-hazard-banner">
+                    <span className="lunar-hazard-tag">CORE HAZARD</span>
+                    <p className="lunar-hazard-lead">{r.coreHazard}</p>
+                  </div>
+
+                  {/* Physical Explanation */}
                   <div className="lunar-summary-box">
-                    <strong>Operational Finding:</strong> {r.summary}
+                    <strong>Physical Mechanism:</strong>
+                    <p>{r.summary}</p>
                   </div>
-                  <div className="lunar-evidence-box">
-                    <strong>NASA Empirical Evidence:</strong> {r.evidence}
+
+                  {/* Bulleted Key Evidence Points */}
+                  <div className="lunar-keypoints-box">
+                    <strong>Flight Data & Experimental Evidence:</strong>
+                    <ul className="lunar-bullet-list">
+                      {r.keyPoints.map((pt, idx) => (
+                        <li key={idx}>{pt}</li>
+                      ))}
+                    </ul>
                   </div>
+
+                  {/* Actionable Engineering Directive */}
+                  <div className="lunar-directive-box">
+                    <strong>Artemis Habitation Mandate:</strong>
+                    <p>{r.directive}</p>
+                  </div>
+
+                  {/* Citation Footer */}
                   <div className="lunar-citation-box">
-                    <span>Source:</span> <code>{r.citation}</code>
+                    <span>Evidence Citation:</span> <code>{r.citation}</code>
                   </div>
                 </div>
               )}

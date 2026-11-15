@@ -1,13 +1,13 @@
 /* ============================================================================
    Lunar Habitat Recommendations (R1–R5) CSS
-   Unified NASA Light Theme Combo: #f5f8fc, #102b4e, #164f91, #cbd8e8
+   Unified NASA Light Theme: Clean, Ergonomic Typography & Visual Chunking
    ============================================================================ */
 
 .lunar-rec-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  max-width: 980px;
+  gap: 1.75rem;
+  max-width: 1040px;
   margin: 0 auto;
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #102b4e;
@@ -15,38 +15,40 @@
 
 .lunar-rec-header {
   border-bottom: 1px solid #cbd8e8;
-  padding-bottom: 1.25rem;
+  padding-bottom: 1.5rem;
 }
 
 .lunar-rec-eyebrow {
   display: inline-flex;
   align-items: center;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: #164f91;
   text-transform: uppercase;
   background: #eef5fc;
-  padding: 0.3rem 0.75rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 999px;
   border: 1px solid #b9cfea;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
 }
 
 .lunar-rec-title {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.85rem;
+  margin: 0 0 0.65rem 0;
+  font-size: 2.1rem;
   font-weight: 700;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
   color: #102b4e;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
 }
 
 .lunar-rec-sub {
   margin: 0;
-  font-size: 0.94rem;
-  line-height: 1.6;
+  font-size: 1.02rem;
+  line-height: 1.68;
   color: #4e637d;
+  max-width: 900px;
 }
 
 .lunar-rec-sub strong {
@@ -57,15 +59,37 @@
 .lunar-rec-callout {
   background: #eef5fc;
   border: 1px solid #cbd8e8;
-  border-left: 4px solid #164f91;
-  padding: 1rem 1.25rem;
-  border-radius: 0 8px 8px 0;
-  font-size: 0.86rem;
-  line-height: 1.55;
+  border-left: 5px solid #164f91;
+  padding: 1.15rem 1.45rem;
+  border-radius: 0 10px 10px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(16, 43, 78, 0.04);
+}
+
+.lunar-callout-icon {
+  width: 24px;
+  height: 24px;
+  background: #164f91;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.lunar-callout-text {
+  font-size: 0.94rem;
+  line-height: 1.62;
   color: #102b4e;
 }
 
-.lunar-rec-callout strong {
+.lunar-callout-text strong {
   color: #164f91;
 }
 
@@ -73,14 +97,14 @@
 .lunar-at-a-glance {
   background: #ffffff;
   border: 1px solid #cbd8e8;
-  border-radius: 10px;
-  padding: 1.25rem;
-  box-shadow: 0 2px 8px rgba(16, 43, 78, 0.04);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
 }
 
 .lunar-glance-title {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
   font-weight: 700;
   font-family: 'Space Grotesk', sans-serif;
   color: #102b4e;
@@ -90,15 +114,15 @@
 .lunar-glance-list {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.55rem;
 }
 
 .lunar-glance-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 6px;
+  gap: 0.85rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
   background: #f8fbff;
@@ -108,30 +132,32 @@
 .lunar-glance-item:hover {
   background: #eef5fc;
   border-color: #164f91;
+  transform: translateX(3px);
 }
 
 .lunar-glance-item.is-active {
   background: #eef5fc;
   border-color: #164f91;
+  box-shadow: 0 2px 6px rgba(22, 79, 145, 0.12);
 }
 
 .lunar-glance-code {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 800;
   color: #164f91;
   font-family: 'Space Grotesk', monospace;
-  min-width: 24px;
+  min-width: 28px;
 }
 
 .lunar-glance-text {
-  font-size: 0.86rem;
+  font-size: 0.94rem;
   font-weight: 600;
   color: #102b4e;
   flex: 1;
 }
 
 .lunar-glance-arrow {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: #8294a8;
 }
 
@@ -139,16 +165,16 @@
 .lunar-cards-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .lunar-detail-card {
   background: #ffffff;
   border: 1px solid #cbd8e8;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(16, 43, 78, 0.04);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  transition: all 0.2s ease;
 }
 
 .lunar-detail-card:hover {
@@ -157,18 +183,19 @@
 
 .lunar-detail-card.is-open {
   border-color: #164f91;
-  box-shadow: 0 4px 16px rgba(22, 79, 145, 0.12);
+  box-shadow: 0 6px 20px rgba(22, 79, 145, 0.12);
 }
 
 .lunar-card-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  padding: 1.1rem 1.35rem;
+  gap: 1.25rem;
+  padding: 1.35rem 1.6rem;
   cursor: pointer;
   user-select: none;
   background: #ffffff;
+  transition: background 0.15s ease;
 }
 
 .lunar-detail-card.is-open .lunar-card-head {
@@ -179,99 +206,198 @@
 .lunar-card-head-left {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .lunar-card-badge-code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   background: #164f91;
   color: #ffffff;
   font-weight: 800;
-  font-size: 0.82rem;
-  border-radius: 6px;
+  font-size: 0.95rem;
+  border-radius: 8px;
   font-family: 'Space Grotesk', monospace;
   flex-shrink: 0;
 }
 
 .lunar-card-title {
-  margin: 0;
-  font-size: 1.05rem;
+  margin: 0 0 0.2rem 0;
+  font-size: 1.15rem;
   font-weight: 700;
   font-family: 'Space Grotesk', sans-serif;
   color: #102b4e;
-  line-height: 1.35;
+  line-height: 1.3;
   letter-spacing: -0.015em;
+}
+
+.lunar-card-meta-tag {
+  font-size: 0.76rem;
+  color: #8294a8;
+  font-weight: 600;
 }
 
 .lunar-card-head-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   flex-shrink: 0;
 }
 
 .lunar-badge-severity {
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: #b91c1c;
   background: #fee2e2;
   border: 1px solid #fca5a5;
-  padding: 0.2rem 0.55rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
 }
 
 .lunar-toggle-btn {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #8294a8;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #164f91;
+  background: #eef5fc;
+  border: 1px solid #b9cfea;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
 }
 
-/* Card Body */
+/* Card Body - Generous whitespace & structured visual chunks */
 .lunar-card-body {
-  padding: 1.25rem 1.35rem;
+  padding: 1.6rem 1.85rem;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 1.25rem;
   background: #ffffff;
 }
 
+/* Punchy Core Hazard Callout */
+.lunar-core-hazard-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-left: 4px solid #dc2626;
+  border-radius: 6px;
+  padding: 0.85rem 1.15rem;
+}
+
+.lunar-hazard-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #dc2626;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.lunar-hazard-lead {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #991b1b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Physical Explanation Box */
 .lunar-summary-box {
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.94rem;
+  line-height: 1.68;
   color: #102b4e;
 }
 
-.lunar-evidence-box {
-  background: #f8fbff;
-  border-left: 3px solid #164f91;
-  padding: 0.75rem 1rem;
-  font-size: 0.85rem;
-  line-height: 1.55;
-  color: #4e637d;
-  border-radius: 0 6px 6px 0;
-  border: 1px solid #cbd8e8;
-  border-left-width: 3px;
-  border-left-color: #164f91;
+.lunar-summary-box strong {
+  color: #164f91;
+  display: block;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.35rem;
 }
 
+.lunar-summary-box p {
+  margin: 0;
+}
+
+/* Bulleted Evidence Points */
+.lunar-keypoints-box {
+  background: #f8fbff;
+  border: 1px solid #cbd8e8;
+  border-radius: 8px;
+  padding: 1.15rem 1.35rem;
+}
+
+.lunar-keypoints-box strong {
+  color: #102b4e;
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+  letter-spacing: -0.01em;
+}
+
+.lunar-bullet-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.lunar-bullet-list li {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #334155;
+}
+
+/* Actionable Engineering Directive Box */
+.lunar-directive-box {
+  background: #eef5fc;
+  border: 1px solid #b9cfea;
+  border-left: 4px solid #164f91;
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+}
+
+.lunar-directive-box strong {
+  color: #164f91;
+  display: block;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.3rem;
+}
+
+.lunar-directive-box p {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #0f294a;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Citation Box */
 .lunar-citation-box {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.78rem;
-  color: #4e637d;
+  gap: 0.65rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.85rem;
 }
 
 .lunar-citation-box code {
-  background: #eef5fc;
-  padding: 0.15rem 0.45rem;
+  background: #f1f5f9;
+  padding: 0.25rem 0.6rem;
   border-radius: 4px;
   font-family: 'Space Grotesk', monospace;
-  color: #164f91;
-  border: 1px solid #cbd8e8;
+  color: #1e293b;
+  font-size: 0.8rem;
+  border: 1px solid #cbd5e1;
 }
