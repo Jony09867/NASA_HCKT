@@ -46,4 +46,4 @@ body .si-header h2 strong{color:#155399!important}
 /* The hero has its own background in home.css; keep it light too. */
 body[data-page=home] .hero{background:radial-gradient(ellipse at 75% 43%,#e2efff 0%,#f1f6fc 44%,#f8fbff 78%)!important}
 body[data-page=home] .hero-foot{color:#536c88}
-
+body[data-page=home] .saturn-wrap::before{background:radial-gradient(circle at 50% 50%,rgba(40,110,195,.22) 0%,rgba(76,146,220,.09) 44%,transparent 70%)}
