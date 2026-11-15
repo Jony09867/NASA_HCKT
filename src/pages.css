@@ -43,4 +43,7 @@ body .evidence-cell.field-name{background:#edf4fb!important;color:#355776!import
 body .evidence-table :is(.evidence-cell,.evidence-header-cell){border-color:#cbd8e8!important}
 body .comparability-notice{background:#edf4fb!important;color:#345575!important;border-color:#bfd3e9!important}
 body .si-header h2 strong{color:#155399!important}
+/* The hero has its own background in home.css; keep it light too. */
+body[data-page=home] .hero{background:radial-gradient(ellipse at 75% 43%,#e2efff 0%,#f1f6fc 44%,#f8fbff 78%)!important}
+body[data-page=home] .hero-foot{color:#536c88}
 
