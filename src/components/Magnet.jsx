@@ -403,7 +403,7 @@ export function magnetizeAllPageButtons() {
   const query = () => {
     for (const entry of registry) if (!entry.wrapper.isConnected) entry.dispose?.();
     const targets = document.querySelectorAll(
-      '[data-primary], #compare .specular-button'
+      'main button:not(.si-preset-card):not(.nav-toggle), main a.button, main a.primary-action, main a.card-source-link, main a.si-action-btn, main a.specular-button'
     );
     targets.forEach(el => {
       if (!el.closest('.magnet-wrapper') && !el.dataset.magnetized) {
