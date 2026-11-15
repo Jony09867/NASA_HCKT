@@ -111,7 +111,7 @@ function initReactHome() {
           <ParticleSaturn
             coreColor="#0B3D91"
             ringColor="#4DA6FF"
-            density={20}
+            density={14}
             particleSize={15}
             glow={26}
             tilt={8}

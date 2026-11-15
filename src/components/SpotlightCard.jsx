@@ -215,7 +215,10 @@ const SpotlightCard = ({
       pointer.x = event.clientX;
       pointer.y = event.clientY;
       pointer.active = true;
-      if (state.presence > 0 || settingsRef.current.proximity > 0 || root.contains(event.target)) wake();
+      if (!state.visible) return;
+      const rect = root.getBoundingClientRect();
+      const gap = Math.hypot(Math.max(0, rect.left - pointer.x, pointer.x - rect.right), Math.max(0, rect.top - pointer.y, pointer.y - rect.bottom));
+      if (state.presence > 0 || gap <= settingsRef.current.proximity) wake();
     };
     const onOut = event => {
       if (event.relatedTarget) return;
@@ -246,7 +249,7 @@ const SpotlightCard = ({
       wake();
     };
     const onScroll = () => {
-      if (pointer.active || state.presence > 0) wake();
+      if (state.visible && (pointer.active || state.presence > 0)) wake();
     };
 
     const observer = new IntersectionObserver(entries => {

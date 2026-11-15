@@ -584,7 +584,7 @@ import {readSelection,writeSelection} from './src/session';
       // Attach card listeners
       cardsContainer.querySelectorAll('.spotlight-card').forEach(card => {
 
-        if (cardObserver) {
+        if (cardObserver && card.getBoundingClientRect().top >= window.innerHeight) {
           cardObserver.observe(card);
         } else {
           card.classList.add('is-visible');

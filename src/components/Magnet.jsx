@@ -310,7 +310,7 @@ export function magnetizeElement(element, options = {}) {
   const measure = () => {
     const s = settingsRef.current;
     const target = { x: 0, y: 0, tiltX: 0, tiltY: 0, scale: 1 };
-    if (s.disabled || reduce || !field.pointer) return { target, engaged: false };
+    if (s.disabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(hover: hover) and (pointer: fine)').matches || !field.pointer) return { target, engaged: false };
     if (s.exclusive && field.owner !== entry) return { target, engaged: false };
     const rect = entry.measureRect();
     const { dx, dy, outside } = reach(rect, field.pointer);
@@ -403,7 +403,7 @@ export function magnetizeAllPageButtons() {
   const query = () => {
     for (const entry of registry) if (!entry.wrapper.isConnected) entry.dispose?.();
     const targets = document.querySelectorAll(
-      '[data-primary], #explore .btn-compare, #compare .specular-button'
+      '[data-primary], #compare .specular-button'
     );
     targets.forEach(el => {
       if (!el.closest('.magnet-wrapper') && !el.dataset.magnetized) {
