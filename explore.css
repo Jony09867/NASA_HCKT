@@ -1343,3 +1343,25 @@ section.compare {
     max-width: none;
   }
 }
+
+/* Clear, source-aware scientific filters and readable overview details. */
+.range-filter{min-width:0;margin:0;padding:12px;border:1px solid #445350;border-radius:4px;color:#c7d0ca}
+.range-filter legend{padding:0 5px;font-size:10px;letter-spacing:.1em;font-weight:700;color:#d2dbd5}
+.range-filter legend span{letter-spacing:0;text-transform:none}
+.range-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.advanced-grid .range-inputs label{display:block;font-size:11px;color:#c7d0ca;letter-spacing:0}
+.range-inputs input{display:block;width:100%;min-width:0;margin-top:5px;padding:10px 8px;border:1px solid #596964;background:#111a1a;color:#f0eee6;font:inherit}
+.range-inputs input:disabled{opacity:.6;cursor:not-allowed}
+.advanced-grid .range-check{display:flex;align-items:flex-start;gap:8px;margin-top:10px;font-size:11px;line-height:1.4;letter-spacing:0;color:#d2dad4}
+.range-check input{flex:none;margin:2px 0 0;accent-color:#ff865d}
+.range-help{margin:8px 0 0;font-size:11px;line-height:1.4;color:#b9c5be}
+.range-filter :is(input,select):focus-visible{outline:2px solid #ff986f;outline-offset:2px}
+.card-specs-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:16px;font-size:14px}
+.spec-item{min-width:0;gap:5px}
+.spec-item span.spec-label{font-size:10px;color:#aebbb5;line-height:1.35}
+.spec-item span.spec-val{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.45}
+.card-content,.card-top,.card-badges-wrap,.card-platform-tag{min-width:0}
+.card-platform-tag,.card-topic-tag{white-space:normal;overflow-wrap:anywhere}
+@media(max-width:420px){.card-specs-grid{grid-template-columns:1fr}}
+.condition-review-note{margin:10px 0 0;color:#bdc8c1;font-size:12px;line-height:1.5}
+.range-inputs input[aria-invalid="true"]{border-color:#ff986f}

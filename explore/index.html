@@ -113,23 +113,26 @@
               </div>
             </label>
 
-            <label>
-              <span>AIRFLOW CONDITION</span>
-              <div class="select-wrapper">
-                <select id="airflow-filter" aria-label="Filter by airflow">
-                  <option value="">All airflow speeds</option>
-                </select>
+            <fieldset class="range-filter" id="airflow-range">
+              <legend>AIRFLOW SPEED <span>(m/s)</span></legend>
+              <div class="range-inputs">
+                <label>Minimum <input id="airflow-min" type="number" min="0" step="any"></label>
+                <label>Maximum <input id="airflow-max" type="number" min="0" step="any"></label>
               </div>
-            </label>
+              <label class="range-check"><input id="airflow-unknown" type="checkbox" checked> Include unknown</label>
+              <label class="range-check"><input id="airflow-quiescent" type="checkbox"> Include quiescent</label>
+              <p id="airflow-help" class="range-help"></p>
+            </fieldset>
 
-            <label>
-              <span>CHAMBER PRESSURE</span>
-              <div class="select-wrapper">
-                <select id="pressure-filter" aria-label="Filter by pressure">
-                  <option value="">All pressure ranges</option>
-                </select>
+            <fieldset class="range-filter" id="pressure-range">
+              <legend>CHAMBER PRESSURE <span>(kPa)</span></legend>
+              <div class="range-inputs">
+                <label>Minimum <input id="pressure-min" type="number" min="0" step="any"></label>
+                <label>Maximum <input id="pressure-max" type="number" min="0" step="any"></label>
               </div>
-            </label>
+              <label class="range-check"><input id="pressure-unknown" type="checkbox" checked> Include unknown</label>
+              <p id="pressure-help" class="range-help"></p>
+            </fieldset>
           </div>
 
           <div class="oxygen-audit-note">
