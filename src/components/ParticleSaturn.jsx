@@ -330,12 +330,19 @@ class SaturnScene {
   }
 
   start() {
+    if (this.disposed || this.frameId) return;
     this.lastT = performance.now();
     const loop = () => {
       this.frameId = requestAnimationFrame(loop);
       this.step();
     };
     loop();
+  }
+
+  stop() {
+    cancelAnimationFrame(this.frameId);
+    this.frameId = 0;
+    this.isDragging = false;
   }
 
   setSize(width, height) {
@@ -398,7 +405,7 @@ class SaturnScene {
 
   dispose() {
     this.disposed = true;
-    cancelAnimationFrame(this.frameId);
+    this.stop();
     if (this.unbind) this.unbind();
     this.cloudGeometry.dispose();
     this.material.dispose();
@@ -460,11 +467,25 @@ export default function ParticleSaturn(props) {
       scene.setSize(w, h);
     };
 
+    let inViewport = false;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const syncPlayback = () => {
+      if (inViewport && !document.hidden && !motion.matches) scene.start();
+      else scene.stop();
+    };
+    const visibility = new IntersectionObserver(([entry]) => {
+      inViewport = entry.isIntersecting;
+      syncPlayback();
+    });
+    visibility.observe(container);
+    document.addEventListener('visibilitychange', syncPlayback);
+    motion.addEventListener('change', syncPlayback);
     updateSize();
-    scene.start();
+    scene.step();
 
     const ro = new ResizeObserver(() => {
       updateSize();
+      if (!scene.frameId && inViewport && !document.hidden) scene.step();
     });
     ro.observe(container);
 
@@ -473,6 +494,9 @@ export default function ParticleSaturn(props) {
     return () => {
       window.removeEventListener("resize", updateSize);
       ro.disconnect();
+      visibility.disconnect();
+      document.removeEventListener('visibilitychange', syncPlayback);
+      motion.removeEventListener('change', syncPlayback);
       scene.dispose();
       sceneRef.current = null;
     };
