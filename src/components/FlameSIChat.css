@@ -810,6 +810,11 @@
   box-shadow: none;
 }
 
+.stage-scroll-body .c3d-viewport-wrap {
+  height: clamp(520px, 58vh, 700px);
+  min-height: 480px;
+}
+
 .stage-chart-wrap {
   width: 100%;
 }

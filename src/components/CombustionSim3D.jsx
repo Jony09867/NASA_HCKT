@@ -515,7 +515,7 @@ export function CombustionSim3D({
     gridGroup.add(gridHelper);
 
     // Circular chamber base ring
-    const ringGeo = new THREE.RingGeometry(1.85, 1.9, 64);
+    const ringGeo = new THREE.RingGeometry(2.3, 2.36, 64);
     ringGeo.rotateX(-Math.PI / 2);
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
@@ -533,7 +533,7 @@ export function CombustionSim3D({
     worldGroup.add(sampleGroup);
 
     // Fuel rod/cylinder sample
-    const fuelGeo = new THREE.CapsuleGeometry(0.24, 0.85, 24, 36);
+    const fuelGeo = new THREE.CapsuleGeometry(0.28, 0.95, 24, 36);
     fuelGeo.rotateZ(Math.PI / 2);
     const fuelMat = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#3b4a54'),
@@ -546,7 +546,7 @@ export function CombustionSim3D({
     sampleGroup.add(fuelMesh);
 
     // Metallic holder sting on right (-X to +X flow across sample)
-    const stingGeo = new THREE.CylinderGeometry(0.055, 0.075, 1.8, 16);
+    const stingGeo = new THREE.CylinderGeometry(0.065, 0.085, 2.0, 16);
     stingGeo.rotateZ(Math.PI / 2);
     const stingMat = new THREE.MeshStandardMaterial({
       color: 0x64748b,
@@ -594,7 +594,7 @@ export function CombustionSim3D({
       });
     });
 
-    const flameGeo = new THREE.SphereGeometry(0.72, 56, 56);
+    const flameGeo = new THREE.SphereGeometry(0.92, 56, 56);
     const flameMeshes = flameMaterials.map((mat) => {
       const m = new THREE.Mesh(flameGeo, mat);
       m.frustumCulled = false;
@@ -603,7 +603,7 @@ export function CombustionSim3D({
     });
 
     // 4. 3D Stoichiometric Reaction Boundary Geodesic Wireframe (visible especially in 0g / 1/6g)
-    const boundaryGeo = new THREE.SphereGeometry(0.96, 20, 16);
+    const boundaryGeo = new THREE.SphereGeometry(1.22, 24, 18);
     const boundaryMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
       wireframe: true,
@@ -689,7 +689,7 @@ export function CombustionSim3D({
     const particlePoints = new THREE.Points(particleGeo, particleMat);
     worldGroup.add(particlePoints);
 
-    // Interactive 3D Orbit State
+    // Interactive 3D Orbit & Zoom State
     let targetYaw = -0.32;
     let targetPitch = 0.22;
     let currentYaw = -0.32;
@@ -697,6 +697,7 @@ export function CombustionSim3D({
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
+    let camDistance = 3.65;
 
     const onPointerDown = (e) => {
       isDragging = true;
@@ -716,17 +717,26 @@ export function CombustionSim3D({
       isDragging = false;
     };
 
+    const onWheel = (e) => {
+      e.preventDefault();
+      const delta = e.deltaY * 0.0022;
+      camDistance = Math.max(2.1, Math.min(5.5, camDistance + delta));
+      camera.position.set(0, 0.22, camDistance);
+      camera.updateProjectionMatrix();
+    };
+
     canvas.addEventListener('pointerdown', onPointerDown);
+    canvas.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
 
     const updateSize = () => {
       const w = Math.max(280, container.clientWidth || 640);
-      const h = Math.max(240, container.clientHeight || 360);
+      const h = Math.max(240, container.clientHeight || 520);
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
-      camera.position.set(0, 0.35, 5.15);
-      camera.lookAt(0.15, 0.1, 0);
+      camera.position.set(0, 0.22, camDistance);
+      camera.lookAt(0.12, 0.08, 0);
       camera.updateProjectionMatrix();
     };
     updateSize();
@@ -876,6 +886,7 @@ export function CombustionSim3D({
       cancelAnimationFrame(frameId);
       ro.disconnect();
       canvas.removeEventListener('pointerdown', onPointerDown);
+      canvas.removeEventListener('wheel', onWheel);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
       flameGeo.dispose();
@@ -935,7 +946,7 @@ export function CombustionSim3D({
               ? '3D LUNAR PARTIAL-BUOYANCY PLUME'
               : '3D BUOYANT TEARDROP PLUME'}
           </span>
-          <span className="c3d-drag-hint">↻ Drag 3D chamber to orbit 360°</span>
+          <span className="c3d-drag-hint">↻ Drag to orbit 360° · Scroll to zoom</span>
         </div>
 
         {/* Top-Right HUD: Gravity Badge + Camera View Switcher */}
