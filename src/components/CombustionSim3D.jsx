@@ -310,11 +310,11 @@ const VOLUMETRIC_FLAME_VERT = /* glsl */ `
 
   float fbm(vec3 p) {
     float v = 0.0;
-    float a = 0.5;
-    for (int i = 0; i < 3; i++) {
+    float a = 0.55;
+    for (int i = 0; i < 2; i++) {
       v += a * noise3(p);
-      p = p * 2.04 + vec3(1.7, 3.2, 2.1);
-      a *= 0.5;
+      p = p * 1.85 + vec3(1.3, 2.1, 1.7);
+      a *= 0.45;
     }
     return v;
   }
@@ -327,13 +327,13 @@ const VOLUMETRIC_FLAME_VERT = /* glsl */ `
     float buoyancy = pow(clamp(uGravity, 0.0, 1.0), 0.44);
     float wind = clamp((uAirflow - 0.04) / 0.45, 0.0, 1.35);
 
-    // Smooth, gentle laminar advection (no high-frequency jitter)
+    // Smooth, slow, majestic laminar advection (ZERO high-frequency jitter)
     vec3 advect = vec3(
-      uTime * (0.22 + wind * 1.3),
-      uTime * (0.28 + buoyancy * 1.6),
-      uTime * 0.12
+      uTime * (0.04 + wind * 0.16),
+      uTime * (0.06 + buoyancy * 0.22),
+      uTime * 0.02
     );
-    float n = fbm(pos * 2.1 - advect);
+    float n = fbm(pos * 1.6 - advect);
     float turb = n - 0.48;
     vNoise = n;
 
@@ -377,14 +377,13 @@ const VOLUMETRIC_FLAME_VERT = /* glsl */ `
       }
     }
 
-    // Organic living flame motion: only activates with buoyancy or forced airflow!
-    // In 0g quiescent microgravity, the spherical diffusion flame is calm and stationary.
-    float dispAmp = (buoyancy * 0.065 + wind * 0.06) * (0.2 + 0.8 * upperMask);
-    pos.x += turb * dispAmp * (1.0 + wind * 1.1);
-    pos.y += turb * dispAmp * (1.0 + buoyancy * 1.2);
-    pos.z += turb * dispAmp * 0.7;
+    // Calm, majestic laminar flame motion (ultra-gentle organic breath, 100% vibration-free)
+    float dispAmp = (buoyancy * 0.016 + wind * 0.014) * upperMask;
+    pos.x += turb * dispAmp * 0.9;
+    pos.y += turb * dispAmp * 1.2;
+    pos.z += turb * dispAmp * 0.9;
 
-    vHeat = clamp(0.30 + upperMask * buoyancy * 0.52 + turb * 0.14, 0.0, 1.0);
+    vHeat = clamp(0.30 + upperMask * buoyancy * 0.52 + turb * 0.08, 0.0, 1.0);
 
     vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
     vViewPos = -mvPos.xyz;
@@ -549,9 +548,9 @@ const FIRE_CLOUD_VERT = /* glsl */ `
         float taper = 1.0 - buoyancy * 0.60 * clamp(pos.y / 2.0, 0.0, 0.92);
         pos.x *= taper;
         pos.z *= taper;
-        // Thermal buoyancy gentle wave
-        pos.x += sin(uTime * 1.2 + pos.y * 1.6 + aSeed * 6.28) * 0.03 * buoyancy * upper;
-        pos.z += cos(uTime * 1.1 + pos.y * 1.6 + aSeed * 6.28) * 0.03 * buoyancy * upper;
+        // Smooth laminar streamline curvature (vibration-free)
+        pos.x += sin(pos.y * 1.2 + aSeed * 6.28) * 0.010 * buoyancy * upper;
+        pos.z += cos(pos.y * 1.2 + aSeed * 6.28) * 0.010 * buoyancy * upper;
       }
 
       // Airflow cross-ventilation deflection:
@@ -584,7 +583,7 @@ const FIRE_CLOUD_VERT = /* glsl */ `
       pos.y += life * (0.45 + buoyancy * 1.95);
       // Downstream drift with cabin airflow
       pos.x += (pos.y + 0.2) * (wind * 0.75) + life * (wind * 0.65);
-      pos.z += sin(uTime * 0.9 + aSeed * 6.28) * 0.03 * (buoyancy + wind) * life;
+      pos.z += sin(pos.y * 0.8 + aSeed * 6.28) * 0.012 * (buoyancy + wind) * life;
 
       vHeat = clamp(1.0 - life * 1.15, 0.0, 1.0);
       // Soot clusters are 8x-12x larger in 0g (SAME-R)
@@ -745,6 +744,7 @@ export function CombustionSim3D({
   ]);
 
   const mountRef = useRef(null);
+  const isUserInteractingRef = useRef(false);
   const simStateRef = useRef({
     gravityKey,
     materialKey,
@@ -797,15 +797,20 @@ export function CombustionSim3D({
       cameraPreset,
       physics,
     };
-    if (onStateChange) {
-      onStateChange({
-        gravityKey,
-        materialKey,
-        oxygen,
-        ventilation,
-        pressure,
-        physics,
-      });
+    // Only dispatch to parent if change was triggered by direct user interaction
+    // This strictly prevents state echo loops and high-frequency render jitter.
+    if (isUserInteractingRef.current) {
+      isUserInteractingRef.current = false;
+      if (onStateChange) {
+        onStateChange({
+          gravityKey,
+          materialKey,
+          oxygen,
+          ventilation,
+          pressure,
+          physics,
+        });
+      }
     }
   }, [gravityKey, materialKey, oxygen, ventilation, pressure, cameraPreset, physics, onStateChange]);
 
@@ -1092,14 +1097,27 @@ export function CombustionSim3D({
       }
 
       // Smooth, stable rotation interpolation without autonomous wobble
-      currentYaw += (targetYaw - currentYaw) * 0.12;
-      currentPitch += (targetPitch - currentPitch) * 0.12;
+      const dYaw = targetYaw - currentYaw;
+      const dPitch = targetPitch - currentPitch;
+      if (Math.abs(dYaw) > 0.0001) currentYaw += dYaw * 0.12;
+      else currentYaw = targetYaw;
+      if (Math.abs(dPitch) > 0.0001) currentPitch += dPitch * 0.12;
+      else currentPitch = targetPitch;
+
       worldGroup.rotation.y = currentYaw;
       worldGroup.rotation.x = currentPitch;
 
-      smoothG += (targetG - smoothG) * 0.12;
-      smoothWind += (st.ventilation - smoothWind) * 0.12;
-      smoothO2 += (st.oxygen - smoothO2) * 0.12;
+      const dG = targetG - smoothG;
+      if (Math.abs(dG) > 0.0001) smoothG += dG * 0.12;
+      else smoothG = targetG;
+
+      const dWind = st.ventilation - smoothWind;
+      if (Math.abs(dWind) > 0.0001) smoothWind += dWind * 0.12;
+      else smoothWind = st.ventilation;
+
+      const dO2 = st.oxygen - smoothO2;
+      if (Math.abs(dO2) > 0.0001) smoothO2 += dO2 * 0.12;
+      else smoothO2 = st.oxygen;
 
       const isBlueSpherical = smoothG < 0.05 && smoothWind < 0.1;
 
@@ -1315,6 +1333,7 @@ export function CombustionSim3D({
             type="button"
             className={`c3d-gravity-btn ${gravityKey === g.id ? 'is-active' : ''}`}
             onClick={() => {
+              isUserInteractingRef.current = true;
               setGravityKey(g.id);
               logParameterChange(
                 `Gravity switched to ${g.shortLabel} (${g.subLabel}): 3D flame geometry adapted.`
@@ -1335,6 +1354,7 @@ export function CombustionSim3D({
             type="button"
             className={`c3d-material-btn ${materialKey === m.id ? 'is-active' : ''}`}
             onClick={() => {
+              isUserInteractingRef.current = true;
               setMaterialKey(m.id);
               logParameterChange(
                 `Fuel sample changed to ${m.shortName} (LOI ${m.loiMicro}% in 0g, Ref: ${m.experimentRef}).`
@@ -1363,6 +1383,7 @@ export function CombustionSim3D({
             value={oxygen}
             aria-label="Oxygen Concentration Percentage"
             onChange={(e) => {
+              isUserInteractingRef.current = true;
               const val = Number(e.target.value);
               setOxygen(val);
               logParameterChange(
@@ -1387,6 +1408,7 @@ export function CombustionSim3D({
             value={ventilation}
             aria-label="Cabin Ventilation Speed"
             onChange={(e) => {
+              isUserInteractingRef.current = true;
               const val = Number(e.target.value);
               setVentilation(val);
               logParameterChange(
@@ -1413,6 +1435,7 @@ export function CombustionSim3D({
             value={pressure}
             aria-label="Cabin Ambient Pressure"
             onChange={(e) => {
+              isUserInteractingRef.current = true;
               const val = Number(e.target.value);
               setPressure(val);
               logParameterChange(

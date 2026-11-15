@@ -232,9 +232,9 @@ export default function SIDashboard() {
   };
 
   const handleSimStateChange = useCallback((next) => {
-    setOxygen((prev) => (prev === next.oxygen ? prev : next.oxygen));
-    setPressure((prev) => (prev === next.pressure ? prev : next.pressure));
-    setVentilation((prev) => (prev === next.ventilation ? prev : next.ventilation));
+    setOxygen((prev) => (Math.abs(prev - next.oxygen) < 0.01 ? prev : next.oxygen));
+    setPressure((prev) => (Math.abs(prev - next.pressure) < 0.01 ? prev : next.pressure));
+    setVentilation((prev) => (Math.abs(prev - next.ventilation) < 0.005 ? prev : next.ventilation));
     setGravityKey((prev) => (prev === next.gravityKey ? prev : next.gravityKey));
     setMaterialKey((prev) => (prev === next.materialKey ? prev : next.materialKey));
   }, []);

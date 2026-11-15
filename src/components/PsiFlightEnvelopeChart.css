@@ -229,25 +229,9 @@
 }
 
 .psi-target-pulse {
-  fill: rgba(220, 38, 38, 0.15);
+  fill: rgba(220, 38, 38, 0.12);
   stroke: #dc2626;
   stroke-width: 1;
-  animation: psiPulse 2s infinite ease-out;
-}
-
-@keyframes psiPulse {
-  0% {
-    r: 6;
-    opacity: 0.8;
-  }
-  70% {
-    r: 16;
-    opacity: 0;
-  }
-  100% {
-    r: 16;
-    opacity: 0;
-  }
 }
 
 /* Target Label Card */
