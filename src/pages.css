@@ -290,3 +290,44 @@ body .selection-tray .primary-action:hover {
   background: #0c3971 !important;
 }
 
+/* 9. Why It Matters 3 Impact Cards in NASA Light Theme */
+.about .impact-cards article {
+  padding: 22px 24px !important;
+  border: 1px solid #cbd8e8 !important;
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 12px rgba(16, 43, 78, 0.05) !important;
+}
+.about .impact-cards article > span {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.13em !important;
+  color: #164f91 !important;
+  display: block !important;
+  margin-bottom: 6px !important;
+}
+.about .impact-cards h3 {
+  margin: 0 0 8px !important;
+  font-size: 19px !important;
+  line-height: 1.25 !important;
+  color: #102b4e !important;
+}
+.about .impact-cards p {
+  margin: 0 !important;
+  color: #4e637d !important;
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+}
+.about .impact-cards a {
+  display: inline-block !important;
+  margin-top: 12px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #164f91 !important;
+  text-decoration: none !important;
+}
+.about .impact-cards a:hover {
+  color: #0c3971 !important;
+  text-decoration: underline !important;
+}
+
