@@ -1980,3 +1980,20 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Simulator uses the same editorial hierarchy and spacing as Explore. */
+body[data-page="simulator"] .si-dashboard-section{max-width:1560px!important;padding:50px 6% 75px!important}
+.si-dashboard-section .si-journal-header{border:0;padding:0;margin-bottom:30px}
+.si-dashboard-section .si-journal-top-bar{align-items:flex-end;gap:24px;margin-bottom:30px}
+.si-dashboard-section .si-page-intro{max-width:740px}
+.si-dashboard-section .si-page-intro .eyebrow{color:#c9272d;font:700 10px 'DM Sans',sans-serif;letter-spacing:.17em}
+.si-dashboard-section .si-page-intro h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4vw,52px);line-height:1.05;letter-spacing:-.045em;color:#102b4e;margin:20px 0}
+.si-dashboard-section .si-page-intro p{font:400 16px/1.7 'DM Sans',sans-serif;color:#4e637d;margin:0;max-width:650px}
+.si-dashboard-section .si-journal-mode-toggle{flex-shrink:0;border-radius:10px;background:#eaf2fb}
+.si-dashboard-section .si-main-tabs-nav{gap:4px;padding:4px 0 12px;border-bottom:1px solid #cbd8e8;scrollbar-width:thin}
+.si-dashboard-section .si-main-tab-btn{font-size:13px;padding:11px 15px;min-height:44px}
+.si-dashboard-section .si-lab-3col-grid{gap:18px}
+.si-dashboard-section :is(.si-lab-left-filters,.si-preset-card,.si-rank-card,.si-pillar-card){border-radius:10px}
+@media(max-width:1000px){.si-dashboard-section .si-journal-top-bar{align-items:flex-start;flex-direction:column}.si-dashboard-section .si-journal-mode-toggle{max-width:100%;flex-wrap:wrap}}
+@media(max-width:700px){body[data-page="simulator"] .si-dashboard-section{padding:36px 5% 70px!important}.si-dashboard-section .si-page-intro h1{font-size:36px}.si-dashboard-section .si-page-intro p{font-size:14px}.si-dashboard-section .si-main-tab-btn{font-size:12px;padding:10px 12px}.si-dashboard-section .si-journal-mode-toggle{width:100%;border-radius:10px}.si-dashboard-section .si-mode-pill{white-space:normal;text-align:left}}

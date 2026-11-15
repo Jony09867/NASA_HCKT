@@ -654,12 +654,10 @@ export default function SIDashboard() {
       {/* Editorial NASA Journal Top Header */}
       <header className="si-journal-header">
         <div className="si-journal-top-bar">
-          <div className="si-journal-brand">
-            <span className="si-brand-logo-mark">◬</span>
-            <div className="si-brand-text-wrap">
-              <span className="si-brand-name">FLAME-SI</span>
-              <span className="si-brand-byline">NASA Physical Sciences Informatics Intelligence Engine</span>
-            </div>
+          <div className="si-page-intro">
+            <span className="eyebrow">MICROGRAVITY RESEARCH / SIMULATOR</span>
+            <h1>Explore the flame<span className="orange">.</span></h1>
+            <p>Investigate combustion conditions, explore experimental data, and compare mission scenarios.</p>
           </div>
 
           <div className="si-journal-mode-toggle" role="group" aria-label="Scientific Evidence Mode">
@@ -2026,3 +2024,4 @@ export default function SIDashboard() {
     </section>
   );
 }
+
