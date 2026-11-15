@@ -7,6 +7,64 @@ import ScrollReveal from './components/ScrollReveal';
 import ParticleSaturn from './components/ParticleSaturn';
 import Magnet, { magnetizeAllPageButtons } from './components/Magnet';
 import GlassSurface, { glassifyAllPageButtons } from './components/GlassSurface';
+import MagicBento from './components/MagicBento';
+
+const BENTO_EXPLORATION_ITEMS = [
+  {
+    label: '01 / 3D FLAME LAB',
+    title: 'Combustion in Freefall',
+    description: 'Explore spherical flame fronts, soot shells, and micro-convection across solid fuels.',
+    visual: 'analytics',
+    href: '/simulator/',
+    colSpan: 1,
+    rowSpan: 1,
+  },
+  {
+    label: '02 / EMPIRICAL DATA',
+    title: '1,450 NASA PSI Records',
+    description: 'Search complete flight tests from BASS-II, SAFFIRE I–III, FLEX, and ACME BRE.',
+    visual: 'dashboard',
+    href: '/explore/',
+    colSpan: 1,
+    rowSpan: 1,
+  },
+  {
+    label: '03 / PARALLEL AUDIT',
+    title: 'ISS 0g vs Earth 1g Comparison',
+    description: 'Expose zero-gravity flammability paradoxes where slow flow sustains fire while Earth upward burns self-extinguish.',
+    visual: 'collaboration',
+    href: '/compare/',
+    colSpan: 2,
+    rowSpan: 2,
+  },
+  {
+    label: '04 / DATA INTEGRITY',
+    title: '18-Stage Zero-Loss Pipeline',
+    description: 'Rigorous automated verification ensures every number traces back to NASA experiment tables without synthetic zeros.',
+    visual: 'automation',
+    href: '/simulator/',
+    colSpan: 2,
+    rowSpan: 2,
+  },
+  {
+    label: '05 / MISSION POLICY',
+    title: 'Lunar 30% O₂ Flammability Gap',
+    description: 'Planned Artemis Lunar Habitat atmosphere (30–34% O₂) sits inside an empirical solid-fuel zero-flight-test gap.',
+    visual: 'security',
+    href: '/simulator/',
+    colSpan: 1,
+    rowSpan: 1,
+  },
+  {
+    label: '06 / AI ASSISTANT',
+    title: 'Flame-SI Copilot',
+    description: 'Natural language research agent cited with NASA TM-20210011385 page numbers and sensor tables.',
+    visual: 'integration',
+    href: '/chat/',
+    colSpan: 1,
+    rowSpan: 1,
+  },
+];
 
 
 
@@ -156,7 +214,32 @@ function initReactHome() {
     );
   }
 
-  // 7. Footer Back to Top Magnet
+  // 7. Interactive MagicBento Exploration Grid
+  const bentoEl = document.getElementById('react-magic-bento');
+  if (bentoEl) {
+    const root = createRoot(bentoEl);
+    root.render(
+      <MagicBento
+        columns={4}
+        rowHeight={210}
+        gap={16}
+        radius={16}
+        theme="light"
+        glowColor="#164f91"
+        enableBorderGlow={true}
+        enableSpotlight={true}
+        spotlightRadius={320}
+        enableStars={true}
+        particleCount={20}
+        enableTilt={true}
+        enableMagnetism={true}
+        clickEffect={true}
+        items={BENTO_EXPLORATION_ITEMS}
+      />
+    );
+  }
+
+  // 8. Footer Back to Top Magnet
   const backToTopEl = document.getElementById('react-back-to-top');
   if (backToTopEl) {
     const root = createRoot(backToTopEl);

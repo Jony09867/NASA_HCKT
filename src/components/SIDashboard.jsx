@@ -9,6 +9,7 @@ import { PsiFlightEnvelopeChart } from './PsiFlightEnvelopeChart';
 import FlowDuctSchematic from './FlowDuctSchematic';
 import LunarHabitatRecommendations from './LunarHabitatRecommendations';
 import OptionWheel from './OptionWheel';
+import MagicBento from './MagicBento';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -310,6 +311,57 @@ const EMPIRICAL_PSI_TESTS = [
 const O2_BAND_LABELS = ['<16%', '16–19%', '19–21%', '21–22.2%', '22.2–30%', '≥30%'];
 const O2_BAND_MIDPOINTS = [15, 17.5, 20, 21.5, 26, 34];
 
+const PIPELINE_BENTO_ITEMS = [
+  {
+    label: 'TIER A / 01',
+    title: 'NASA Experiment Tables',
+    description: '14 raw CSV files from NASA PSI repositories: 1,450 records, blank cells preserved as missing values.',
+    visual: 'analytics',
+    colSpan: 1,
+    rowSpan: 1,
+  },
+  {
+    label: 'TIER A / 02',
+    title: 'NASA BASS-II Report & AI',
+    description: '144-page technical publication (NASA/TM-20210011385); 110 test endings transcribed with exact source page citations.',
+    visual: 'dashboard',
+    colSpan: 1,
+    rowSpan: 1,
+  },
+  {
+    label: 'TIER B / 03',
+    title: '18 Automated Integrity Checks',
+    description: 'test_pipeline.py runs 18 assertions: zero synthetic zeros, exact airflow calibration, LOI boundary checks.',
+    visual: 'automation',
+    colSpan: 2,
+    rowSpan: 2,
+  },
+  {
+    label: 'TIER B / 04',
+    title: 'Physics Derivation & Gap Matrix',
+    description: 'build_data.py & derive.py label flame mechanisms, compute 54 research gap questions, and calibrate FLEX extinction limits.',
+    visual: 'collaboration',
+    colSpan: 2,
+    rowSpan: 2,
+  },
+  {
+    label: 'TIER C / 05',
+    title: 'Multi-Mission Safety Certification',
+    description: 'Artemis Lunar Habitat (30% O2) & Spacesuit EVA qualification protocols with empirical gap warnings.',
+    visual: 'security',
+    colSpan: 1,
+    rowSpan: 1,
+  },
+  {
+    label: 'TIER C / 06',
+    title: 'Client WebGL & Three.js Delivery',
+    description: 'React, Three.js 3D chamber, real-time telemetry, and natural language copilot running client-side with zero telemetry leakage.',
+    visual: 'integration',
+    colSpan: 1,
+    rowSpan: 1,
+  },
+];
+
 export default function SIDashboard() {
   // Top-Level 7-Tab Navigation: 'lab' | 'lunar' | 'ranking' | 'gap-matrix' | 'envelope' | 'pipeline' | 'copilot'
   const [activeMainTab, setActiveMainTab] = useState('lab');
@@ -323,6 +375,7 @@ export default function SIDashboard() {
   const [selectedShape, setSelectedShape] = useState('Rod');
   const [selectedInvestigation, setSelectedInvestigation] = useState('all');
   const [materialViewMode, setMaterialViewMode] = useState('chips'); // 'chips' | 'wheel'
+  const [pipelineViewMode, setPipelineViewMode] = useState('bento'); // 'bento' | 'flow'
 
   // Lab Stage View Toggle: 3D WebGL vs 2D Flow Duct Schematic
   const [labStageMode, setLabStageMode] = useState('3d'); // '3d' | 'duct'
@@ -1419,103 +1472,143 @@ export default function SIDashboard() {
       {activeMainTab === 'pipeline' && (
         <div className="si-pipeline-view-wrap">
           <div className="si-pipeline-card">
-            <h3 className="si-section-serif-title">How it works, at a glance</h3>
-
-            {/* 3-Tier Workflow Architecture */}
-            <div className="si-pipeline-tiers-container">
-              {/* TIER A: DATA FROM NASA */}
-              <div className="si-pipeline-tier-block tier-a">
-                <span className="si-tier-title">A · DATA FROM NASA · downloaded, never edited</span>
-                <div className="si-tier-nodes-row">
-                  <div className="si-pipeline-node">
-                    <span className="si-node-num">1</span>
-                    <code>data_raw/PSI-*.csv ×14</code>
-                    <strong>NASA experiment tables</strong>
-                    <small>1 450 records (1 431 tests)</small>
-                  </div>
-
-                  <div className="si-pipeline-connector">→</div>
-
-                  <div className="si-pipeline-node">
-                    <span className="si-node-num">2</span>
-                    <code>NASA/TM-20210011385</code>
-                    <strong>NASA's BASS-II report</strong>
-                    <small>144 pages; endings only as notes</small>
-                  </div>
-
-                  <div className="si-pipeline-connector">→</div>
-
-                  <div className="si-pipeline-node">
-                    <span className="si-node-num">3</span>
-                    <code>AI transcription → CSV</code>
-                    <strong>AI reads the report</strong>
-                    <small>110 test endings, each with page</small>
-                  </div>
-                </div>
-              </div>
-
-              {/* TIER B: PROCESSING */}
-              <div className="si-pipeline-tier-block tier-b">
-                <span className="si-tier-title">B · PROCESSING · Python, runs before the site goes live</span>
-                <div className="si-tier-nodes-row">
-                  <div className="si-pipeline-node">
-                    <span className="si-node-num">4</span>
-                    <code>loaders.py</code>
-                    <strong>Read every table</strong>
-                    <small>blank cells stay blank, never 0</small>
-                  </div>
-
-                  <div className="si-pipeline-connector">→</div>
-
-                  <div className="si-pipeline-node">
-                    <span className="si-node-num">5</span>
-                    <code>build_data.py · derive.py</code>
-                    <strong>Clean, label, build findings</strong>
-                    <small>sources tagged · 54 questions · FLEX</small>
-                  </div>
-
-                  <div className="si-pipeline-connector">→</div>
-
-                  <div className="si-pipeline-node">
-                    <span className="si-node-num">6</span>
-                    <code>test_pipeline.py</code>
-                    <strong>18 automatic checks</strong>
-                    <small>nothing invented, nothing deleted</small>
-                  </div>
-                </div>
-              </div>
-
-              {/* TIER C: PRODUCT */}
-              <div className="si-pipeline-tier-block tier-c">
-                <span className="si-tier-title">C · PRODUCT · published on GitHub Pages, runs in your browser</span>
-                <div className="si-tier-nodes-row">
-                  <div className="si-pipeline-node">
-                    <span className="si-node-num">7</span>
-                    <code>GitHub Actions → Pages</code>
-                    <strong>Publish the website</strong>
-                    <small>only if every check passes</small>
-                  </div>
-
-                  <div className="si-pipeline-connector">→</div>
-
-                  <div className="si-pipeline-node">
-                    <span className="si-node-num">8</span>
-                    <code>React · TypeScript · Three.js</code>
-                    <strong>The FLAME-SI website</strong>
-                    <small>Experiment Lab · 3D flame, real tests</small>
-                  </div>
-
-                  <div className="si-pipeline-connector">→</div>
-
-                  <div className="si-pipeline-node">
-                    <span className="si-node-num">9</span>
-                    <code>any browser or phone</code>
-                    <strong>You explore and ask</strong>
-                    <small>every number links back to NASA</small>
-                  </div>
-                </div>
+            <div className="si-filter-header-flex">
+              <h3 className="si-section-serif-title" style={{ margin: 0 }}>How it works, at a glance</h3>
+              <div className="si-mat-mode-toggle" role="group" aria-label="Pipeline view mode">
+                <button
+                  type="button"
+                  className={`si-mat-toggle-btn ${pipelineViewMode === 'bento' ? 'is-active' : ''}`}
+                  onClick={() => setPipelineViewMode('bento')}
+                >
+                  Interactive Bento Grid
+                </button>
+                <button
+                  type="button"
+                  className={`si-mat-toggle-btn ${pipelineViewMode === 'flow' ? 'is-active' : ''}`}
+                  onClick={() => setPipelineViewMode('flow')}
+                >
+                  Linear Flow
+                </button>
               </div>
             </div>
+
+            {pipelineViewMode === 'bento' ? (
+              <div className="si-pipeline-bento-wrap" style={{ marginTop: '1.25rem' }}>
+                <MagicBento
+                  columns={4}
+                  rowHeight={195}
+                  gap={14}
+                  radius={14}
+                  theme="light"
+                  glowColor="#164f91"
+                  enableBorderGlow={true}
+                  enableSpotlight={true}
+                  spotlightRadius={300}
+                  enableStars={true}
+                  particleCount={20}
+                  enableTilt={true}
+                  enableMagnetism={true}
+                  clickEffect={true}
+                  items={PIPELINE_BENTO_ITEMS}
+                />
+              </div>
+            ) : (
+              /* 3-Tier Workflow Architecture */
+              <div className="si-pipeline-tiers-container">
+                {/* TIER A: DATA FROM NASA */}
+                <div className="si-pipeline-tier-block tier-a">
+                  <span className="si-tier-title">A · DATA FROM NASA · downloaded, never edited</span>
+                  <div className="si-tier-nodes-row">
+                    <div className="si-pipeline-node">
+                      <span className="si-node-num">1</span>
+                      <code>data_raw/PSI-*.csv ×14</code>
+                      <strong>NASA experiment tables</strong>
+                      <small>1 450 records (1 431 tests)</small>
+                    </div>
+
+                    <div className="si-pipeline-connector">→</div>
+
+                    <div className="si-pipeline-node">
+                      <span className="si-node-num">2</span>
+                      <code>NASA/TM-20210011385</code>
+                      <strong>NASA's BASS-II report</strong>
+                      <small>144 pages; endings only as notes</small>
+                    </div>
+
+                    <div className="si-pipeline-connector">→</div>
+
+                    <div className="si-pipeline-node">
+                      <span className="si-node-num">3</span>
+                      <code>AI transcription → CSV</code>
+                      <strong>AI reads the report</strong>
+                      <small>110 test endings, each with page</small>
+                    </div>
+                  </div>
+                </div>
+
+                {/* TIER B: PROCESSING */}
+                <div className="si-pipeline-tier-block tier-b">
+                  <span className="si-tier-title">B · PROCESSING · Python, runs before the site goes live</span>
+                  <div className="si-tier-nodes-row">
+                    <div className="si-pipeline-node">
+                      <span className="si-node-num">4</span>
+                      <code>loaders.py</code>
+                      <strong>Read every table</strong>
+                      <small>blank cells stay blank, never 0</small>
+                    </div>
+
+                    <div className="si-pipeline-connector">→</div>
+
+                    <div className="si-pipeline-node">
+                      <span className="si-node-num">5</span>
+                      <code>build_data.py · derive.py</code>
+                      <strong>Clean, label, build findings</strong>
+                      <small>sources tagged · 54 questions · FLEX</small>
+                    </div>
+
+                    <div className="si-pipeline-connector">→</div>
+
+                    <div className="si-pipeline-node">
+                      <span className="si-node-num">6</span>
+                      <code>test_pipeline.py</code>
+                      <strong>18 automatic checks</strong>
+                      <small>nothing invented, nothing deleted</small>
+                    </div>
+                  </div>
+                </div>
+
+                {/* TIER C: PRODUCT */}
+                <div className="si-pipeline-tier-block tier-c">
+                  <span className="si-tier-title">C · PRODUCT · published on GitHub Pages, runs in your browser</span>
+                  <div className="si-tier-nodes-row">
+                    <div className="si-pipeline-node">
+                      <span className="si-node-num">7</span>
+                      <code>GitHub Actions → Pages</code>
+                      <strong>Publish the website</strong>
+                      <small>only if every check passes</small>
+                    </div>
+
+                    <div className="si-pipeline-connector">→</div>
+
+                    <div className="si-pipeline-node">
+                      <span className="si-node-num">8</span>
+                      <code>React · TypeScript · Three.js</code>
+                      <strong>The FLAME-SI website</strong>
+                      <small>Experiment Lab · 3D flame, real tests</small>
+                    </div>
+
+                    <div className="si-pipeline-connector">→</div>
+
+                    <div className="si-pipeline-node">
+                      <span className="si-node-num">9</span>
+                      <code>any browser or phone</code>
+                      <strong>You explore and ask</strong>
+                      <small>every number links back to NASA</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="si-pipeline-integrity-footer">
               <div className="si-check-badge">✔ 18 Automated Data Integrity Assertions Passed</div>
