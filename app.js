@@ -52,17 +52,26 @@ import {readSelection,writeSelection} from './src/session';
   }
   function getRangeFilter(key) {
     const c = rangeControls[key];
-    return { min: c.min.value === '' ? null : Number(c.min.value), max: c.max.value === '' ? null : Number(c.max.value), includeUnknown: c.includeUnknown.checked, includeQuiescent: Boolean(c.includeQuiescent && c.includeQuiescent.checked) };
+    if (!c || !c.min || !c.max) return { min: null, max: null, includeUnknown: true, includeQuiescent: false };
+    return { min: c.min.value === '' ? null : Number(c.min.value), max: c.max.value === '' ? null : Number(c.max.value), includeUnknown: c.includeUnknown ? c.includeUnknown.checked : true, includeQuiescent: Boolean(c.includeQuiescent && c.includeQuiescent.checked) };
   }
-  function rangeIsActive(range) { return range.min !== null || range.max !== null || !range.includeUnknown || range.includeQuiescent; }
+  function rangeIsActive(range) { if (!range) return false; return range.min !== null || range.max !== null || !range.includeUnknown || range.includeQuiescent; }
   function matchesRange(item, key, filter) {
+    if (!filter) return true;
     if (filter.min !== null && filter.max !== null && filter.min > filter.max) return false;
     const range = reviewedRange(item, key);
     if (!range) return filter.includeUnknown || (key === 'airflow' && filter.includeQuiescent && /quiescent/i.test(String(item.airflow || '')));
     return (filter.min === null || range.max >= filter.min) && (filter.max === null || range.min <= filter.max);
   }
   function resetRange(key) {
-    const c = rangeControls[key]; c.min.value = ''; c.max.value = ''; c.max.setCustomValidity(''); c.max.removeAttribute('aria-invalid'); c.help.textContent = c.min.disabled ? 'Numeric search is unavailable until values, units and sources are reviewed. Records remain visible.' : 'Matches overlap with reviewed reported ranges; unknown or unverified records can be included.'; c.includeUnknown.checked = true; if (c.includeQuiescent) c.includeQuiescent.checked = false;
+    const c = rangeControls[key];
+    if (!c || !c.min || !c.max) return;
+    c.min.value = ''; c.max.value = ''; c.max.setCustomValidity(''); c.max.removeAttribute('aria-invalid');
+    if (c.help) {
+      c.help.textContent = c.min.disabled ? 'Numeric search is unavailable until values, units and sources are reviewed. Records remain visible.' : 'Matches overlap with reviewed reported ranges; unknown or unverified records can be included.';
+    }
+    if (c.includeUnknown) c.includeUnknown.checked = true;
+    if (c.includeQuiescent) c.includeQuiescent.checked = false;
   }
   function describeRange(key, filter) {
     const unit = key === 'pressure' ? 'kPa' : 'm/s';
@@ -87,7 +96,7 @@ import {readSelection,writeSelection} from './src/session';
   const btnSwapColumns = document.querySelector('#btn-swap-columns');
   const btnClearCompare = document.querySelector('#btn-clear-compare');
 
-  const filterControls={q:searchInput,sort:sortSelect,fuel:fuelSelect,topic:topicSelect,platform:platformSelect,oxygen:oxygenInput,facility:facilitySelect,gravity:gravitySelect,geometry:geometrySelect,airflow:airflowSelect,pressure:pressureSelect};
+  const filterControls={q:searchInput,sort:sortSelect,fuel:fuelSelect,topic:topicSelect,platform:platformSelect,oxygen:oxygenInput,facility:facilitySelect,gravity:gravitySelect,geometry:geometrySelect};
   let restoring=false;
   function restoreFilters(){
     const params=new URLSearchParams(location.search);
@@ -179,17 +188,21 @@ import {readSelection,writeSelection} from './src/session';
     populateSelect(facilitySelect, getUniqueValues('facility'), 'All facilities');
     const gravityLabels = { microgravity: 'Microgravity', reduced: 'Reduced gravity', normal: 'Normal gravity', unknown: 'Unknown' };
     const categories = [...new Set(data.map(item => gravityCategory(item.gravity)))];
-    gravitySelect.innerHTML = '<option value="">All gravity conditions</option>';
-    Object.entries(gravityLabels).filter(([key]) => categories.includes(key)).forEach(([key, label]) => {
-      const option = document.createElement('option'); option.value = key; option.textContent = label; gravitySelect.appendChild(option);
-    });
+    if (gravitySelect) {
+      gravitySelect.innerHTML = '<option value="">All gravity conditions</option>';
+      Object.entries(gravityLabels).filter(([key]) => categories.includes(key)).forEach(([key, label]) => {
+        const option = document.createElement('option'); option.value = key; option.textContent = label; gravitySelect.appendChild(option);
+      });
+    }
     populateSelect(geometrySelect, getUniqueValues('geometry'), 'All fuel geometries');
     Object.entries(rangeControls).forEach(([key, control]) => {
-      const hasReviewed = data.some(item => reviewedRange(item, key));
-      control.min.disabled = !hasReviewed; control.max.disabled = !hasReviewed;
-      control.help.textContent = hasReviewed
-        ? 'Matches overlap with reviewed reported ranges; unknown or unverified records can be included.'
-        : 'Numeric search is unavailable until values, units and sources are reviewed. Records remain visible.';
+      if (control && control.min && control.max && control.help) {
+        const hasReviewed = data.some(item => reviewedRange(item, key));
+        control.min.disabled = !hasReviewed; control.max.disabled = !hasReviewed;
+        control.help.textContent = hasReviewed
+          ? 'Matches overlap with reviewed reported ranges; unknown or unverified records can be included.'
+          : 'Numeric search is unavailable until values, units and sources are reviewed. Records remain visible.';
+      }
     });
   }
 
@@ -280,7 +293,7 @@ import {readSelection,writeSelection} from './src/session';
     if (filters.platform) chips.push({ key: 'platform', label: `Platform: ${filters.platform}`, id: 'chip-platform' });
     if (filters.targetOxygen !== null) chips.push({ key: 'oxygen', label: `Target O₂: ${filters.targetOxygen}% (nearest)`, id: 'chip-oxygen' });
     if (filters.facility) chips.push({ key: 'facility', label: `Facility: ${filters.facility}`, id: 'chip-facility' });
-    if (filters.gravity) chips.push({ key: 'gravity', label: `Gravity: ${gravitySelect.selectedOptions[0].textContent}`, id: 'chip-gravity' });
+    if (filters.gravity && gravitySelect?.selectedOptions?.[0]) chips.push({ key: 'gravity', label: `Gravity: ${gravitySelect.selectedOptions[0].textContent}`, id: 'chip-gravity' });
     if (filters.geometry) chips.push({ key: 'geometry', label: `Geometry: ${filters.geometry}`, id: 'chip-geometry' });
     if (filters.airflow) chips.push({ key: 'airflow', label: `Airflow: ${filters.airflow}`, id: 'chip-airflow' });
     if (filters.pressure) chips.push({ key: 'pressure', label: `Pressure: ${filters.pressure}`, id: 'chip-pressure' });
@@ -345,7 +358,7 @@ import {readSelection,writeSelection} from './src/session';
       geometrySelect.focus();
     } else if (key === 'airflow' || key === 'pressure') {
       resetRange(key);
-      rangeControls[key].includeUnknown.focus();
+      if (rangeControls[key]?.includeUnknown) rangeControls[key].includeUnknown.focus();
     }
     render();
   }
@@ -916,15 +929,23 @@ import {readSelection,writeSelection} from './src/session';
   if (gravitySelect) gravitySelect.addEventListener('change', render);
   if (geometrySelect) geometrySelect.addEventListener('change', render);
   Object.values(rangeControls).forEach(control => {
-    [control.min, control.max].forEach(input => input.addEventListener('input', () => {
-      const invalid = control.min.value !== '' && control.max.value !== '' && Number(control.min.value) > Number(control.max.value);
-      control.max.setCustomValidity(invalid ? 'Maximum must be greater than or equal to minimum.' : '');
-      control.max.setAttribute('aria-invalid', String(invalid));
-      control.help.textContent = invalid ? 'Maximum must be greater than or equal to minimum.' : 'Matches overlap with reviewed reported ranges; unknown or unverified records can be included.';
-      render();
-    }));
-    control.includeUnknown.addEventListener('change', render);
-    if (control.includeQuiescent) control.includeQuiescent.addEventListener('change', render);
+    if (control && control.min && control.max) {
+      [control.min, control.max].forEach(input => {
+        if (input) {
+          input.addEventListener('input', () => {
+            const invalid = control.min.value !== '' && control.max.value !== '' && Number(control.min.value) > Number(control.max.value);
+            control.max.setCustomValidity(invalid ? 'Maximum must be greater than or equal to minimum.' : '');
+            control.max.setAttribute('aria-invalid', String(invalid));
+            if (control.help) {
+              control.help.textContent = invalid ? 'Maximum must be greater than or equal to minimum.' : 'Matches overlap with reviewed reported ranges; unknown or unverified records can be included.';
+            }
+            render();
+          });
+        }
+      });
+    }
+    if (control && control.includeUnknown) control.includeUnknown.addEventListener('change', render);
+    if (control && control.includeQuiescent) control.includeQuiescent.addEventListener('change', render);
   });
 
   if (clearBtn) clearBtn.addEventListener('click', clearAllFilters);
@@ -943,7 +964,8 @@ import {readSelection,writeSelection} from './src/session';
   if (btnClearCompare) {
     btnClearCompare.addEventListener('click', () => {
       selectedOrder = [];
-      render();
+      updateSelection();
+      renderComparisonSection();
     });
   }
 

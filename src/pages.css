@@ -35,6 +35,9 @@ body .flame-chat-container :is(.chat-context-menu button,.chat-context>summary,.
 body .flame-chat-container :is(.chat-eyebrow,.assistant-label,.inv-action-tag){color:#155399}body .flame-chat-container .chat-send-btn{background:#164f91;color:#fff}
 @media(max-width:700px){body .site-header #site-nav{background:#fff;border-color:#cbd8e8}}
 body section.explore :is(.spotlight-card,.card-content,.search-input-wrap,.count){background:#fff!important;color:#173657!important;border-color:#c5d6e8!important;box-shadow:none}
+body section.explore .search-input-wrap input{background:#ffffff!important;color:#102b4e!important;border-color:#cbd8e8!important;box-shadow:0 2px 6px rgba(16,43,78,.04)!important}
+body section.explore .search-input-wrap input:focus{background:#ffffff!important;border-color:#164f91!important;box-shadow:0 0 0 3px rgba(22,79,145,.18)!important}
+body section.explore .search-input-wrap .search-icon{color:#164f91!important}
 body section.explore :is(.card-specs-grid,.card-topic-tag,.card-eyebrow-badge){background:#edf4fc!important;color:#294969!important;border-color:#ccdaea!important}
 body section.explore :is(.spotlight-card h3,.spec-val,.search-input-wrap input){color:#102b4e!important}
 body section.explore :is(.card-objective,.spec-label,.card-platform-tag,.search-input-wrap input::placeholder){color:#4e637d!important}
