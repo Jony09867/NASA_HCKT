@@ -17,7 +17,7 @@ function initReactHome() {
     root.render(
       <ShinyText
         text="MICROGRAVITY RESEARCH / 01"
-        color="#ff8a58"
+        color="#78b7ff"
         shineColor="#ffffff"
         speed={2.5}
         shineWidth={35}
@@ -109,8 +109,8 @@ function initReactHome() {
         />
         <div className="saturn-wrap">
           <ParticleSaturn
-            coreColor="#ff4414"
-            ringColor="#ffa855"
+            coreColor="#fc3d21"
+            ringColor="#8cc7ff"
             density={20}
             particleSize={15}
             glow={26}

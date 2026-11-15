@@ -191,7 +191,7 @@ export default function SIDashboard() {
             aria-pressed={activePreset === key}
             onClick={() => handlePresetSelect(key)}
             theme="dark"
-            spotlightColor="#ff8a58"
+            spotlightColor="#78b7ff"
             intensity={0.15}
             spotlightSize={240}
             softness={0.7}
@@ -260,7 +260,7 @@ export default function SIDashboard() {
             </div>
             <div className="si-metric-row">
               <span>Flammability Spread vs Earth:</span>
-              <span style={{ color: metrics.statusClass === 'status-critical' ? '#ef4444' : '#ff8a58' }}>
+              <span style={{ color: metrics.statusClass === 'status-critical' ? '#ef4444' : '#78b7ff' }}>
                 {metrics.flammabilityDelta}
               </span>
             </div>
