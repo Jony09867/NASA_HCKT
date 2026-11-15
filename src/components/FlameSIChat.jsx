@@ -323,8 +323,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
         <div><span className="chat-eyebrow">FLAME-SI / RESEARCH ASSISTANT</span>
           <h3>New thread</h3><p>Explore combustion beyond Earth.</p></div>
         
-          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.15} style={{ display: 'inline-flex' }}>
-            <button className="flame-reset-btn" type="button" onClick={handleReset} aria-label="Reset conversation" title="Reset conversation"><RotateCwIcon size={17} /></button>
+          <GlassSurface as="button" type="button" onClick={handleReset} aria-label="Reset conversation" title="Reset conversation" className="flame-reset-btn" borderRadius={8}>
+            <RotateCwIcon size={17} />
           </GlassSurface>
         
       </header>
@@ -336,8 +336,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
             <h4>What would you like to explore?</h4>
             <p>Discover NASA combustion experiments, compare mission conditions, and explore fire safety research.</p>
             <div className="chat-starters">{SUGGESTIONS.slice(0, 3).map(item => 
-              <GlassSurface key={item.key} width="auto" height="auto" borderRadius={20} backgroundOpacity={0.12} style={{ display: 'inline-flex' }}>
-                <button type="button" onClick={() => handleSend(item.label)}>{item.label}<ArrowUpIcon size={14} /></button>
+              <GlassSurface as="button" key={item.key} type="button" onClick={() => handleSend(item.label)} borderRadius={8}>
+                {item.label}<ArrowUpIcon size={14} />
               </GlassSurface>
             )}</div>
           </div>}
@@ -362,8 +362,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
           {isStreaming && <div className="chat-loading" role="status"><LoaderCircleIcon size={16} className="chat-spin"/>Preparing research overview…</div>}
         </div>
         {showLatest && (
-          <GlassSurface width="auto" height="auto" borderRadius={20} style={{ position: 'absolute', bottom: '16px', right: '16px', zIndex: 10, display: 'inline-flex' }}>
-            <button type="button" className="chat-scroll-latest" aria-label="Scroll to latest message" onClick={()=>{const el=chatBodyRef.current;el.scrollTop=el.scrollHeight;followLatest.current=true;setShowLatest(false);}}><ArrowDownIcon size={16}/></button>
+          <GlassSurface as="button" type="button" className="chat-scroll-latest" aria-label="Scroll to latest message" borderRadius={8} onClick={()=>{const el=chatBodyRef.current;el.scrollTop=el.scrollHeight;followLatest.current=true;setShowLatest(false);}}>
+            <ArrowDownIcon size={16}/>
           </GlassSurface>
         )}
       </div>
@@ -375,8 +375,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
             <details className="chat-context"><summary aria-label="Add mission context" title="Add mission context"><PlusIcon size={18}/></summary><div className="chat-context-menu"><span>MISSION SCENARIOS</span>{SUGGESTIONS.map(item=><button type="button" key={item.key} onClick={e=>{setInput(item.label);e.currentTarget.closest('details').open=false;}}>{item.label}</button>)}</div></details>
             <span className="chat-mode"><GlobeIcon size={13}/> NASA research · demo</span>
             <Magnet padding={35} maxOffset={5} magnetStrength={3} disabled={isStreaming||!input.trim()}>
-              <GlassSurface width="auto" height="auto" borderRadius={8} backgroundOpacity={0.18} style={{ display: 'inline-flex' }}>
-                <button type="submit" className="chat-send-btn" aria-label="Send message" disabled={isStreaming||!input.trim()}>{isStreaming?<LoaderCircleIcon size={17} className="chat-spin"/>:<ArrowUpIcon size={19}/>}</button>
+              <GlassSurface as="button" type="submit" className="chat-send-btn" aria-label="Send message" disabled={isStreaming||!input.trim()} borderRadius={8}>
+                {isStreaming?<LoaderCircleIcon size={17} className="chat-spin"/>:<ArrowUpIcon size={19}/>}
               </GlassSurface>
             </Magnet>
           </div>

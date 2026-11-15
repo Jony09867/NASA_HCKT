@@ -63,17 +63,14 @@ function initReactHome() {
           spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
         >
           <GlassSurface
-            width="auto"
-            height="auto"
+            as="a"
+            href="/explore/"
+            className="button"
             borderRadius={8}
-            backgroundOpacity={0.12}
-            distortionScale={-140}
-            displace={0.4}
-            style={{ display: 'inline-flex' }}
+            backgroundOpacity={0}
+            distortionScale={0}
           >
-            <a className="button" href="/explore/" style={{ margin: 0 }}>
-              Explore investigations
-            </a>
+            Explore investigations <span>↗</span>
           </GlassSurface>
         </Magnet>
         <Magnet
@@ -84,26 +81,14 @@ function initReactHome() {
           spring={{ stiffness: 180, damping: 15, mass: 0.9 }}
         >
           <GlassSurface
-            width="auto"
-            height="auto"
+            as="a"
+            href="/simulator/"
+            className="button secondary"
             borderRadius={8}
-            backgroundOpacity={0.1}
-            distortionScale={-140}
-            displace={0.4}
-            style={{ display: 'inline-flex' }}
+            backgroundOpacity={0}
+            distortionScale={0}
           >
-            <a
-              className="button"
-              href="/simulator/"
-              style={{
-                margin: 0,
-                background: 'rgba(255, 255, 255, 0.7)',
-                borderColor: '#cbd8e8',
-                color: '#102b4e',
-              }}
-            >
-              Try the simulator <span>↗</span>
-            </a>
+            Try the simulator <span>↗</span>
           </GlassSurface>
         </Magnet>
       </div>

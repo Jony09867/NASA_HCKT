@@ -482,44 +482,44 @@ export default function InteractiveFlameLab({
 
         {/* Action buttons */}
         <div className="flame-lab-actions">
-          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.15} style={{ display: 'inline-flex' }}>
-            <button
-              type="button"
-              className={`flame-action-btn primary ${applied ? 'applied' : ''}`}
-              onClick={handleApply}
-              disabled={!applyCallback}
-            >
-              {applied ? '✓ Applied to Simulator' : 'Apply to Mission Simulator'}
-            </button>
+          <GlassSurface
+            as="button"
+            type="button"
+            className={`flame-action-btn primary ${applied ? 'applied' : ''}`}
+            onClick={handleApply}
+            disabled={!applyCallback}
+            borderRadius={8}
+          >
+            {applied ? '✓ Applied to Simulator' : 'Apply to Mission Simulator'}
           </GlassSurface>
           {onInspectInExplorer && (
-            <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-              <button
-                type="button"
-                className="flame-action-btn secondary"
-                onClick={() => onInspectInExplorer('saffire-iii', o2)}
-              >
-                Inspect Saffire-III ↗
-              </button>
-            </GlassSurface>
-          )}
-          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-            <button
+            <GlassSurface
+              as="button"
               type="button"
               className="flame-action-btn secondary"
-              onClick={handleReset}
+              onClick={() => onInspectInExplorer('saffire-iii', o2)}
+              borderRadius={8}
             >
-              Reset
-            </button>
+              Inspect Saffire-III ↗
+            </GlassSurface>
+          )}
+          <GlassSurface
+            as="button"
+            type="button"
+            className="flame-action-btn secondary"
+            onClick={handleReset}
+            borderRadius={8}
+          >
+            Reset
           </GlassSurface>
-          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-            <button
-              type="button"
-              className={`flame-action-btn secondary ${isPlaying ? '' : 'paused-btn'}`}
-              onClick={() => setIsPlaying(!isPlaying)}
-            >
-              {isPlaying ? 'Pause' : 'Play'}
-            </button>
+          <GlassSurface
+            as="button"
+            type="button"
+            className={`flame-action-btn secondary ${isPlaying ? '' : 'paused-btn'}`}
+            onClick={() => setIsPlaying(!isPlaying)}
+            borderRadius={8}
+          >
+            {isPlaying ? 'Pause' : 'Play'}
           </GlassSurface>
         </div>
       </div>

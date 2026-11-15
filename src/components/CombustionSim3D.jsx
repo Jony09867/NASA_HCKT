@@ -1204,32 +1204,32 @@ export function CombustionTelemetryChart({
           </h4>
         </div>
         <div className="c3d-viz-tabs" role="tablist">
-          <GlassSurface width="auto" height="auto" borderRadius={4} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-            <button
-              type="button"
-              className={chartTab === 'o2-curve' ? 'is-active' : ''}
-              onClick={() => setChartTab('o2-curve')}
-            >
-              O₂ vs Spread
-            </button>
+          <GlassSurface
+            as="button"
+            type="button"
+            className={chartTab === 'o2-curve' ? 'is-active' : ''}
+            onClick={() => setChartTab('o2-curve')}
+            borderRadius={8}
+          >
+            O₂ vs Spread
           </GlassSurface>
-          <GlassSurface width="auto" height="auto" borderRadius={4} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-            <button
-              type="button"
-              className={chartTab === 'airflow-curve' ? 'is-active' : ''}
-              onClick={() => setChartTab('airflow-curve')}
-            >
-              Airflow Envelope
-            </button>
+          <GlassSurface
+            as="button"
+            type="button"
+            className={chartTab === 'airflow-curve' ? 'is-active' : ''}
+            onClick={() => setChartTab('airflow-curve')}
+            borderRadius={8}
+          >
+            Airflow Envelope
           </GlassSurface>
-          <GlassSurface width="auto" height="auto" borderRadius={4} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-            <button
-              type="button"
-              className={chartTab === 'cool-soot' ? 'is-active' : ''}
-              onClick={() => setChartTab('cool-soot')}
-            >
-              Cool Flame & Soot
-            </button>
+          <GlassSurface
+            as="button"
+            type="button"
+            className={chartTab === 'cool-soot' ? 'is-active' : ''}
+            onClick={() => setChartTab('cool-soot')}
+            borderRadius={8}
+          >
+            Cool Flame & Soot
           </GlassSurface>
         </div>
       </div>

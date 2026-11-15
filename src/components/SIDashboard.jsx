@@ -342,37 +342,37 @@ export default function SIDashboard() {
                 </details>
                 <div className="si-rank-actions">
                   <Magnet padding={35} maxOffset={5} magnetStrength={3}>
-                    <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.15} style={{ display: 'inline-flex' }}>
-                      <button
-                        type="button"
-                        className="si-action-btn primary"
-                        onClick={() => handleInspectInExplorer(inv.id, inv.oxygen ? parseInt(inv.oxygen, 10) : oxygen)}
-                      >
-                        Inspect in Explorer ↗
-                      </button>
+                    <GlassSurface
+                      as="button"
+                      type="button"
+                      className="si-action-btn primary"
+                      borderRadius={8}
+                      onClick={() => handleInspectInExplorer(inv.id, inv.oxygen ? parseInt(inv.oxygen, 10) : oxygen)}
+                    >
+                      Inspect in Explorer ↗
                     </GlassSurface>
                   </Magnet>
 
-                  <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-                    <button
-                      type="button"
-                      className="si-action-btn secondary"
-                      onClick={() => askInvestigation(inv.name)}
-                    >
-                      Ask FLAME-SI
-                    </button>
+                  <GlassSurface
+                    as="button"
+                    type="button"
+                    className="si-action-btn secondary"
+                    borderRadius={8}
+                    onClick={() => askInvestigation(inv.name)}
+                  >
+                    Ask FLAME-SI
                   </GlassSurface>
 
                   {inv.sourceUrl && (
-                    <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-                      <a
-                        href={inv.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="si-action-btn secondary"
-                      >
-                        NASA PSI Source ↗
-                      </a>
+                    <GlassSurface
+                      as="a"
+                      href={inv.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="si-action-btn secondary"
+                      borderRadius={8}
+                    >
+                      NASA PSI Source ↗
                     </GlassSurface>
                   )}
                 </div>
@@ -385,44 +385,44 @@ export default function SIDashboard() {
       {/* Pillars of Fire Safety & Terrestrial Impact Tabs */}
       <div className="si-pillars-container">
         <AnimatedContent className="si-tabs-nav" >
-          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-            <button
-              type="button"
-              className={`si-tab-btn ${activeTab === 'prevention' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('prevention')}
-            >
-              01. Prevention Protocols
-            </button>
+          <GlassSurface
+            as="button"
+            type="button"
+            className={`si-tab-btn ${activeTab === 'prevention' ? 'is-active' : ''}`}
+            borderRadius={8}
+            onClick={() => setActiveTab('prevention')}
+          >
+            01. Prevention Protocols
           </GlassSurface>
 
-          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-            <button
-              type="button"
-              className={`si-tab-btn ${activeTab === 'detection' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('detection')}
-            >
-              02. Detection Dynamics
-            </button>
+          <GlassSurface
+            as="button"
+            type="button"
+            className={`si-tab-btn ${activeTab === 'detection' ? 'is-active' : ''}`}
+            borderRadius={8}
+            onClick={() => setActiveTab('detection')}
+          >
+            02. Detection Dynamics
           </GlassSurface>
 
-          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-            <button
-              type="button"
-              className={`si-tab-btn ${activeTab === 'suppression' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('suppression')}
-            >
-              03. Suppression Architecture
-            </button>
+          <GlassSurface
+            as="button"
+            type="button"
+            className={`si-tab-btn ${activeTab === 'suppression' ? 'is-active' : ''}`}
+            borderRadius={8}
+            onClick={() => setActiveTab('suppression')}
+          >
+            03. Suppression Architecture
           </GlassSurface>
 
-          <GlassSurface width="auto" height="auto" borderRadius={6} backgroundOpacity={0.08} style={{ display: 'inline-flex' }}>
-            <button
-              type="button"
-              className={`si-tab-btn ${activeTab === 'earth' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('earth')}
-            >
-              04. Earth Applications
-            </button>
+          <GlassSurface
+            as="button"
+            type="button"
+            className={`si-tab-btn ${activeTab === 'earth' ? 'is-active' : ''}`}
+            borderRadius={8}
+            onClick={() => setActiveTab('earth')}
+          >
+            04. Earth Applications
           </GlassSurface>
         </AnimatedContent>
 

@@ -11,14 +11,14 @@ body[data-page=compare] section.compare{display:block;width:100%;min-width:0}.co
 :root{--bg:#f5f8fc;--ink:#102b4e;--muted:#4e637d;--line:#cbd8e8;--orange:#d3292f;color-scheme:light}
 body,.site-header,body[data-page=chat],section.explore,.compare{background:#f5f8fc!important;color:#102b4e!important}
 .site-header,.how-it-works,.site-footer{border-color:#cbd8e8!important}.site-header nav,.site-header nav a,.site-footer,.site-footer a,.brand,.nav-toggle{color:#183b65!important}.site-header nav a[aria-current=page],.eyebrow,.orange,.mark,.steps-grid span{color:#c9272d!important}.site-header [data-selection-count]{background:#dceafd;color:#153e75}.nav-toggle{border-color:#b4c8de!important} .badge{color:#345579;border-color:#a9bfd8}
-p,.section-head p,.about p{color:#4e637d}.hero h1,.hero h1 em,.about h2,.about em{color:#102b4e}.hero .hero-muted{color:#466887}.about{background:#e8f1fb;color:#102b4e}.orbit{border-color:#afc4dc}.art-label{color:#365777}.art-note{color:#c9272d}.how-it-works .steps-grid>a{background:#fff;border-color:#cbd8e8}.button,.primary-action{background:#164f91!important;color:white!important}.button:hover,.primary-action:hover{background:#0c3971!important}
+p,.section-head p,.about p{color:#4e637d}.hero h1,.hero h1 em,.about h2,.about em{color:#102b4e}.hero .hero-muted{color:#466887}.about{background:#e8f1fb;color:#102b4e}.orbit{border-color:#afc4dc}.art-label{color:#365777}.art-note{color:#c9272d}.how-it-works .steps-grid>a{background:#fff;border-color:#cbd8e8}.button,.primary-action{background:#164f91!important;color:white!important;border-radius:8px!important}.button:hover,.primary-action:hover{background:#0c3971!important}
 section.explore .notice{background:#e2eefb;color:#294969;border-color:#d3292f}.selection-tray{background:#fff;color:#183b65;border-color:#b6cbe1;box-shadow:0 8px 25px #163d651c}.investigation-details,.investigation-details summary{color:#284967}.investigation-details dt{color:#135194}
 /* Explore and comparison surfaces */
 body :is(.filters-container,.advanced-filters-panel,.card,.evidence-table,.evidence-header-cell,.evidence-cell,.compare-empty,.slot){background-color:#fff;color:#173657;border-color:#ccdaea}
 body :is(.card h3,.card h4,.card strong,.evidence-table h3,.evidence-table strong){color:#102b4e}
 body :is(.card p,.card span,.evidence-cell,.evidence-header-cell,.filter-feedback){color:#4e637d}
-body :is(.filters-container input,.filters-container select,.filters-container button,.compare-toolbar button){background-color:#fff;color:#173657;border-color:#b9cbe0}
-body :is(.btn-compare,.clear,.specular-button,.si-action-btn.primary){background:#164f91!important;color:#fff!important;border-color:#164f91!important}
+body :is(.filters-container input,.filters-container select,.filters-container button,.compare-toolbar button){background-color:#fff;color:#173657;border-color:#b9cbe0;border-radius:8px!important}
+body :is(.btn-compare,.clear,.specular-button,.si-action-btn.primary){background:#164f91!important;color:#fff!important;border-color:#164f91!important;border-radius:8px!important}
 /* Simulator */
 body .si-dashboard-section{color:#102b4e}body .si-dashboard-section :is(h2,h3,h4,.si-preset-title,.si-metric-row span:last-child){color:#102b4e!important}
 body .si-dashboard-section :is(p,.si-preset-label,.si-preset-specs,.si-control-group label,.si-metric-row span:first-child,.si-result-details summary,.si-tag){color:#4e637d}
@@ -98,7 +98,7 @@ body .compare-empty-guide .specular-button {
   color: #ffffff !important;
   border: 1px solid #164f91 !important;
   font-weight: 700 !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   padding: 12px 24px !important;
   box-shadow: 0 2px 12px rgba(22, 79, 145, 0.25) !important;
   transition: all 0.2s ease !important;
@@ -172,7 +172,7 @@ body .toggle-advanced-btn {
   background: #ffffff !important;
   color: #183b65 !important;
   border: 1px solid #b9cbe0 !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   padding: 10px 16px !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
@@ -189,7 +189,7 @@ body section.explore .clear {
   background: #164f91 !important;
   color: #ffffff !important;
   border: 1px solid #164f91 !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   box-shadow: 0 2px 8px rgba(22, 79, 145, 0.2) !important;
   transition: all 0.2s ease !important;
 }
@@ -238,7 +238,7 @@ body section.explore .btn-compare {
   background: #eef5fc !important;
   color: #164f91 !important;
   border: 1px solid #b9cbe0 !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
 }
@@ -280,7 +280,7 @@ body .selection-tray .primary-action {
   background: #164f91 !important;
   color: #ffffff !important;
   border: 1px solid #164f91 !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   font-weight: 700 !important;
   box-shadow: 0 2px 8px rgba(22, 79, 145, 0.25) !important;
   transition: all 0.2s ease !important;

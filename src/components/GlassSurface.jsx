@@ -279,21 +279,22 @@ const bendShape = (trace, edge, softness, calm, level) => {
 };
 
 const GlassSurface = ({
+  as: Component = 'div',
   children,
-  width = 200,
-  height = 80,
-  borderRadius = 20,
-  borderWidth = 0.07,
+  width = 'auto',
+  height = 'auto',
+  borderRadius = 8,
+  borderWidth = 0.02,
   brightness = 50,
-  opacity = 0.93,
-  blur = 11,
+  opacity = 0.95,
+  blur = 4,
   displace = 0,
   backgroundOpacity = 0,
   saturation = 1,
-  distortionScale = -180,
+  distortionScale = 0,
   redOffset = 0,
-  greenOffset = 10,
-  blueOffset = 20,
+  greenOffset = 0,
+  blueOffset = 0,
   xChannel = 'R',
   yChannel = 'G',
   mixBlendMode = 'difference',
@@ -740,7 +741,7 @@ const GlassSurface = ({
   };
 
   return (
-    <div
+    <Component
       ref={containerRef}
       className={`glass-surface ${webgl ? 'glass-surface--webgl' : refractive ? 'glass-surface--svg' : 'glass-surface--fallback'} ${className}`}
       style={containerStyle}
@@ -818,8 +819,8 @@ const GlassSurface = ({
         />
       )}
 
-      <div className="glass-surface__content">{children}</div>
-    </div>
+      <span className="glass-surface__content">{children}</span>
+    </Component>
   );
 };
 
