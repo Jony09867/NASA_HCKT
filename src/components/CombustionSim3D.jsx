@@ -730,6 +730,7 @@ export function CombustionSim3D({
   initialVentilation = 0.08,
   initialPressure = 4.3,
   compact = false,
+  showControls = true,
   showReport = true,
   onStateChange,
 }) {
@@ -1325,126 +1326,131 @@ export function CombustionSim3D({
         </div>
       </div>
 
-      {/* Gravity Regime Selector (0g, 1/6g Lunar, 1g Earth) */}
-      <div className="c3d-gravity-grid" role="group" aria-label="Gravity Regime">
-        {Object.values(GRAVITY_REGIMES).map((g) => (
-          <button
-            key={g.id}
-            type="button"
-            className={`c3d-gravity-btn ${gravityKey === g.id ? 'is-active' : ''}`}
-            onClick={() => {
-              isUserInteractingRef.current = true;
-              setGravityKey(g.id);
-              logParameterChange(
-                `Gravity switched to ${g.shortLabel} (${g.subLabel}): 3D flame geometry adapted.`
-              );
-            }}
-          >
-            <strong>{g.shortLabel}</strong>
-            <span>{g.subLabel}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Fuel Material Selector */}
-      <div className="c3d-material-grid" role="group" aria-label="Fuel Material">
-        {Object.values(FUEL_MATERIALS).map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            className={`c3d-material-btn ${materialKey === m.id ? 'is-active' : ''}`}
-            onClick={() => {
-              isUserInteractingRef.current = true;
-              setMaterialKey(m.id);
-              logParameterChange(
-                `Fuel sample changed to ${m.shortName} (LOI ${m.loiMicro}% in 0g, Ref: ${m.experimentRef}).`
-              );
-            }}
-          >
-            {m.shortName}
-          </button>
-        ))}
-      </div>
-
-      {/* Environmental Sliders */}
-      <div className="c3d-sliders-grid">
-        <div className="c3d-slider-box">
-          <div className="c3d-slider-head">
-            <span>Oxygen Concentration (O₂)</span>
-            <strong>
-              {oxygen}% · P<sub>O₂</sub> {physics.pO2} psi
-            </strong>
+      {/* Environmental Sliders & Regimes (Hidden when hosted in SIDashboard where sidebar handles inputs) */}
+      {showControls && (
+        <>
+          {/* Gravity Regime Selector (0g, 1/6g Lunar, 1g Earth) */}
+          <div className="c3d-gravity-grid" role="group" aria-label="Gravity Regime">
+            {Object.values(GRAVITY_REGIMES).map((g) => (
+              <button
+                key={g.id}
+                type="button"
+                className={`c3d-gravity-btn ${gravityKey === g.id ? 'is-active' : ''}`}
+                onClick={() => {
+                  isUserInteractingRef.current = true;
+                  setGravityKey(g.id);
+                  logParameterChange(
+                    `Gravity switched to ${g.shortLabel} (${g.subLabel}): 3D flame geometry adapted.`
+                  );
+                }}
+              >
+                <strong>{g.shortLabel}</strong>
+                <span>{g.subLabel}</span>
+              </button>
+            ))}
           </div>
-          <input
-            type="range"
-            min="12"
-            max="100"
-            step="1"
-            value={oxygen}
-            aria-label="Oxygen Concentration Percentage"
-            onChange={(e) => {
-              isUserInteractingRef.current = true;
-              const val = Number(e.target.value);
-              setOxygen(val);
-              logParameterChange(
-                `O₂ updated to ${val}% (PO₂ = ${((val / 100) * pressure).toFixed(2)} psi).`
-              );
-            }}
-          />
-        </div>
 
-        <div className="c3d-slider-box">
-          <div className="c3d-slider-head">
-            <span>Cabin Ventilation</span>
-            <strong>
-              {ventilation.toFixed(2)} m/s ({physics.ventilationRegime})
-            </strong>
+          {/* Fuel Material Selector */}
+          <div className="c3d-material-grid" role="group" aria-label="Fuel Material">
+            {Object.values(FUEL_MATERIALS).map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                className={`c3d-material-btn ${materialKey === m.id ? 'is-active' : ''}`}
+                onClick={() => {
+                  isUserInteractingRef.current = true;
+                  setMaterialKey(m.id);
+                  logParameterChange(
+                    `Fuel sample changed to ${m.shortName} (LOI ${m.loiMicro}% in 0g, Ref: ${m.experimentRef}).`
+                  );
+                }}
+              >
+                {m.shortName}
+              </button>
+            ))}
           </div>
-          <input
-            type="range"
-            min="0"
-            max="0.55"
-            step="0.01"
-            value={ventilation}
-            aria-label="Cabin Ventilation Speed"
-            onChange={(e) => {
-              isUserInteractingRef.current = true;
-              const val = Number(e.target.value);
-              setVentilation(val);
-              logParameterChange(
-                `Cabin airflow adjusted to ${val.toFixed(2)} m/s (${
-                  val >= 0.14 ? 'Forced-Convection Wake' : 'Quiescent / Laminar Diffusion'
-                }).`
-              );
-            }}
-          />
-        </div>
 
-        <div className="c3d-slider-box">
-          <div className="c3d-slider-head">
-            <span>Cabin Ambient Pressure</span>
-            <strong>
-              {pressure.toFixed(1)} psi ({(pressure * 6.895).toFixed(0)} kPa)
-            </strong>
+          {/* Environmental Sliders */}
+          <div className="c3d-sliders-grid">
+            <div className="c3d-slider-box">
+              <div className="c3d-slider-head">
+                <span>Oxygen Concentration (O₂)</span>
+                <strong>
+                  {oxygen}% · P<sub>O₂</sub> {physics.pO2} psi
+                </strong>
+              </div>
+              <input
+                type="range"
+                min="12"
+                max="100"
+                step="1"
+                value={oxygen}
+                aria-label="Oxygen Concentration Percentage"
+                onChange={(e) => {
+                  isUserInteractingRef.current = true;
+                  const val = Number(e.target.value);
+                  setOxygen(val);
+                  logParameterChange(
+                    `O₂ updated to ${val}% (PO₂ = ${((val / 100) * pressure).toFixed(2)} psi).`
+                  );
+                }}
+              />
+            </div>
+
+            <div className="c3d-slider-box">
+              <div className="c3d-slider-head">
+                <span>Cabin Ventilation</span>
+                <strong>
+                  {ventilation.toFixed(2)} m/s ({physics.ventilationRegime})
+                </strong>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="0.55"
+                step="0.01"
+                value={ventilation}
+                aria-label="Cabin Ventilation Speed"
+                onChange={(e) => {
+                  isUserInteractingRef.current = true;
+                  const val = Number(e.target.value);
+                  setVentilation(val);
+                  logParameterChange(
+                    `Cabin airflow adjusted to ${val.toFixed(2)} m/s (${
+                      val >= 0.14 ? 'Forced-Convection Wake' : 'Quiescent / Laminar Diffusion'
+                    }).`
+                  );
+                }}
+              />
+            </div>
+
+            <div className="c3d-slider-box">
+              <div className="c3d-slider-head">
+                <span>Cabin Ambient Pressure</span>
+                <strong>
+                  {pressure.toFixed(1)} psi ({(pressure * 6.895).toFixed(0)} kPa)
+                </strong>
+              </div>
+              <input
+                type="range"
+                min="4.0"
+                max="14.7"
+                step="0.1"
+                value={pressure}
+                aria-label="Cabin Ambient Pressure"
+                onChange={(e) => {
+                  isUserInteractingRef.current = true;
+                  const val = Number(e.target.value);
+                  setPressure(val);
+                  logParameterChange(
+                    `Chamber pressure set to ${val.toFixed(1)} psi (${(val * 6.895).toFixed(0)} kPa).`
+                  );
+                }}
+              />
+            </div>
           </div>
-          <input
-            type="range"
-            min="4.0"
-            max="14.7"
-            step="0.1"
-            value={pressure}
-            aria-label="Cabin Ambient Pressure"
-            onChange={(e) => {
-              isUserInteractingRef.current = true;
-              const val = Number(e.target.value);
-              setPressure(val);
-              logParameterChange(
-                `Chamber pressure set to ${val.toFixed(1)} psi (${(val * 6.895).toFixed(0)} kPa).`
-              );
-            }}
-          />
-        </div>
-      </div>
+        </>
+      )}
 
       {/* Dynamic Situational SI Assessment Report (Automatically adapts to every parameter change!) */}
       {showReport && (

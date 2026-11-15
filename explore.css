@@ -359,12 +359,12 @@ section.explore .notice strong {
 .advanced-filters-panel {
   background: #ffffff;
   border: 1px solid #cbd8e8;
-  border-radius: 8px;
+  border-radius: 20px;
   padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 18px;
-  box-shadow: 0 4px 16px rgba(16, 43, 78, 0.04);
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
   animation: panelSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -546,7 +546,7 @@ section.explore .cards {
 
 .spotlight-card {
   position: relative;
-  border-radius: 6px;
+  border-radius: 20px;
   background-color: #12181a;
   border: 1px solid #252f31;
   padding: 24px;
@@ -959,9 +959,8 @@ section.compare {
 .comparability-notice {
   background: rgba(255, 107, 57, 0.05);
   border: 1px solid rgba(255, 107, 57, 0.25);
-  border-left: 3px solid var(--orange, #ff6b39);
-  padding: 14px 18px;
-  border-radius: 4px;
+  padding: 16px 20px;
+  border-radius: 20px;
   margin-bottom: 28px;
   font-size: 12.5px;
   line-height: 1.6;
@@ -1024,10 +1023,10 @@ section.compare {
 .evidence-table {
   width: 100%;
   border: 1px solid #cbd8e8;
-  border-radius: 8px;
+  border-radius: 20px;
   background: #ffffff;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(16, 43, 78, 0.05);
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
 }
 
 .evidence-header-grid {

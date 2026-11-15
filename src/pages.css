@@ -60,13 +60,14 @@ body[data-page=home] .saturn-wrap::before{background:radial-gradient(circle at 5
 
 /* 1. Evidence Comparison Empty Guide Card (replaces muddy gray box with clean white card) */
 body :is(.compare-empty-guide) {
-  background: #ffffff !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%) !important;
   color: #102b4e !important;
   border: 1px dashed #b9cbe0 !important;
-  border-radius: 12px !important;
+  border-radius: 20px !important;
   padding: 60px 24px !important;
-  box-shadow: 0 4px 24px rgba(16, 43, 78, 0.06) !important;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08) !important;
   text-align: center !important;
+  overflow: hidden !important;
 }
 
 body .compare-empty-guide .guide-mark {
@@ -228,32 +229,33 @@ body section.explore .notice strong {
   color: #102b4e !important;
 }
 
-/* 7. Investigation Cards in Light Theme */
+/* 7. Investigation Cards in Light Theme (MagicBento 20px squircle geometry) */
 body section.explore .spotlight-card {
-  background: #ffffff !important;
-  border: 1px solid #cbd8e8 !important;
-  border-radius: 10px !important;
-  box-shadow: 0 2px 12px rgba(16, 43, 78, 0.04) !important;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%) !important;
+  border: 1px solid rgba(203, 216, 232, 0.8) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08) !important;
+  overflow: hidden !important;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease !important;
 }
 
 body section.explore .spotlight-card:hover {
-  border-color: #164f91 !important;
-  box-shadow: 0 6px 20px rgba(22, 79, 145, 0.12) !important;
-  transform: translateY(-2px) !important;
+  border-color: #8bb2df !important;
+  box-shadow: 0 24px 48px -20px rgba(16, 43, 78, 0.16), 0 8px 20px -8px rgba(16, 43, 78, 0.10) !important;
+  transform: translateY(-3px) !important;
 }
 
 body section.explore .spotlight-card.is-selected {
   border-color: #164f91 !important;
-  background: #f0f6fd !important;
-  box-shadow: 0 0 0 2px rgba(22, 79, 145, 0.25) !important;
+  background: linear-gradient(180deg, #f0f6fd 0%, #e6f0fc 100%) !important;
+  box-shadow: 0 0 0 2px rgba(22, 79, 145, 0.3), 0 20px 40px -25px rgba(16, 43, 78, 0.15) !important;
 }
 
 body section.explore .btn-compare {
   background: #eef5fc !important;
   color: #164f91 !important;
   border: 1px solid #b9cbe0 !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
 }
@@ -273,7 +275,7 @@ body section.explore .btn-compare.is-selected {
 body section.explore .card-specs-grid {
   background: #f4f8fd !important;
   border: 1px solid #d5e3f2 !important;
-  border-radius: 6px !important;
+  border-radius: 14px !important;
 }
 
 body section.explore .spec-val.match {
@@ -286,16 +288,16 @@ body .selection-tray {
   background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid #b6cbe1 !important;
-  box-shadow: 0 8px 30px rgba(16, 43, 78, 0.14) !important;
-  border-radius: 12px !important;
+  border: 1px solid rgba(203, 216, 232, 0.85) !important;
+  box-shadow: 0 20px 45px rgba(16, 43, 78, 0.18) !important;
+  border-radius: 20px !important;
 }
 
 body .selection-tray .primary-action {
   background: #164f91 !important;
   color: #ffffff !important;
   border: 1px solid #164f91 !important;
-  border-radius: 6px !important;
+  border-radius: 12px !important;
   font-weight: 700 !important;
   box-shadow: 0 2px 8px rgba(22, 79, 145, 0.25) !important;
   transition: all 0.2s ease !important;
@@ -346,13 +348,100 @@ body .selection-tray .primary-action:hover {
   text-decoration: underline !important;
 }
 
-/* Pointer-following spotlight on light card surfaces. */
-body :is(.steps-grid > a,.spotlight-card,.si-preset-card,.si-rank-card,.si-pillar-card){position:relative;isolation:isolate;overflow:hidden}
-@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
- body :is(.steps-grid > a,.spotlight-card,.si-preset-card,.si-rank-card,.si-pillar-card)::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;background:radial-gradient(240px circle at var(--spot-x,50%) var(--spot-y,50%),rgba(35,114,210,.20),transparent 75%);opacity:0;transition:opacity .2s ease}
- body :is(.steps-grid > a,.spotlight-card,.si-preset-card,.si-rank-card,.si-pillar-card):hover::before{opacity:1}
+/* Signature Magic Bento Card Spotlight & Dynamic Border Glow */
+body :is(.steps-grid > a, .spotlight-card, .si-preset-card, .si-rank-card, .si-pillar-card, .advanced-filters-panel, .evidence-table, .comparability-notice, .selection-tray) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
 }
-@media (prefers-reduced-motion:reduce){body :is(.spotlight-card,.steps-grid > a):hover{transform:none!important}}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  /* 1. Internal Spotlight Glow */
+  body :is(.steps-grid > a, .spotlight-card, .si-preset-card, .si-rank-card, .si-pillar-card, .advanced-filters-panel, .evidence-table, .comparability-notice, .selection-tray)::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    background: radial-gradient(
+      320px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(22, 79, 145, 0.08) 0%,
+      rgba(2, 132, 199, 0.04) 45%,
+      transparent 80%
+    );
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  body :is(.steps-grid > a, .spotlight-card, .si-preset-card, .si-rank-card, .si-pillar-card, .advanced-filters-panel, .evidence-table, .comparability-notice, .selection-tray):hover::before {
+    opacity: 1;
+  }
+
+  /* 2. Dynamic Masked Border Contour Glow */
+  body :is(.steps-grid > a, .spotlight-card, .si-preset-card, .si-rank-card, .si-pillar-card, .advanced-filters-panel, .evidence-table, .comparability-notice, .selection-tray)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    box-sizing: border-box;
+    padding: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      280px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(22, 79, 145, 0.75) 0%,
+      rgba(2, 132, 199, 0.45) 35%,
+      transparent 70%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  body :is(.steps-grid > a, .spotlight-card, .si-preset-card, .si-rank-card, .si-pillar-card, .advanced-filters-panel, .evidence-table, .comparability-notice, .selection-tray):hover::after {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body :is(.spotlight-card, .steps-grid > a):hover { transform: none !important; }
+}
+
+/* ==========================================================================
+   Unified 20px Squircle Card Geometry (Across Explore, Compare, Chat, Simulator)
+   Derived from React Bits MagicBento: 20px radius, soft ambient shadows, crisp borders
+   ========================================================================== */
+body section.explore .filters-container,
+body section.explore .advanced-filters-panel,
+body section.explore .selection-tray,
+body .evidence-table,
+body .comparability-notice,
+body .compare-container,
+body .steps-grid > a {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+body .evidence-table {
+  border: 1px solid rgba(203, 216, 232, 0.85) !important;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08) !important;
+}
+
+body .comparability-notice {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%) !important;
+  border: 1px solid rgba(203, 216, 232, 0.85) !important;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.10), 0 6px 16px -10px rgba(16, 43, 78, 0.06) !important;
+  padding: 1.25rem 1.65rem !important;
+}
+
+body section.explore .selection-tray {
+  border-radius: 20px !important;
+  box-shadow: 0 20px 45px rgba(16, 43, 78, 0.2) !important;
+}
+
+body .evidence-card-head {
+  border-radius: 14px !important;
+}
 
 /* ══════════════════════════════════════════════════════════════════════════
    Resources & About Pages — NASA Light Aerospace Theme Styling

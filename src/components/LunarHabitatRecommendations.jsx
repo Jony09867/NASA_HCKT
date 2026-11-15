@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Stepper, { Step } from './Stepper';
+import MagicCard from './MagicCard';
 import './LunarHabitatRecommendations.css';
 
 export const LUNAR_RECOMMENDATIONS = [
@@ -163,8 +164,8 @@ export function LunarHabitatRecommendations() {
         </div>
       </div>
 
-      {/* At a glance summary list (Matching user specification & enhancing with direct navigation) */}
-      <div className="lunar-at-a-glance">
+      {/* At a glance summary list with MagicCard dynamic interactive spotlight and border glow */}
+      <MagicCard className="lunar-at-a-glance" radius={20} glowColor="#164f91" enableStars={true}>
         <div className="lunar-glance-header">
           <h4 className="lunar-glance-title">At a glance</h4>
           <span className="lunar-glance-subtitle">Select any directive to jump directly into its analysis</span>
@@ -191,7 +192,7 @@ export function LunarHabitatRecommendations() {
             );
           })}
         </div>
-      </div>
+      </MagicCard>
 
       {viewMode === 'stepper' ? (
         /* Interactive Animated Stepper View */
@@ -227,7 +228,7 @@ export function LunarHabitatRecommendations() {
           >
             {LUNAR_RECOMMENDATIONS.map((r) => (
               <Step key={r.id} title={`${r.code}: ${r.severity}`}>
-                <div className="lunar-detail-card is-open" style={{ margin: 0, boxShadow: 'none' }}>
+                <MagicCard className="lunar-detail-card is-open" radius={20} glowColor="#164f91" enableStars={true} style={{ margin: 0, boxShadow: 'none' }}>
                   <div className="lunar-card-head" style={{ cursor: 'default' }}>
                     <div className="lunar-card-head-left">
                       <span className="lunar-card-badge-code">{r.code}</span>
@@ -270,7 +271,7 @@ export function LunarHabitatRecommendations() {
                       <span>Evidence Citation:</span> <code>{r.citation}</code>
                     </div>
                   </div>
-                </div>
+                </MagicCard>
               </Step>
             ))}
           </Stepper>
@@ -281,7 +282,13 @@ export function LunarHabitatRecommendations() {
           {LUNAR_RECOMMENDATIONS.map((r) => {
             const isExpanded = expandedId === r.id;
             return (
-              <div key={r.id} className={`lunar-detail-card ${isExpanded ? 'is-open' : ''}`}>
+              <MagicCard
+                key={r.id}
+                className={`lunar-detail-card ${isExpanded ? 'is-open' : ''}`}
+                radius={20}
+                glowColor="#164f91"
+                enableStars={true}
+              >
                 <div
                   className="lunar-card-head"
                   onClick={() => setExpandedId(isExpanded ? '' : r.id)}
@@ -340,7 +347,7 @@ export function LunarHabitatRecommendations() {
                     </div>
                   </div>
                 )}
-              </div>
+              </MagicCard>
             );
           })}
         </div>

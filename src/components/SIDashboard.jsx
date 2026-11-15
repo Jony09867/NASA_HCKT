@@ -13,6 +13,7 @@ import MagicBento from './MagicBento';
 import Stepper, { Step } from './Stepper';
 import ScrubField from './ScrubField';
 import Radar from './Radar';
+import MagicCard from './MagicCard';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -707,8 +708,8 @@ export default function SIDashboard() {
           ========================================================================= */}
       {activeMainTab === 'lab' && (
         <div className="si-lab-3col-grid">
-          {/* LEFT COLUMN: Filters & Material Chips */}
-          <aside className="si-lab-left-filters">
+          {/* LEFT COLUMN: Filters & Material Chips with MagicBento dynamic spotlight and border glow */}
+          <MagicCard tag="aside" className="si-lab-left-filters" radius={20} glowColor="#164f91" enableStars={true}>
             <div className="si-filters-header">
               <div className="si-filter-header-flex">
                 <h3 className="si-filters-title" style={{ margin: 0 }}>Experiment Lab</h3>
@@ -1115,7 +1116,7 @@ export default function SIDashboard() {
                 </div>
               </>
             )}
-          </aside>
+          </MagicCard>
 
           {/* CENTER COLUMN: 3D WebGL Volumetric Chamber vs. BASS-II Flow Duct Schematic */}
           <main className="si-lab-center-stage">
@@ -1146,8 +1147,8 @@ export default function SIDashboard() {
               </button>
             </div>
 
-            {/* Render 3D WebGL or 2D Hardware Schematic */}
-            <div className="si-stage-canvas-card">
+            {/* Render 3D WebGL or 2D Hardware Schematic inside MagicCard */}
+            <MagicCard className="si-stage-canvas-card" radius={20} glowColor="#0284c7" enableStars={true}>
               {labStageMode === '3d' ? (
                 <CombustionSim3D
                   initialGravity={gravityKey}
@@ -1155,6 +1156,8 @@ export default function SIDashboard() {
                   initialOxygen={oxygen}
                   initialVentilation={ventilation}
                   initialPressure={pressure}
+                  showControls={false}
+                  showReport={false}
                   onStateChange={handleSimStateChange}
                 />
               ) : (
@@ -1165,7 +1168,7 @@ export default function SIDashboard() {
                   oxygen={oxygen}
                 />
               )}
-            </div>
+            </MagicCard>
 
             <p className="si-figure-caption">
               <strong>Fig. 1.</strong>{' '}
@@ -1189,7 +1192,7 @@ export default function SIDashboard() {
           </main>
 
           {/* RIGHT COLUMN: What Happened in Real Tests */}
-          <aside className="si-lab-right-audit">
+          <MagicCard tag="aside" className="si-lab-right-audit" radius={20} glowColor="#164f91" enableStars={true}>
             <div className="si-audit-header">
               <span className="si-audit-eyebrow">WHAT HAPPENED IN REAL TESTS</span>
               <h2 className="si-audit-mat-name">{activeCoverage.material}</h2>
@@ -1327,7 +1330,7 @@ export default function SIDashboard() {
                 <p>{closestEmpiricalTest.outcome}</p>
               </div>
             </div>
-          </aside>
+          </MagicCard>
         </div>
       )}
 
@@ -1336,8 +1339,8 @@ export default function SIDashboard() {
           ========================================================================= */}
       {activeMainTab === 'lunar' && (
         <div className="si-lunar-view-wrap">
-          {/* Quick Action Banner with Tactile ScrubFields */}
-          <div className="si-lunar-action-banner">
+          {/* Quick Action Banner with Tactile ScrubFields inside MagicCard */}
+          <MagicCard className="si-lunar-action-banner" radius={20} glowColor="#164f91" enableStars={true}>
             <div className="si-lunar-banner-info">
               <div className="si-lunar-banner-badge-row">
                 <span className="si-lunar-env-pill">NASA Artemis Target Baseline</span>
@@ -1417,7 +1420,7 @@ export default function SIDashboard() {
               </button>
               <span className="si-banner-cta-caption">Extrapolates 3D Navier-Stokes flame directly in lab</span>
             </div>
-          </div>
+          </MagicCard>
 
           <LunarHabitatRecommendations />
         </div>
@@ -1429,7 +1432,7 @@ export default function SIDashboard() {
       {activeMainTab === 'ranking' && (
         <div className="si-ranking-view-wrap">
           {/* Section 1: Choose the mission and what counts */}
-          <div className="si-ranking-config-card">
+          <MagicCard className="si-ranking-config-card" radius={20} glowColor="#164f91" enableStars={true}>
             <h3 className="si-section-serif-title">1 · Choose the mission and what counts</h3>
             
             <div className="si-ranking-config-grid">
@@ -1531,10 +1534,10 @@ export default function SIDashboard() {
                 </div>
               </div>
             </div>
-          </div>
+          </MagicCard>
 
           {/* Section 2: The ranking Table */}
-          <div className="si-ranked-table-card">
+          <MagicCard className="si-ranked-table-card" radius={20} glowColor="#164f91" enableStars={false}>
             <h3 className="si-section-serif-title">2 · The ranking</h3>
             <p className="si-table-subtitle">
               Every criterion's score is shown, so nothing hides inside a single number. Click a row to see why it
@@ -1646,7 +1649,7 @@ export default function SIDashboard() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </MagicCard>
         </div>
       )}
 
@@ -1655,7 +1658,7 @@ export default function SIDashboard() {
           ========================================================================= */}
       {activeMainTab === 'gap-matrix' && (
         <div className="si-gap-matrix-view-wrap">
-          <div className="si-gap-matrix-card">
+          <MagicCard className="si-gap-matrix-card" radius={20} glowColor="#164f91" enableStars={false}>
             <h3 className="si-section-serif-title">Where tests exist, and where none do</h3>
             <p className="si-matrix-sub">
               Solid-fuel tests in PSI by oxygen level and gravity level. Empty cells are hatched: nothing was measured
@@ -1773,10 +1776,10 @@ export default function SIDashboard() {
               No solid-fuel table in this dataset records chamber pressure, so reduced-pressure coverage for solids
               cannot be shown; none is recorded.
             </p>
-          </div>
+          </MagicCard>
 
-          {/* Gaps this dataset cannot fill */}
-          <div className="si-matrix-findings-card">
+          {/* Gaps this dataset cannot fill inside MagicCard */}
+          <MagicCard className="si-matrix-findings-card" radius={20} glowColor="#164f91" enableStars={true}>
             <h4>Gaps this dataset cannot fill</h4>
             <ul>
               <li>
@@ -1790,7 +1793,7 @@ export default function SIDashboard() {
                 performance in the planned 70.3 kPa Artemis atmosphere must be bridged with physics scaling.
               </li>
             </ul>
-          </div>
+          </MagicCard>
         </div>
       )}
 
@@ -1810,8 +1813,8 @@ export default function SIDashboard() {
             }}
           />
 
-          {/* Optional Companion 3D WebGL Orbital Radar Scope */}
-          <div className="si-orbital-radar-card">
+          {/* Optional Companion 3D WebGL Orbital Radar Scope inside MagicCard */}
+          <MagicCard className="si-orbital-radar-card" radius={20} glowColor="#0284c7" enableStars={true}>
             <div className="si-orbital-radar-header">
               <div>
                 <span className="si-lunar-env-pill">Deep Space Sensor Telemetry</span>
@@ -1845,7 +1848,7 @@ export default function SIDashboard() {
                 />
               </div>
             )}
-          </div>
+          </MagicCard>
         </div>
       )}
 
@@ -1854,7 +1857,7 @@ export default function SIDashboard() {
           ========================================================================= */}
       {activeMainTab === 'pipeline' && (
         <div className="si-pipeline-view-wrap">
-          <div className="si-pipeline-card">
+          <MagicCard className="si-pipeline-card" radius={20} glowColor="#164f91" enableStars={true}>
             <div className="si-filter-header-flex">
               <h3 className="si-section-serif-title" style={{ margin: 0 }}>How it works, at a glance</h3>
               <div className="si-mat-mode-toggle" role="group" aria-label="Pipeline view mode">
@@ -2001,7 +2004,7 @@ export default function SIDashboard() {
                 Informatics repositories.
               </p>
             </div>
-          </div>
+          </MagicCard>
         </div>
       )}
 

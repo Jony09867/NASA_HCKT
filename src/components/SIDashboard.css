@@ -193,16 +193,17 @@
   align-items: start;
 }
 
-/* LEFT COLUMN: Filters */
+/* LEFT COLUMN: Filters (MagicBento 20px squircle geometry) */
 .si-lab-left-filters {
-  background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 1.65rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .si-filters-title {
@@ -655,10 +656,10 @@
 
 .si-stage-canvas-card {
   background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(16, 43, 78, 0.04);
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
 }
 
 .si-figure-caption {
@@ -674,23 +675,26 @@
 }
 
 .si-stage-telemetry-drawer {
-  background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 1.65rem;
   margin-top: 0.5rem;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.10);
+  overflow: hidden;
 }
 
-/* RIGHT COLUMN: What Happened in Real Tests */
+/* RIGHT COLUMN: What Happened in Real Tests (MagicBento 20px squircle geometry) */
 .si-lab-right-audit {
-  background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 1.65rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .si-audit-eyebrow {
@@ -847,9 +851,9 @@
   justify-content: space-between;
   align-items: center;
   background: #f8fbff;
-  border: 1px solid var(--si-line);
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 16px;
+  padding: 1.15rem 1.35rem;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
@@ -898,13 +902,14 @@
 
 .si-grav-spec-card {
   background: #ffffff;
-  border: 1px solid var(--si-line);
-  border-radius: 10px;
-  padding: 0.95rem;
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 18px;
+  padding: 1.15rem;
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
-  box-shadow: 0 1px 4px rgba(16, 43, 78, 0.04);
+  box-shadow: 0 10px 25px -15px rgba(16, 43, 78, 0.10);
+  overflow: hidden;
 }
 
 .si-grav-spec-card.micro {
@@ -1051,17 +1056,17 @@
 }
 
 .si-lunar-action-banner {
-  background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-left: 5px solid var(--si-primary);
-  border-radius: 12px;
-  padding: 1.5rem 1.85rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 1.5rem;
-  box-shadow: 0 4px 14px rgba(16, 43, 78, 0.05);
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .si-lunar-banner-info {
@@ -1190,11 +1195,12 @@
 
 .si-ranking-config-card,
 .si-ranked-table-card {
-  background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
-  padding: 1.75rem;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 1.85rem 2rem;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .si-ranking-config-grid {
@@ -1499,11 +1505,12 @@
 }
 
 .si-gap-matrix-card {
-  background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
-  padding: 1.75rem;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 1.85rem 2rem;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .si-matrix-sub {
@@ -1614,11 +1621,12 @@
 }
 
 .si-matrix-findings-card {
-  background: #ffffff;
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
-  padding: 1.5rem 1.75rem;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .si-matrix-findings-card h4 {
@@ -1650,11 +1658,12 @@
 }
 
 .si-pipeline-card {
-  background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 2rem 2.25rem;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .si-pipeline-tiers-container {
@@ -1781,11 +1790,11 @@
    ========================================================================= */
 .si-copilot-view-wrap {
   background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
   overflow: hidden;
   min-height: 720px;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
 }
 
 /* ==========================================================================
@@ -1820,11 +1829,12 @@
 }
 
 .si-orbital-radar-card {
-  background: var(--si-card-bg);
-  border: 1px solid var(--si-line);
-  border-radius: 12px;
-  padding: 1.35rem 1.65rem;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 1.65rem 1.85rem;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .si-orbital-radar-header {

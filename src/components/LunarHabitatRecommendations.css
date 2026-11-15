@@ -55,22 +55,22 @@
   color: #102b4e;
 }
 
-/* "How to read this page" Callout Box */
+/* "How to read this page" Callout Box (MagicBento 20px squircle geometry) */
 .lunar-rec-callout {
-  background: #eef5fc;
-  border: 1px solid #cbd8e8;
-  border-left: 5px solid #164f91;
-  padding: 1.15rem 1.45rem;
-  border-radius: 0 10px 10px 0;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  padding: 1.35rem 1.75rem;
+  border-radius: 20px;
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
-  box-shadow: 0 2px 8px rgba(16, 43, 78, 0.04);
+  gap: 1.15rem;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.10), 0 6px 16px -10px rgba(16, 43, 78, 0.06);
+  overflow: hidden;
 }
 
 .lunar-callout-icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   background: #164f91;
   color: #ffffff;
   border-radius: 50%;
@@ -93,13 +93,14 @@
   color: #164f91;
 }
 
-/* At a glance summary list */
+/* At a glance summary list (MagicBento 20px squircle geometry) */
 .lunar-at-a-glance {
-  background: #ffffff;
-  border: 1px solid #cbd8e8;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .lunar-glance-header {
@@ -136,24 +137,25 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.85rem 1.15rem;
-  border-radius: 8px;
+  padding: 0.95rem 1.25rem;
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   background: #f8fbff;
-  border: 1px solid #cbd8e8;
+  border: 1px solid rgba(203, 216, 232, 0.8);
 }
 
 .lunar-glance-item:hover {
   background: #eef5fc;
   border-color: #164f91;
   transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(22, 79, 145, 0.08);
 }
 
 .lunar-glance-item.is-active {
   background: #eef5fc;
   border-color: #164f91;
-  box-shadow: 0 2px 6px rgba(22, 79, 145, 0.12);
+  box-shadow: 0 4px 14px rgba(22, 79, 145, 0.15);
 }
 
 .lunar-glance-code {
@@ -190,7 +192,7 @@
   font-weight: 700;
 }
 
-/* Detailed Recommendation Cards */
+/* Detailed Recommendation Cards (MagicBento 20px squircle geometry) */
 .lunar-cards-list {
   display: flex;
   flex-direction: column;
@@ -198,21 +200,22 @@
 }
 
 .lunar-detail-card {
-  background: #ffffff;
-  border: 1px solid #cbd8e8;
-  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
-  transition: all 0.2s ease;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  transition: all 0.25s ease;
 }
 
 .lunar-detail-card:hover {
-  border-color: #9cbce0;
+  border-color: #8bb2df;
+  box-shadow: 0 24px 48px -20px rgba(16, 43, 78, 0.16), 0 8px 20px -8px rgba(16, 43, 78, 0.10);
 }
 
 .lunar-detail-card.is-open {
   border-color: #164f91;
-  box-shadow: 0 6px 20px rgba(22, 79, 145, 0.12);
+  box-shadow: 0 24px 48px -20px rgba(22, 79, 145, 0.2), 0 8px 20px -8px rgba(22, 79, 145, 0.12);
 }
 
 .lunar-card-head {
@@ -311,8 +314,8 @@
   background: #fef2f2;
   border: 1px solid #fecaca;
   border-left: 4px solid #dc2626;
-  border-radius: 6px;
-  padding: 0.85rem 1.15rem;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
 }
 
 .lunar-hazard-tag {
@@ -356,9 +359,9 @@
 /* Bulleted Evidence Points */
 .lunar-keypoints-box {
   background: #f8fbff;
-  border: 1px solid #cbd8e8;
-  border-radius: 8px;
-  padding: 1.15rem 1.35rem;
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 16px;
+  padding: 1.25rem 1.45rem;
 }
 
 .lunar-keypoints-box strong {
@@ -389,8 +392,8 @@
   background: #eef5fc;
   border: 1px solid #b9cfea;
   border-left: 4px solid #164f91;
-  border-radius: 0 8px 8px 0;
-  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  padding: 1.15rem 1.35rem;
 }
 
 .lunar-directive-box strong {
@@ -482,9 +485,11 @@
 .lunar-audit-complete-card {
   text-align: center;
   padding: 3rem 2rem;
-  background: #f8fbff;
-  border: 1px solid #cbd8e8;
-  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  border: 1px solid rgba(203, 216, 232, 0.85);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08);
+  overflow: hidden;
 }
 
 .lunar-complete-icon {

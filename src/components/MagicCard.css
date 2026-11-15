@@ -1,0 +1,79 @@
+/* ==========================================================================
+   MagicCard Component Styles
+   Seamlessly integrates React Bits MagicBento interactive effects into any card
+   ========================================================================== */
+
+.magic-card {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: var(--mb-radius, 20px) !important;
+  background: var(--mb-surface, linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%)) !important;
+  box-shadow: var(--mb-shadow, 0 20px 40px -25px rgba(16, 43, 78, 0.12), 0 6px 16px -10px rgba(16, 43, 78, 0.08)) !important;
+  color: var(--mb-ink, #102b4e);
+  isolation: isolate;
+  overflow: hidden !important;
+  transition: box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.magic-card:hover {
+  box-shadow: 0 24px 48px -20px rgba(16, 43, 78, 0.16), 0 8px 20px -8px rgba(16, 43, 78, 0.10) !important;
+}
+
+.magic-card__body {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure child forms, charts, canvas, and buttons retain crisp interactions */
+.magic-card .magic-bento__light,
+.magic-card .magic-bento__border,
+.magic-card .magic-bento__rim,
+.magic-card .magic-bento__stars {
+  pointer-events: none !important;
+}
+
+/* Dashboard specific card body adaptations */
+.magic-card.si-lab-left-filters > .magic-card__body,
+.magic-card.si-lab-right-audit > .magic-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.magic-card.si-lunar-action-banner > .magic-card__body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.magic-card.si-ranking-config-card > .magic-card__body,
+.magic-card.si-ranked-table-card > .magic-card__body,
+.magic-card.si-gap-matrix-card > .magic-card__body,
+.magic-card.si-pipeline-card > .magic-card__body,
+.magic-card.si-orbital-radar-card > .magic-card__body,
+.magic-card.psi-env-container > .magic-card__body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* NASA Light theme styling */
+.magic-card--nasa-light {
+  --mb-surface: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  --mb-edge: rgba(203, 216, 232, 0.75);
+  --mb-glow-rgb: 22, 79, 145;
+}
+
+/* Subtle elevation when hovered if clickable */
+.magic-card[data-clickable="true"]:hover {
+  transform: translateY(-2px);
+  cursor: pointer;
+}

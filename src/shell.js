@@ -17,8 +17,8 @@ updateCount();window.addEventListener('freefall:selection',updateCount);window.a
 
 
 
-// The spotlight follows the pointer on static and dynamically rendered cards.
-const spotlightCards = '.steps-grid > a, .spotlight-card, .si-preset-card, .si-rank-card, .si-pillar-card';
+// The signature Magic Bento spotlight & border glow follows the pointer on cards.
+const spotlightCards = '.steps-grid > a, .spotlight-card, .si-preset-card, .si-rank-card, .si-pillar-card, .advanced-filters-panel, .evidence-table, .comparability-notice, .selection-tray';
 document.addEventListener('pointermove', event => {
   if (event.pointerType !== 'mouse' || !matchMedia('(hover: hover) and (pointer: fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const card = event.target instanceof Element ? event.target.closest(spotlightCards) : null;

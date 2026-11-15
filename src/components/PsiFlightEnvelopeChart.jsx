@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
+import MagicCard from './MagicCard';
 import './PsiFlightEnvelopeChart.css';
 
 // 58 Curated Empirical NASA PSI Flight Test Records (BASS-II, Saffire-I/II/III, ACME, FLEX)
@@ -184,7 +185,7 @@ export function PsiFlightEnvelopeChart({
   ];
 
   return (
-    <div className="psi-env-container">
+    <MagicCard className="psi-env-container" radius={20} glowColor="#0284c7" enableStars={true}>
       {/* Header & Radar Control HUD */}
       <div className="psi-env-topbar">
         <div>
@@ -619,7 +620,7 @@ export function PsiFlightEnvelopeChart({
           The live radar scanner highlights this empirical void in real time, validating FLAME-SI's physics-informed extrapolation.
         </div>
       </div>
-    </div>
+    </MagicCard>
   );
 }
 
