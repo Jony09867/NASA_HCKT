@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import GlassSurface from './GlassSurface';
 import './CombustionSim3D.css';
 
 export const GRAVITY_REGIMES = {
@@ -11,7 +10,7 @@ export const GRAVITY_REGIMES = {
     gValue: 0.0,
     badge: '0g · ISS / Orbital Freefall',
     physicsSummary:
-      'Buoyancy is absent (Gr ≈ 0). Molecular diffusion dominates: oxygen diffuses inward omnidirectionally to form a spherical reaction shell (NASA ACME s-Flame / FLEX).',
+      'Buoyancy is absent (Gr ≈ 0). Molecular diffusion dominates: oxygen diffuses inward omnidirectionally to form an isotropic spherical reaction shell (NASA ACME s-Flame / FLEX).',
   },
   '1/6g': {
     id: '1/6g',
@@ -20,7 +19,7 @@ export const GRAVITY_REGIMES = {
     gValue: 0.166,
     badge: '1/6g · Artemis Lunar Base',
     physicsSummary:
-      'Weak partial buoyancy stretches the spherical diffusion zone into a hemispherical plume. Reduced convective cooling lowers the Limiting Oxygen Index (LOI) and accelerates material flame spread.',
+      'Weak partial buoyancy stretches the spherical diffusion zone into a hemispherical bell plume. Reduced convective cooling lowers the Limiting Oxygen Index (LOI) and accelerates flame spread.',
   },
   '1g': {
     id: '1g',
@@ -39,13 +38,14 @@ export const FUEL_MATERIALS = {
     name: 'PMMA (Plexiglass)',
     shortName: 'PMMA (Plexiglass)',
     geometryLabel: 'Cast Cylindrical Rod (BASS-II)',
+    shapeType: 'rod',
     loiEarth: 17.5,
     loiMicro: 15.2,
     baseSpread: 1.0,
-    baseTemp: 1020,
-    baseBurnTime: 95,
+    baseTemp: 1040,
+    baseBurnTime: 88,
     sootFactor: 0.55,
-    sampleColor: '#3b4a54',
+    sampleColor: '#2b3a42',
     emissiveColor: '#ff6b39',
     experimentRef: 'BASS-II (#922)',
   },
@@ -54,13 +54,14 @@ export const FUEL_MATERIALS = {
     name: 'Cotton Fabric',
     shortName: 'Cotton Fabric',
     geometryLabel: 'Fiberglass-Cotton Composite (Saffire)',
+    shapeType: 'slab',
     loiEarth: 18.0,
     loiMicro: 15.8,
     baseSpread: 1.48,
-    baseTemp: 1120,
+    baseTemp: 1140,
     baseBurnTime: 62,
     sootFactor: 0.72,
-    sampleColor: '#4c463b',
+    sampleColor: '#3d372e',
     emissiveColor: '#ff8a47',
     experimentRef: 'Saffire-I & III (#1738)',
   },
@@ -68,14 +69,15 @@ export const FUEL_MATERIALS = {
     id: 'silicone',
     name: 'Silicone Rubber',
     shortName: 'Silicone Rubber',
-    geometryLabel: 'Elastomer Insulation Slab',
+    geometryLabel: 'Elastomer Insulation Cylinder',
+    shapeType: 'rod',
     loiEarth: 23.5,
     loiMicro: 20.4,
     baseSpread: 0.74,
     baseTemp: 980,
     baseBurnTime: 130,
     sootFactor: 0.85,
-    sampleColor: '#523835',
+    sampleColor: '#452c2a',
     emissiveColor: '#f97316',
     experimentRef: 'ACME: BRE (#7585)',
   },
@@ -84,13 +86,14 @@ export const FUEL_MATERIALS = {
     name: 'Nomex III (NASA)',
     shortName: 'Nomex III (NASA)',
     geometryLabel: 'Meta-Aramid Flame-Retardant Weave',
+    shapeType: 'slab',
     loiEarth: 28.5,
     loiMicro: 25.2,
     baseSpread: 0.42,
     baseTemp: 910,
     baseBurnTime: 175,
     sootFactor: 0.35,
-    sampleColor: '#474335',
+    sampleColor: '#3a3628',
     emissiveColor: '#38bdf8',
     experimentRef: 'NASA-STD-6001 / ACME-CFIG',
   },
@@ -106,84 +109,136 @@ export function computeCombustionPhysics({
   const grav = GRAVITY_REGIMES[gravityKey] || GRAVITY_REGIMES['0g'];
   const mat = FUEL_MATERIALS[materialKey] || FUEL_MATERIALS.pmma;
 
-  // Effective Limiting Oxygen Index (LOI) shifts lower in reduced gravity and higher pressure
   const gFactor = grav.gValue;
   const effectiveLOI =
     mat.loiMicro +
     (mat.loiEarth - mat.loiMicro) * Math.pow(gFactor, 0.45) -
     (pressure - 10.2) * 0.12;
 
-  // Oxygen Partial Pressure (psi)
   const pO2 = (oxygen / 100) * pressure;
+  const earthPO2 = 3.087;
+  const pO2Ratio = pO2 / earthPO2;
   const o2Margin = oxygen - effectiveLOI;
 
-  // Determine combustion regime: extinguished, cool-flame, spherical diffusion, partial-buoyancy, buoyant plume, or forced-convection wake
   const isCoolFlame =
-    gravityKey === '0g' && oxygen >= effectiveLOI - 3.0 && oxygen < effectiveLOI + 1.2 && ventilation < 0.08;
-  const isExtinguished = oxygen < effectiveLOI - 3.0 || (gravityKey === '0g' && ventilation < 0.015 && oxygen < 18);
+    gravityKey === '0g' &&
+    oxygen >= effectiveLOI - 3.2 &&
+    oxygen < effectiveLOI + 1.2 &&
+    ventilation < 0.09;
+  const isExtinguished =
+    oxygen < effectiveLOI - 3.2 ||
+    (gravityKey === '0g' && ventilation < 0.012 && oxygen < 17.5);
 
-  // Forced convection factor: in 0g/1/6g, cabin ventilation > 0.10 m/s feeds fresh O2 into the reaction zone
   const forcedFlowBoost =
-    ventilation <= 0.28
-      ? 1 + ventilation * 2.65
-      : Math.max(0.55, 1 + 0.28 * 2.65 - (ventilation - 0.28) * 1.4);
+    ventilation <= 0.3
+      ? 1 + ventilation * 2.5
+      : Math.max(0.55, 1 + 0.3 * 2.5 - (ventilation - 0.3) * 1.45);
 
-  const o2Multiplier = Math.max(0.15, Math.pow(Math.max(10, oxygen) / 21, 1.55));
-  const pressureMultiplier = Math.pow(Math.max(3.5, pressure) / 10.2, 0.32);
+  const o2Multiplier = Math.max(0.15, Math.pow(Math.max(10, oxygen) / 21, 1.52));
+  const pressureMultiplier = Math.pow(Math.max(3.5, pressure) / 10.2, 0.28);
   const gravitySpreadFactor =
-    gravityKey === '0g' ? 0.78 : gravityKey === '1/6g' ? 1.18 : 1.0;
+    gravityKey === '0g' ? 0.76 : gravityKey === '1/6g' ? 1.16 : 1.0;
 
   const rawSpread = isExtinguished
     ? 0
     : isCoolFlame
-    ? 0.18
+    ? 0.16
     : mat.baseSpread * o2Multiplier * pressureMultiplier * forcedFlowBoost * gravitySpreadFactor;
 
   const spreadRate = Number(rawSpread.toFixed(2));
 
-  // Flame temperature (K)
   let flameTemp = 300;
   if (!isExtinguished) {
     if (isCoolFlame) {
       flameTemp = Math.round(640 + (oxygen - 12) * 18);
     } else {
       const baseT = mat.baseTemp;
-      const o2TempBoost = (oxygen - 21) * 11.5;
-      const flowTempBoost = ventilation * 420;
-      const gravTempBoost = gravityKey === '1g' ? 280 : gravityKey === '1/6g' ? 110 : 0;
-      flameTemp = Math.min(2480, Math.max(720, Math.round(baseT + o2TempBoost + flowTempBoost + gravTempBoost)));
+      const o2TempBoost = (oxygen - 34) * 9.5;
+      const flowTempBoost = (ventilation - 0.1) * 380;
+      const gravTempBoost = gravityKey === '1g' ? 310 : gravityKey === '1/6g' ? 120 : 0;
+      flameTemp = Math.min(
+        2480,
+        Math.max(720, Math.round(baseT + o2TempBoost + flowTempBoost + gravTempBoost))
+      );
     }
   }
 
-  // Burn time (s) inversely proportional to spread intensity
   const burnTime = isExtinguished
     ? 0
-    : Math.max(12, Math.min(240, Math.round(mat.baseBurnTime / Math.max(0.35, spreadRate * 0.82))));
+    : Math.max(12, Math.min(240, Math.round((mat.baseBurnTime * 1.36) / Math.max(0.35, spreadRate))));
 
-  // Flow regime label
   let ventilationRegime = 'Quiescent';
   if (ventilation >= 0.32) ventilationRegime = 'High Forced Flow';
   else if (ventilation >= 0.14) ventilationRegime = 'Forced Convection';
   else if (ventilation >= 0.06) ventilationRegime = 'Low Laminar Drift';
 
-  // Flashover warning condition (Saffire-III / BASS-II)
-  const flashoverWarning =
-    !isExtinguished &&
-    ((ventilation >= 0.13 && oxygen >= 20) || (oxygen >= 32 && ventilation >= 0.08));
+  // Only trigger flashover warning when forced convection is genuinely active (>= 0.14 m/s)
+  const flashoverWarning = !isExtinguished && ventilation >= 0.14 && oxygen >= 19;
 
-  // Soot agglomeration multiplier (SAME-R: 8x-12x larger in 0g low flow)
   const sootClusterScale =
     gravityKey === '0g'
-      ? Math.max(2.5, 9.5 - ventilation * 14)
+      ? Math.max(2.4, 9.2 - ventilation * 10)
       : gravityKey === '1/6g'
-      ? Math.max(1.8, 5.2 - ventilation * 7)
+      ? Math.max(1.8, 5.1 - ventilation * 6)
       : 1.0;
+
+  // Dynamic Hazard Score (0 - 100) for situational report
+  const hazardScore = isExtinguished
+    ? 12
+    : Math.min(
+        99,
+        Math.max(
+          22,
+          Math.round(
+            oxygen * 0.42 +
+              pO2Ratio * 22 +
+              spreadRate * 14 +
+              (flashoverWarning ? 15 : 0) +
+              (isCoolFlame ? 18 : 0)
+          )
+        )
+      );
+
+  let regimeTitle = '3D SPHERICAL DIFFUSION FLAME';
+  let regimeCode = 'SPHERICAL_0G';
+  if (isExtinguished) {
+    regimeTitle = 'QUENCHED / BELOW LOI LIMIT';
+    regimeCode = 'EXTINGUISHED';
+  } else if (isCoolFlame) {
+    regimeTitle = 'FLEX COOL-FLAME REGIME (600–800 K)';
+    regimeCode = 'COOL_FLAME';
+  } else if (ventilation >= 0.14) {
+    regimeTitle = '3D FORCED-CONVECTION WAKE CONE';
+    regimeCode = 'FORCED_WAKE';
+  } else if (gravityKey === '1/6g') {
+    regimeTitle = '3D LUNAR PARTIAL-BUOYANCY PLUME';
+    regimeCode = 'LUNAR_PLUME';
+  } else if (gravityKey === '1g') {
+    regimeTitle = '3D BUOYANT TEARDROP PLUME';
+    regimeCode = 'EARTH_TEARDROP';
+  }
+
+  // Radar metrics (0-100) for multi-axis situational assessment
+  const radarMetrics = {
+    ignitionRisk: Math.min(100, Math.round((oxygen / 100) * 75 + pO2Ratio * 20)),
+    spreadVelocity: Math.min(100, Math.round((spreadRate / 4.5) * 100)),
+    sootObscuration: Math.min(100, Math.round(mat.sootFactor * 60 + sootClusterScale * 4.2)),
+    flashoverHazard: Math.min(
+      100,
+      Math.round(ventilation * 145 + (oxygen > 30 ? 35 : 10) + (gravityKey !== '1g' ? 15 : 0))
+    ),
+    suppressionDifficulty: Math.min(
+      100,
+      Math.round((o2Margin > 15 ? 55 : 25) + (isCoolFlame ? 40 : 0) + ventilation * 65)
+    ),
+  };
 
   return {
     spreadRate,
     flameTemp,
     burnTime,
     pO2: Number(pO2.toFixed(2)),
+    pO2Ratio: Number(pO2Ratio.toFixed(2)),
     effectiveLOI: Number(effectiveLOI.toFixed(1)),
     o2Margin: Number(o2Margin.toFixed(1)),
     isCoolFlame,
@@ -191,14 +246,18 @@ export function computeCombustionPhysics({
     flashoverWarning,
     ventilationRegime,
     sootClusterScale: Number(sootClusterScale.toFixed(1)),
+    hazardScore,
+    regimeTitle,
+    regimeCode,
+    radarMetrics,
   };
 }
 
 /* ============================================================================
-   GLSL Shaders for 3D Volumetric Multi-Shell Flame & 3D Particle Plume
+   1. Volumetric Multi-Shell GLSL Shaders (100% WebGL Standards-Compliant)
    ============================================================================ */
 
-const FLAME_VERTEX_SHADER = /* glsl */ `
+const VOLUMETRIC_FLAME_VERT = /* glsl */ `
   uniform float uTime;
   uniform float uGravity;
   uniform float uAirflow;
@@ -212,104 +271,106 @@ const FLAME_VERTEX_SHADER = /* glsl */ `
   varying float vHeat;
   varying float vNoise;
 
-  float hash(vec3 p) {
+  float hash3(vec3 p) {
     p = fract(p * 0.3183099 + 0.1);
     p *= 17.0;
     return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
   }
 
-  float noise3D(vec3 x) {
+  float noise3(vec3 x) {
     vec3 i = floor(x);
     vec3 f = fract(x);
     f = f * f * (3.0 - 2.0 * f);
     return mix(
       mix(
-        mix(hash(i + vec3(0, 0, 0)), hash(i + vec3(1, 0, 0)), f.x),
-        mix(hash(i + vec3(0, 1, 0)), hash(i + vec3(1, 1, 0)), f.x),
+        mix(hash3(i + vec3(0.0, 0.0, 0.0)), hash3(i + vec3(1.0, 0.0, 0.0)), f.x),
+        mix(hash3(i + vec3(0.0, 1.0, 0.0)), hash3(i + vec3(1.0, 1.0, 0.0)), f.x),
         f.y
       ),
       mix(
-        mix(hash(i + vec3(0, 0, 1)), hash(i + vec3(1, 0, 1)), f.x),
-        mix(hash(i + vec3(0, 1, 1)), hash(i + vec3(1, 1, 1)), f.x),
+        mix(hash3(i + vec3(0.0, 0.0, 1.0)), hash3(i + vec3(1.0, 0.0, 1.0)), f.x),
+        mix(hash3(i + vec3(0.0, 1.0, 1.0)), hash3(i + vec3(1.0, 1.0, 1.0)), f.x),
         f.y
       ),
       f.z
     );
   }
 
+  float fbm(vec3 p) {
+    float v = 0.0;
+    float a = 0.5;
+    for (int i = 0; i < 3; i++) {
+      v += a * noise3(p);
+      p = p * 2.04 + vec3(1.7, 3.2, 2.1);
+      a *= 0.5;
+    }
+    return v;
+  }
+
   void main() {
     vec3 pos = position;
     vLocalPos = position;
 
-    // Normalize oxygen intensity (0.0 at 15%, 1.0 at 100%)
-    float o2Norm = clamp((uOxygen - 15.0) / 85.0, 0.0, 1.0);
-    // Buoyancy strength from gravity (0.0 in 0g, ~0.41 in 1/6g, 1.0 in 1g)
-    float buoyancy = pow(clamp(uGravity, 0.0, 1.0), 0.42);
-    // Forced convection wake strength from cabin ventilation (0.0 to 0.55 m/s)
-    float wind = clamp(uAirflow / 0.45, 0.0, 1.35);
+    float o2Norm = clamp((uOxygen - 14.0) / 86.0, 0.0, 1.0);
+    float buoyancy = pow(clamp(uGravity, 0.0, 1.0), 0.44);
+    float wind = clamp((uAirflow - 0.04) / 0.45, 0.0, 1.35);
 
-    // 3D turbulence field
-    vec3 samplePt = pos * 2.4 - vec3(uTime * (1.2 + wind * 3.8), uTime * (1.5 + buoyancy * 3.2), 0.0);
-    float n1 = noise3D(samplePt);
-    float n2 = noise3D(samplePt * 2.1 + 4.3);
-    float turb = (n1 * 0.65 + n2 * 0.35) - 0.5;
-    vNoise = n1;
+    vec3 advect = vec3(
+      uTime * (0.9 + wind * 4.2),
+      uTime * (1.2 + buoyancy * 3.8),
+      uTime * 0.6
+    );
+    float n = fbm(pos * 2.3 - advect);
+    float turb = n - 0.48;
+    vNoise = n;
 
-    // 1. Base Spherical Radius (0g diffusion envelope)
-    float baseScale = 0.82 + o2Norm * 0.36 + uShellIndex * 0.16;
+    // Shell radius scaling (inner hot core -> middle reaction sheet -> outer thermal halo)
+    float shellScale = 0.68 + uShellIndex * 0.21 + o2Norm * 0.28;
     if (uCoolFlame > 0.5) {
-      baseScale = 0.68 + 0.06 * sin(uTime * 3.2) + uShellIndex * 0.12;
+      shellScale = 0.62 + uShellIndex * 0.15 + 0.05 * sin(uTime * 3.5);
     }
-    pos *= baseScale;
+    pos *= shellScale;
 
-    // 2. Buoyant Vertical Plume Deformation (1/6g Lunar & 1g Earth)
-    float upperFactor = smoothstep(-0.35, 0.85, vLocalPos.y);
+    // Buoyant vertical teardrop / bell elongation (1/6g Lunar & 1g Earth)
+    float upperMask = smoothstep(-0.55, 0.9, vLocalPos.y);
     if (buoyancy > 0.01) {
-      // Stretch upward and taper toward tip (teardrop / bell geometry)
-      float verticalStretch = 1.0 + buoyancy * (1.35 + o2Norm * 0.45) * upperFactor;
-      float tipTaper = 1.0 - buoyancy * 0.58 * pow( clamp((vLocalPos.y + 0.2) / 1.2, 0.0, 1.0), 1.35 );
-      // Slight buoyant necking near base
-      float basePinch = 1.0 - buoyancy * 0.16 * exp(-pow((vLocalPos.y + 0.45) * 3.0, 2.0));
-      pos.y *= verticalStretch;
-      pos.x *= tipTaper * basePinch;
-      pos.z *= tipTaper * basePinch;
-      // Upward shift so flame sits cleanly on/above fuel sample
-      pos.y += buoyancy * 0.42 * upperFactor;
+      float stretchY = 1.0 + buoyancy * (1.42 + o2Norm * 0.4) * upperMask;
+      float heightRatio = clamp((vLocalPos.y + 0.35) / 1.35, 0.0, 1.0);
+      float coneTaper = 1.0 - buoyancy * 0.64 * pow(heightRatio, 1.3);
+      float neckPinch = 1.0 - buoyancy * 0.18 * exp(-pow((vLocalPos.y + 0.45) * 2.8, 2.0));
+      pos.y *= stretchY;
+      pos.x *= coneTaper * neckPinch;
+      pos.z *= coneTaper * neckPinch;
+      pos.y += buoyancy * 0.38 * upperMask;
     }
 
-    // 3. Forced Convection Wake Deformation (+X airflow from cabin ventilation)
-    float downstreamFactor = smoothstep(-0.65, 0.95, vLocalPos.x);
-    if (wind > 0.04) {
-      // Compress windward (-X) boundary layer, stretch leeward (+X) trailing wake cone
-      float windStretchX = 1.0 + wind * (1.65 + o2Norm * 0.5) * downstreamFactor;
-      float windwardCompress = vLocalPos.x < 0.0 ? (1.0 - min(0.42, wind * 0.28)) : 1.0;
-      float wakeTaper = 1.0 - min(0.55, wind * 0.36) * pow(downstreamFactor, 1.25);
-      pos.x = pos.x * windStretchX * windwardCompress + wind * 0.55 * Math_max(0.0, upperFactor * 0.6 + downstreamFactor);
-      pos.y *= (1.0 - min(0.32, wind * 0.22) * downstreamFactor);
-      pos.z *= wakeTaper;
+    // Forced convection downstream wake deformation (+X cabin ventilation)
+    float wakeMask = smoothstep(-0.7, 0.95, vLocalPos.x);
+    if (wind > 0.02) {
+      float stretchX = 1.0 + wind * (1.85 + o2Norm * 0.45) * wakeMask;
+      float leadingCompress = vLocalPos.x < 0.0 ? (1.0 - min(0.45, wind * 0.32)) : 1.0;
+      float tailTaper = 1.0 - min(0.58, wind * 0.38) * pow(wakeMask, 1.25);
+      pos.x = pos.x * stretchX * leadingCompress + wind * 0.52 * max(0.0, upperMask * 0.5 + wakeMask);
+      pos.y *= (1.0 - min(0.32, wind * 0.22) * wakeMask);
+      pos.z *= tailTaper;
     }
 
-    // 4. Organic 3D Flicker & Shear-Layer Ripples
-    float rippleAmp = (0.045 + buoyancy * 0.09 + wind * 0.11) * (0.4 + 0.6 * max(upperFactor, downstreamFactor));
-    pos.x += turb * rippleAmp * (1.0 + wind * 1.4);
-    pos.y += turb * rippleAmp * (1.0 + buoyancy * 1.2);
-    pos.z += (n2 - 0.5) * rippleAmp * 0.85;
+    // 3D FBM surface displacement for organic living flame motion
+    float dispAmp = (0.04 + buoyancy * 0.11 + wind * 0.12) * (0.35 + 0.65 * max(upperMask, wakeMask));
+    pos.x += turb * dispAmp * (1.0 + wind * 1.5);
+    pos.y += turb * dispAmp * (1.0 + buoyancy * 1.35);
+    pos.z += (fbm(pos * 3.1 + 2.4) - 0.48) * dispAmp * 0.9;
 
-    // Heat coordinate (0 = base/leading edge, 1 = downstream/plume tip)
-    vHeat = clamp(0.35 + upperFactor * buoyancy * 0.55 + downstreamFactor * wind * 0.45 + turb * 0.18, 0.0, 1.0);
+    vHeat = clamp(0.28 + upperMask * buoyancy * 0.58 + wakeMask * wind * 0.5 + turb * 0.22, 0.0, 1.0);
 
-    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-    vViewPos = -mvPosition.xyz;
+    vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
+    vViewPos = -mvPos.xyz;
     vNormal = normalize(normalMatrix * normal);
-    gl_Position = projectionMatrix * mvPosition;
-  }
-
-  float Math_max(float a, float b) {
-    return a > b ? a : b;
+    gl_Position = projectionMatrix * mvPos;
   }
 `;
 
-const FLAME_FRAGMENT_SHADER = /* glsl */ `
+const VOLUMETRIC_FLAME_FRAG = /* glsl */ `
   precision highp float;
 
   uniform float uTime;
@@ -335,71 +396,316 @@ const FLAME_FRAGMENT_SHADER = /* glsl */ `
     vec3 V = normalize(vViewPos);
     float ndotv = abs(dot(N, V));
 
-    // Volumetric rim + core density
-    float fresnel = pow(1.0 - ndotv, 1.65);
-    float coreDensity = pow(ndotv, 1.35);
+    // Soft volumetric glow profile
+    float coreGlow = pow(ndotv, 1.25);
+    float rimGlow = pow(1.0 - ndotv, 1.8) * smoothstep(0.0, 0.35, ndotv);
 
-    float o2Norm = clamp((uOxygen - 15.0) / 85.0, 0.0, 1.0);
-    float buoyancy = pow(clamp(uGravity, 0.0, 1.0), 0.42);
-    float wind = clamp(uAirflow / 0.45, 0.0, 1.35);
+    float o2Norm = clamp((uOxygen - 14.0) / 86.0, 0.0, 1.0);
+    float buoyancy = pow(clamp(uGravity, 0.0, 1.0), 0.44);
+    float wind = clamp((uAirflow - 0.04) / 0.45, 0.0, 1.35);
 
-    // Regime blend: 0.0 = pure 0g blue spherical diffusion, 1.0 = incandescent yellow-orange soot/convective flame
-    float radiativeMix = clamp(buoyancy * 0.82 + wind * 0.68 + o2Norm * 0.38, 0.0, 1.0);
+    // 0g Spherical Diffusion Palette (CH* / OH* Chemiluminescence Blue-Cyan-Violet)
+    vec3 diffCore = vec3(0.86, 0.96, 1.00);
+    vec3 diffMid  = vec3(0.14, 0.72, 1.00);
+    vec3 diffRim  = vec3(0.22, 0.34, 0.96);
+    vec3 zeroGCol = mix(diffRim, diffMid, coreGlow);
+    zeroGCol = mix(zeroGCol, diffCore, pow(coreGlow, 2.3) * (0.6 + o2Norm * 0.35));
 
-    // Palette 1: 0g Microgravity Spherical Diffusion (CH* / OH* blue-cyan radical emission)
-    vec3 zeroGCore = vec3(0.78, 0.93, 1.00);
-    vec3 zeroGMid  = vec3(0.16, 0.68, 0.98);
-    vec3 zeroGRim  = vec3(0.22, 0.36, 0.92);
+    // Partial/Earth Gravity & Forced Convection Palette (Blue cup -> Deep Orange -> Gold -> White Core)
+    vec3 baseCupBlue = vec3(0.16, 0.62, 1.00);
+    vec3 outerCrimson = vec3(0.96, 0.26, 0.06);
+    vec3 midAmber = vec3(1.00, 0.58, 0.12);
+    vec3 innerGold = vec3(1.00, 0.90, 0.45);
+    vec3 hotWhite = vec3(1.00, 0.99, 0.92);
 
-    // Palette 2: Partial/Earth Gravity & Forced Convection (Blue base -> Amber/Orange -> White-Yellow core)
-    vec3 baseBlue   = vec3(0.18, 0.58, 0.98);
-    vec3 midOrange  = vec3(1.00, 0.44, 0.11);
-    vec3 hotYellow  = vec3(1.00, 0.88, 0.48);
-    vec3 whiteCore  = vec3(1.00, 0.98, 0.90);
+    vec3 plumeCol = mix(outerCrimson, midAmber, clamp(vHeat * 0.9 + coreGlow * 0.4, 0.0, 1.0));
+    plumeCol = mix(plumeCol, innerGold, pow(coreGlow, 1.55) * (0.65 + o2Norm * 0.3));
+    plumeCol = mix(plumeCol, hotWhite, pow(coreGlow, 3.0) * (0.55 + o2Norm * 0.45));
 
-    // In buoyant/convective flames, leading edge/bottom is blue, upper/wake body is orange-gold
-    float blueBaseZone = smoothstep(-0.75, -0.05, -vLocalPos.y * (0.6 + buoyancy) - vLocalPos.x * wind * 0.7);
-    vec3 buoyantColor = mix(midOrange, hotYellow, clamp(vHeat * 0.85 + coreDensity * 0.45, 0.0, 1.0));
-    buoyantColor = mix(buoyantColor, whiteCore, pow(coreDensity, 2.4) * (0.45 + o2Norm * 0.45));
-    buoyantColor = mix(buoyantColor, baseBlue, blueBaseZone * (0.65 - o2Norm * 0.25));
+    // Blue leading-edge / base reaction cup
+    float cupMask = smoothstep(0.15, -0.65, vLocalPos.y * (0.65 + buoyancy) + vLocalPos.x * wind * 0.75);
+    plumeCol = mix(plumeCol, baseCupBlue, cupMask * (0.72 - o2Norm * 0.25));
 
-    vec3 zeroGColor = mix(zeroGRim, zeroGMid, coreDensity);
-    zeroGColor = mix(zeroGColor, zeroGCore, pow(coreDensity, 2.6) * (0.55 + o2Norm * 0.35));
-
-    vec3 finalColor = mix(zeroGColor, buoyantColor, radiativeMix);
-
-    // Cool flame override (FLEX 600-800 K invisible/UV-blue regime)
-    if (uCoolFlame > 0.5) {
-      vec3 coolInner = vec3(0.32, 0.78, 1.0);
-      vec3 coolOuter = vec3(0.38, 0.28, 0.95);
-      finalColor = mix(coolOuter, coolInner, coreDensity);
-    }
-
-    // Shell-dependent alpha for true 3D multi-layer volumetric look
-    float shellAlpha = uShellIndex < 0.5
-      ? (0.58 * coreDensity + 0.28 * fresnel)
-      : uShellIndex < 1.5
-      ? (0.34 * coreDensity + 0.46 * fresnel)
-      : (0.14 * coreDensity + 0.32 * fresnel);
+    float radiativeBlend = clamp(buoyancy * 0.88 + wind * 0.78, 0.0, 1.0);
+    vec3 color = mix(zeroGCol, plumeCol, radiativeBlend);
 
     if (uCoolFlame > 0.5) {
-      shellAlpha *= 0.55 + 0.15 * sin(uTime * 4.0);
+      vec3 coolCore = vec3(0.38, 0.85, 1.00);
+      vec3 coolHalo = vec3(0.42, 0.25, 0.96);
+      color = mix(coolHalo, coolCore, coreGlow);
     }
 
-    // Subtle cellular flicker modulation
-    shellAlpha *= 0.88 + 0.16 * vNoise;
+    float alpha;
+    if (uShellIndex < 0.5) {
+      // Inner incandescent core
+      alpha = 0.68 * pow(coreGlow, 1.2) + 0.18 * rimGlow;
+    } else if (uShellIndex < 1.5) {
+      // Primary stoichiometric reaction sheet
+      alpha = 0.42 * coreGlow + 0.48 * rimGlow;
+    } else if (uShellIndex < 2.5) {
+      // Secondary chemiluminescence envelope
+      alpha = 0.24 * coreGlow + 0.36 * rimGlow;
+    } else {
+      // Outer soft thermal bloom aura
+      alpha = 0.14 * pow(coreGlow, 1.8) + 0.16 * rimGlow;
+    }
 
-    gl_FragColor = vec4(finalColor * (1.12 + o2Norm * 0.28), clamp(shellAlpha, 0.0, 0.92));
+    alpha *= (0.86 + 0.22 * vNoise);
+    if (uCoolFlame > 0.5) {
+      alpha *= 0.55 + 0.18 * sin(uTime * 4.2);
+    }
+
+    gl_FragColor = vec4(color * (1.18 + o2Norm * 0.32), clamp(alpha, 0.0, 0.92));
   }
 `;
+
+/* ============================================================================
+   2. GPU-Accelerated 3D Volumetric Fire & Soot Cloud Shader (10,000+ Motes)
+      Inspired by ParticleSaturn.jsx for ultra-rich 3D particle density
+   ============================================================================ */
+
+const FIRE_CLOUD_VERT = /* glsl */ `
+  attribute float aLayer;
+  attribute float aSeed;
+  attribute float aPhase;
+  attribute vec3 aBaseDir;
+
+  uniform float uTime;
+  uniform float uGravity;
+  uniform float uAirflow;
+  uniform float uOxygen;
+  uniform float uCoolFlame;
+  uniform float uExtinguished;
+  uniform float uPixelRatio;
+  uniform float uSootScale;
+
+  varying float vLayer;
+  varying float vLife;
+  varying float vHeat;
+  varying float vSeed;
+
+  float hash1(float n) {
+    return fract(sin(n * 91.3458) * 47453.5453);
+  }
+
+  void main() {
+    vLayer = aLayer;
+    vSeed = aSeed;
+
+    float o2Norm = clamp((uOxygen - 14.0) / 86.0, 0.0, 1.0);
+    float buoyancy = pow(clamp(uGravity, 0.0, 1.0), 0.44);
+    float wind = clamp((uAirflow - 0.04) / 0.45, 0.0, 1.35);
+
+    vec3 pos = vec3(0.0);
+    float pointSize = 1.0;
+
+    if (aLayer < 0.5) {
+      // LAYER 0: Dense 3D Reaction Shell & Inner Flame Plasma Motes (7,500 motes)
+      float life = fract(aPhase + uTime * (0.28 + buoyancy * 0.45 + wind * 0.55));
+      vLife = life;
+
+      // Base spherical shell distribution
+      float baseR = (0.32 + 0.58 * pow(aSeed, 0.45)) * (0.85 + o2Norm * 0.32);
+      if (uCoolFlame > 0.5) {
+        baseR *= 0.78 + 0.05 * sin(uTime * 3.5 + aSeed * 6.28);
+      }
+
+      // Swirl around reaction zone
+      float angle = aSeed * 6.28318 + uTime * (0.45 + hash1(aSeed) * 0.4);
+      vec3 dir = aBaseDir;
+      float cosA = cos(angle * 0.15);
+      float sinA = sin(angle * 0.15);
+      dir = vec3(dir.x * cosA - dir.z * sinA, dir.y, dir.x * sinA + dir.z * cosA);
+
+      pos = dir * baseR;
+
+      // Morph sphere into 1/6g bell or 1g teardrop plume
+      float upper = smoothstep(-0.4, 0.9, dir.y);
+      if (buoyancy > 0.01) {
+        float rise = life * buoyancy * (1.55 + o2Norm * 0.45);
+        pos.y = pos.y * (1.0 + buoyancy * 1.15 * upper) + rise * upper;
+        float taper = 1.0 - buoyancy * 0.58 * clamp(pos.y / 2.2, 0.0, 0.92);
+        pos.x *= taper;
+        pos.z *= taper;
+        // Helical thermal vortex flicker
+        pos.x += sin(uTime * 3.8 + pos.y * 2.6 + aSeed * 12.0) * 0.08 * buoyancy * upper;
+        pos.z += cos(uTime * 3.4 + pos.y * 2.6 + aSeed * 12.0) * 0.08 * buoyancy * upper;
+      }
+
+      // Morph into Forced Convection Trailing Wake (+X)
+      float wake = smoothstep(-0.6, 0.9, dir.x);
+      if (wind > 0.02) {
+        float driftX = life * wind * (2.15 + o2Norm * 0.5);
+        pos.x = pos.x * (1.0 + wind * 1.25 * wake) + driftX * (0.35 + 0.65 * wake);
+        float wakeTaper = 1.0 - min(0.55, wind * 0.32) * clamp(pos.x / 2.6, 0.0, 0.9);
+        pos.y *= wakeTaper;
+        pos.z *= wakeTaper;
+        pos.y += sin(uTime * 5.0 + pos.x * 2.8 + aSeed * 10.0) * 0.07 * wind;
+      }
+
+      vHeat = clamp(1.0 - life * 0.55 + upper * buoyancy * 0.25, 0.0, 1.0);
+      pointSize = (6.5 + hash1(aSeed * 3.1) * 8.5) * (1.0 - life * 0.35);
+      if (uExtinguished > 0.5) {
+        pointSize = 0.0;
+      }
+    } else if (aLayer < 1.5) {
+      // LAYER 1: Soot Agglomerates & Thermal Plume Aerosols (SAME-R physics)
+      float life = fract(aPhase + uTime * (0.18 + buoyancy * 0.32 + wind * 0.65));
+      vLife = life;
+
+      vec3 dir = aBaseDir;
+      float startR = 0.58 + hash1(aSeed * 7.3) * 0.45;
+      pos = dir * startR;
+
+      // Radial diffusion in 0g + buoyant lift in 1/6g & 1g + wind advection
+      pos += dir * (life * 0.85 * (1.0 - buoyancy * 0.55));
+      pos.y += life * buoyancy * 2.35;
+      pos.x += life * (0.18 + wind * 3.1);
+      pos.z += sin(uTime * 1.8 + aSeed * 25.0) * 0.12 * life;
+
+      vHeat = clamp(1.0 - life * 1.15, 0.0, 1.0);
+      // Soot clusters are 8x-12x larger in 0g (SAME-R)
+      float clusterBoost = 0.85 + clamp(uSootScale / 9.0, 0.15, 1.1) * 0.95;
+      pointSize = (5.0 + hash1(aSeed * 19.7) * 7.5) * clusterBoost * sin(life * 3.14159);
+    } else {
+      // LAYER 2: Cabin Ventilation Oxidizer Airflow Streamlines
+      float speed = 0.22 + uAirflow * 1.85;
+      float life = fract(aPhase + uTime * speed);
+      vLife = life;
+
+      float x = -3.4 + life * 6.8;
+      float y = (aBaseDir.y) * 1.55;
+      float z = (aBaseDir.z) * 1.55;
+
+      // Potential-flow streamline deflection around the 3D flame zone
+      float distSq = x * x + y * y + z * z;
+      float deflect = 0.45 / max(0.35, distSq + 0.25);
+      y += sign(y + 0.001) * deflect * 0.35;
+      z += sign(z + 0.001) * deflect * 0.35;
+
+      pos = vec3(x, y, z);
+      vHeat = clamp(uAirflow / 0.45, 0.15, 1.0);
+      pointSize = (3.2 + uAirflow * 6.0) * sin(life * 3.14159);
+    }
+
+    vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
+    gl_Position = projectionMatrix * mvPos;
+    gl_PointSize = pointSize * uPixelRatio * (5.2 / max(0.5, -mvPos.z));
+  }
+`;
+
+const FIRE_CLOUD_FRAG = /* glsl */ `
+  precision highp float;
+
+  uniform float uGravity;
+  uniform float uAirflow;
+  uniform float uOxygen;
+  uniform float uCoolFlame;
+  uniform float uExtinguished;
+
+  varying float vLayer;
+  varying float vLife;
+  varying float vHeat;
+  varying float vSeed;
+
+  void main() {
+    float d = length(gl_PointCoord - 0.5) * 2.0;
+    if (d > 1.0) discard;
+
+    float falloff = 1.0 - d;
+    // Crisp glowing core + soft radial halo (same formula family as ParticleSaturn)
+    float shape = pow(falloff, 4.2) + pow(falloff, 1.5) * 0.38;
+
+    float o2Norm = clamp((uOxygen - 14.0) / 86.0, 0.0, 1.0);
+    float buoyancy = pow(clamp(uGravity, 0.0, 1.0), 0.44);
+    float wind = clamp((uAirflow - 0.04) / 0.45, 0.0, 1.35);
+    float radMix = clamp(buoyancy * 0.88 + wind * 0.78, 0.0, 1.0);
+
+    vec3 col;
+    float alpha;
+
+    if (vLayer < 0.5) {
+      // Flame plasma motes
+      vec3 cyanMote = mix(vec3(0.15, 0.68, 1.0), vec3(0.75, 0.94, 1.0), vHeat);
+      vec3 fireMote = mix(vec3(1.0, 0.36, 0.08), vec3(1.0, 0.92, 0.55), vHeat);
+      col = mix(cyanMote, fireMote, radMix);
+      if (uCoolFlame > 0.5) {
+        col = mix(vec3(0.38, 0.28, 0.95), vec3(0.35, 0.85, 1.0), vHeat);
+      }
+      alpha = shape * (0.42 + o2Norm * 0.25) * sin(vLife * 3.14159);
+    } else if (vLayer < 1.5) {
+      // Soot agglomerates & embers
+      if (uExtinguished > 0.5) {
+        col = vec3(0.45, 0.52, 0.58);
+        alpha = shape * 0.28 * (1.0 - vLife);
+      } else if (radMix < 0.25) {
+        col = mix(vec3(0.22, 0.58, 0.92), vec3(0.65, 0.88, 1.0), vHeat);
+        alpha = shape * 0.52 * (1.0 - vLife * 0.65);
+      } else {
+        col = mix(vec3(0.55, 0.32, 0.20), vec3(1.0, 0.62, 0.22), vHeat);
+        alpha = shape * 0.58 * (1.0 - vLife * 0.6);
+      }
+    } else {
+      // Cabin ventilation airflow stream motes
+      col = vec3(0.38, 0.78, 0.98);
+      alpha = shape * (0.16 + vHeat * 0.32);
+    }
+
+    gl_FragColor = vec4(col * alpha * 1.35, clamp(alpha, 0.0, 0.95));
+  }
+`;
+
+function buildFireCloudGeometry() {
+  const FLAME_MOTES = 6800;
+  const SOOT_MOTES = 1800;
+  const FLOW_MOTES = 600;
+  const TOTAL = FLAME_MOTES + SOOT_MOTES + FLOW_MOTES;
+
+  const positions = new Float32Array(TOTAL * 3);
+  const layers = new Float32Array(TOTAL);
+  const seeds = new Float32Array(TOTAL);
+  const phases = new Float32Array(TOTAL);
+  const baseDirs = new Float32Array(TOTAL * 3);
+
+  for (let i = 0; i < TOTAL; i++) {
+    const layer = i < FLAME_MOTES ? 0 : i < FLAME_MOTES + SOOT_MOTES ? 1 : 2;
+    layers[i] = layer;
+    seeds[i] = Math.random();
+    phases[i] = Math.random();
+
+    if (layer < 2) {
+      // Fibonacci / uniform sphere direction
+      const u = Math.random();
+      const v = Math.random();
+      const theta = 2 * Math.PI * u;
+      const phi = Math.acos(2 * v - 1);
+      baseDirs[i * 3 + 0] = Math.sin(phi) * Math.cos(theta);
+      baseDirs[i * 3 + 1] = Math.cos(phi);
+      baseDirs[i * 3 + 2] = Math.sin(phi) * Math.sin(theta);
+    } else {
+      baseDirs[i * 3 + 0] = 1;
+      baseDirs[i * 3 + 1] = (Math.random() - 0.5) * 2;
+      baseDirs[i * 3 + 2] = (Math.random() - 0.5) * 2;
+    }
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('aLayer', new THREE.BufferAttribute(layers, 1));
+  geo.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 1));
+  geo.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
+  geo.setAttribute('aBaseDir', new THREE.BufferAttribute(baseDirs, 3));
+  return geo;
+}
 
 export function CombustionSim3D({
   initialGravity = '0g',
   initialMaterial = 'pmma',
   initialOxygen = 34,
-  initialVentilation = 0.1,
+  initialVentilation = 0.08,
   initialPressure = 4.3,
   compact = false,
+  showReport = true,
   onStateChange,
 }) {
   const [gravityKey, setGravityKey] = useState(initialGravity);
@@ -408,6 +714,9 @@ export function CombustionSim3D({
   const [ventilation, setVentilation] = useState(initialVentilation);
   const [pressure, setPressure] = useState(initialPressure);
   const [cameraPreset, setCameraPreset] = useState('iso');
+  const [changeHistory, setChangeHistory] = useState([
+    'Initialized 3D WebGL Combustion Integrated Rack (CIR) simulation.',
+  ]);
 
   const mountRef = useRef(null);
   const simStateRef = useRef({
@@ -419,7 +728,7 @@ export function CombustionSim3D({
     cameraPreset,
   });
 
-  // Sync props when parent changes preset
+  // Sync when parent or AI Chat dispatches new situational parameters
   useEffect(() => {
     setGravityKey(initialGravity);
   }, [initialGravity]);
@@ -447,6 +756,10 @@ export function CombustionSim3D({
       }),
     [gravityKey, materialKey, oxygen, ventilation, pressure]
   );
+
+  const logParameterChange = (description) => {
+    setChangeHistory((prev) => [description, ...prev.slice(0, 3)]);
+  };
 
   useEffect(() => {
     simStateRef.current = {
@@ -500,88 +813,97 @@ export function CombustionSim3D({
     container.appendChild(canvas);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, 16 / 9, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(32, 16 / 9, 0.1, 100);
 
-    // Root 3D group for user orbit rotation
     const worldGroup = new THREE.Group();
     scene.add(worldGroup);
 
-    // 1. Scientific Chamber Floor Grid & Optical Measurement Ring
+    // 1. Scientific Chamber Perspective Floor Grid & Thin Diagnostic Orbit Rings
     const gridGroup = new THREE.Group();
     gridGroup.position.y = -1.25;
-    const gridHelper = new THREE.GridHelper(9.5, 24, 0x2c3b42, 0x182228);
+    const gridHelper = new THREE.GridHelper(10, 24, 0x263840, 0x141f24);
     gridHelper.material.transparent = true;
-    gridHelper.material.opacity = 0.55;
+    gridHelper.material.opacity = 0.5;
     gridGroup.add(gridHelper);
 
-    // Circular chamber base ring
-    const ringGeo = new THREE.RingGeometry(2.3, 2.36, 64);
-    ringGeo.rotateX(-Math.PI / 2);
-    const ringMat = new THREE.MeshBasicMaterial({
+    const floorRingGeo = new THREE.RingGeometry(1.72, 1.75, 96);
+    floorRingGeo.rotateX(-Math.PI / 2);
+    const floorRingMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0.25,
       side: THREE.DoubleSide,
     });
-    const baseRing = new THREE.Mesh(ringGeo, ringMat);
-    baseRing.position.y = 0.01;
-    gridGroup.add(baseRing);
+    const floorRing = new THREE.Mesh(floorRingGeo, floorRingMat);
+    floorRing.position.y = 0.01;
+    gridGroup.add(floorRing);
     worldGroup.add(gridGroup);
+
+    // Thin Scientific Diagnostic Gimbal Rings around Flame (No ugly wireframe triangle mesh!)
+    const gimbalGroup = new THREE.Group();
+    const gimbalRingGeo1 = new THREE.RingGeometry(1.18, 1.2, 96);
+    const gimbalRingMat1 = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.18,
+      side: THREE.DoubleSide,
+    });
+    const gimbal1 = new THREE.Mesh(gimbalRingGeo1, gimbalRingMat1);
+    gimbal1.rotation.x = Math.PI / 2.6;
+    gimbalGroup.add(gimbal1);
+
+    const gimbal2 = new THREE.Mesh(gimbalRingGeo1, gimbalRingMat1);
+    gimbal2.rotation.y = Math.PI / 3;
+    gimbal2.rotation.x = -Math.PI / 5;
+    gimbalGroup.add(gimbal2);
+    worldGroup.add(gimbalGroup);
 
     // 2. 3D Fuel Sample & CIR Metallic Sting Holder
     const sampleGroup = new THREE.Group();
     worldGroup.add(sampleGroup);
 
-    // Fuel rod/cylinder sample
-    const fuelGeo = new THREE.CapsuleGeometry(0.28, 0.95, 24, 36);
+    const fuelGeo = new THREE.CapsuleGeometry(0.19, 0.72, 24, 36);
     fuelGeo.rotateZ(Math.PI / 2);
     const fuelMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#3b4a54'),
-      roughness: 0.38,
-      metalness: 0.15,
-      emissive: new THREE.Color('#ff5520'),
-      emissiveIntensity: 0.22,
+      color: new THREE.Color('#2b3a42'),
+      roughness: 0.35,
+      metalness: 0.2,
+      emissive: new THREE.Color('#38bdf8'),
+      emissiveIntensity: 0.35,
     });
     const fuelMesh = new THREE.Mesh(fuelGeo, fuelMat);
     sampleGroup.add(fuelMesh);
 
-    // Metallic holder sting on right (-X to +X flow across sample)
-    const stingGeo = new THREE.CylinderGeometry(0.065, 0.085, 2.0, 16);
+    const stingGeo = new THREE.CylinderGeometry(0.045, 0.065, 1.75, 16);
     stingGeo.rotateZ(Math.PI / 2);
     const stingMat = new THREE.MeshStandardMaterial({
       color: 0x64748b,
-      roughness: 0.3,
+      roughness: 0.28,
       metalness: 0.85,
     });
     const stingMesh = new THREE.Mesh(stingGeo, stingMat);
-    stingMesh.position.set(-1.35, 0, 0);
+    stingMesh.position.set(-1.28, 0, 0);
     sampleGroup.add(stingMesh);
 
-    // Vertical support strut down to chamber floor
-    const strutGeo = new THREE.CylinderGeometry(0.06, 0.08, 1.25, 16);
-    const strutMesh = new THREE.Mesh(strutGeo, stingMat);
-    strutMesh.position.set(-2.15, -0.62, 0);
-    sampleGroup.add(strutMesh);
-
-    // Lights for 3D fuel sample & chamber hardware
-    const ambientLight = new THREE.AmbientLight(0x94a3b8, 1.1);
+    const ambientLight = new THREE.AmbientLight(0x94a3b8, 1.15);
     scene.add(ambientLight);
-    const flamePointLight = new THREE.PointLight(0xff7b39, 3.2, 8.0);
-    flamePointLight.position.set(0.2, 0.4, 0.5);
-    worldGroup.add(flamePointLight);
+    const flameLight = new THREE.PointLight(0x38bdf8, 3.6, 9.0);
+    flameLight.position.set(0.15, 0.35, 0.5);
+    worldGroup.add(flameLight);
 
-    // 3. Multi-Layer 3D Volumetric Flame Shells (Inner Core, Reaction Sheet, Outer Halo)
+    // 3. 4 Nested Volumetric GLSL Shader Flame Shells
     const flameGroup = new THREE.Group();
     worldGroup.add(flameGroup);
 
-    const flameMaterials = [0, 1, 2].map((shellIdx) => {
+    const flameGeo = new THREE.SphereGeometry(0.76, 64, 64);
+    const flameMaterials = [0, 1, 2, 3].map((shellIdx) => {
       return new THREE.ShaderMaterial({
-        vertexShader: FLAME_VERTEX_SHADER,
-        fragmentShader: FLAME_FRAGMENT_SHADER,
+        vertexShader: VOLUMETRIC_FLAME_VERT,
+        fragmentShader: VOLUMETRIC_FLAME_FRAG,
         uniforms: {
           uTime: { value: 0 },
           uGravity: { value: 0 },
-          uAirflow: { value: 0.1 },
+          uAirflow: { value: 0.08 },
           uOxygen: { value: 34 },
           uShellIndex: { value: shellIdx },
           uCoolFlame: { value: 0 },
@@ -594,110 +916,43 @@ export function CombustionSim3D({
       });
     });
 
-    const flameGeo = new THREE.SphereGeometry(0.92, 56, 56);
-    const flameMeshes = flameMaterials.map((mat) => {
-      const m = new THREE.Mesh(flameGeo, mat);
-      m.frustumCulled = false;
-      flameGroup.add(m);
-      return m;
+    flameMaterials.forEach((mat) => {
+      const mesh = new THREE.Mesh(flameGeo, mat);
+      mesh.frustumCulled = false;
+      flameGroup.add(mesh);
     });
 
-    // 4. 3D Stoichiometric Reaction Boundary Geodesic Wireframe (visible especially in 0g / 1/6g)
-    const boundaryGeo = new THREE.SphereGeometry(1.22, 24, 18);
-    const boundaryMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      wireframe: true,
+    // 4. 9,200-Mote GPU Volumetric Fire, Soot & Streamline Cloud
+    const cloudGeo = buildFireCloudGeometry();
+    const cloudMat = new THREE.ShaderMaterial({
+      vertexShader: FIRE_CLOUD_VERT,
+      fragmentShader: FIRE_CLOUD_FRAG,
+      uniforms: {
+        uTime: { value: 0 },
+        uGravity: { value: 0 },
+        uAirflow: { value: 0.08 },
+        uOxygen: { value: 34 },
+        uCoolFlame: { value: 0 },
+        uExtinguished: { value: 0 },
+        uPixelRatio: { value: dpr },
+        uSootScale: { value: 8.4 },
+      },
       transparent: true,
-      opacity: 0.14,
-    });
-    const boundaryCage = new THREE.Mesh(boundaryGeo, boundaryMat);
-    worldGroup.add(boundaryCage);
-
-    // 5. 3D Soot, Ember & Cabin Airflow Particle System (1,100 particles in 3D space)
-    const PARTICLE_COUNT = 950;
-    const pPositions = new Float32Array(PARTICLE_COUNT * 3);
-    const pVelocities = new Float32Array(PARTICLE_COUNT * 3);
-    const pPhases = new Float32Array(PARTICLE_COUNT);
-    const pColors = new Float32Array(PARTICLE_COUNT * 3);
-
-    const resetParticle = (i, initial = false) => {
-      const st = simStateRef.current;
-      const gVal = (GRAVITY_REGIMES[st.gravityKey] || GRAVITY_REGIMES['0g']).gValue;
-      const wind = st.ventilation;
-      const isStreamline = i % 5 === 0;
-
-      if (isStreamline) {
-        // Cabin ventilation streamline particle
-        pPositions[i * 3 + 0] = initial ? -3.2 + Math.random() * 6.4 : -3.2;
-        pPositions[i * 3 + 1] = (Math.random() - 0.5) * 2.2;
-        pPositions[i * 3 + 2] = (Math.random() - 0.5) * 2.2;
-        pVelocities[i * 3 + 0] = 0.4 + wind * 5.2;
-        pVelocities[i * 3 + 1] = 0;
-        pVelocities[i * 3 + 2] = 0;
-      } else {
-        // Soot / thermal plume particle originating near reaction shell
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.acos(2 * Math.random() - 1);
-        const r = 0.35 + Math.random() * 0.45;
-        pPositions[i * 3 + 0] = r * Math.sin(phi) * Math.cos(theta);
-        pPositions[i * 3 + 1] = r * Math.cos(phi);
-        pPositions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-
-        // Velocity combines radial diffusion + buoyant updraft + forced convection wake
-        const radialSpeed = 0.22 + Math.random() * 0.25;
-        pVelocities[i * 3 + 0] =
-          Math.sin(phi) * Math.cos(theta) * radialSpeed * (1 - gVal * 0.5) +
-          wind * (3.8 + Math.random() * 2.4);
-        pVelocities[i * 3 + 1] =
-          Math.cos(phi) * radialSpeed * (1 - gVal * 0.4) +
-          Math.pow(gVal, 0.45) * (1.35 + Math.random() * 1.1);
-        pVelocities[i * 3 + 2] = Math.sin(phi) * Math.sin(theta) * radialSpeed;
-      }
-      pPhases[i] = initial ? Math.random() : 0.01;
-    };
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      resetParticle(i, true);
-    }
-
-    const particleGeo = new THREE.BufferGeometry();
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
-    particleGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
-
-    // Create soft circular sprite texture in memory
-    const spriteCanvas = document.createElement('canvas');
-    spriteCanvas.width = 64;
-    spriteCanvas.height = 64;
-    const sCtx = spriteCanvas.getContext('2d');
-    const grad = sCtx.createRadialGradient(32, 32, 2, 32, 32, 30);
-    grad.addColorStop(0, 'rgba(255,255,255,1)');
-    grad.addColorStop(0.35, 'rgba(255,255,255,0.75)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
-    sCtx.fillStyle = grad;
-    sCtx.fillRect(0, 0, 64, 64);
-    const spriteTex = new THREE.CanvasTexture(spriteCanvas);
-
-    const particleMat = new THREE.PointsMaterial({
-      size: 0.14,
-      map: spriteTex,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.85,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
-    const particlePoints = new THREE.Points(particleGeo, particleMat);
-    worldGroup.add(particlePoints);
+    const cloudPoints = new THREE.Points(cloudGeo, cloudMat);
+    cloudPoints.frustumCulled = false;
+    worldGroup.add(cloudPoints);
 
-    // Interactive 3D Orbit & Zoom State
-    let targetYaw = -0.32;
-    let targetPitch = 0.22;
-    let currentYaw = -0.32;
-    let currentPitch = 0.22;
+    // Interactive 360° Orbit Controls
+    let targetYaw = -0.28;
+    let targetPitch = 0.2;
+    let currentYaw = -0.28;
+    let currentPitch = 0.2;
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
-    let camDistance = 3.65;
 
     const onPointerDown = (e) => {
       isDragging = true;
@@ -711,31 +966,22 @@ export function CombustionSim3D({
       lastX = e.clientX;
       lastY = e.clientY;
       targetYaw += dx * 0.0085;
-      targetPitch = Math.max(-0.65, Math.min(1.05, targetPitch + dy * 0.0075));
+      targetPitch = Math.max(-0.65, Math.min(1.1, targetPitch + dy * 0.0075));
     };
     const onPointerUp = () => {
       isDragging = false;
     };
 
-    const onWheel = (e) => {
-      e.preventDefault();
-      const delta = e.deltaY * 0.0022;
-      camDistance = Math.max(2.1, Math.min(5.5, camDistance + delta));
-      camera.position.set(0, 0.22, camDistance);
-      camera.updateProjectionMatrix();
-    };
-
     canvas.addEventListener('pointerdown', onPointerDown);
-    canvas.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
 
     const updateSize = () => {
       const w = Math.max(280, container.clientWidth || 640);
-      const h = Math.max(240, container.clientHeight || 520);
+      const h = Math.max(240, container.clientHeight || 360);
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
-      camera.position.set(0, 0.22, camDistance);
+      camera.position.set(0, 0.28, 4.85);
       camera.lookAt(0.12, 0.08, 0);
       camera.updateProjectionMatrix();
     };
@@ -744,7 +990,6 @@ export function CombustionSim3D({
     const ro = new ResizeObserver(updateSize);
     ro.observe(container);
 
-    // Smooth interpolated uniform values
     let smoothG = (GRAVITY_REGIMES[simStateRef.current.gravityKey] || GRAVITY_REGIMES['0g']).gValue;
     let smoothWind = simStateRef.current.ventilation;
     let smoothO2 = simStateRef.current.oxygen;
@@ -766,14 +1011,16 @@ export function CombustionSim3D({
       const targetG = (GRAVITY_REGIMES[st.gravityKey] || GRAVITY_REGIMES['0g']).gValue;
       const matCfg = FUEL_MATERIALS[st.materialKey] || FUEL_MATERIALS.pmma;
 
-      // Apply camera preset if changed
       if (!isDragging) {
-        if (st.cameraPreset === 'side') {
+        if (st.cameraPreset === 'iso') {
+          targetYaw += (-0.28 + Math.sin(clockTime * 0.25) * 0.08 - targetYaw) * 0.04;
+          targetPitch += (0.2 - targetPitch) * 0.06;
+        } else if (st.cameraPreset === 'side') {
           targetYaw += (0.0 - targetYaw) * 0.08;
-          targetPitch += (0.06 - targetPitch) * 0.08;
+          targetPitch += (0.04 - targetPitch) * 0.08;
         } else if (st.cameraPreset === 'top') {
           targetYaw += (0.0 - targetYaw) * 0.08;
-          targetPitch += (0.95 - targetPitch) * 0.08;
+          targetPitch += (1.02 - targetPitch) * 0.08;
         }
       }
 
@@ -786,20 +1033,21 @@ export function CombustionSim3D({
       smoothWind += (st.ventilation - smoothWind) * 0.12;
       smoothO2 += (st.oxygen - smoothO2) * 0.12;
 
-      // Update fuel rod material & glowing pyrolysis core
-      fuelMat.color.set(matCfg.sampleColor);
-      fuelMat.emissive.set(
-        st.physics?.isCoolFlame
-          ? '#38bdf8'
-          : smoothG < 0.05 && smoothWind < 0.08
-          ? '#38bdf8'
-          : matCfg.emissiveColor
-      );
-      fuelMat.emissiveIntensity = st.physics?.isExtinguished
-        ? 0.02
-        : 0.25 + (smoothO2 / 100) * 0.55;
+      const isBlueSpherical = smoothG < 0.05 && smoothWind < 0.1;
 
-      // Update flame shader uniforms
+      // Adapt 3D sample geometry scale to material type (rod vs fabric slab)
+      if (matCfg.shapeType === 'slab') {
+        fuelMesh.scale.set(1.15, 0.45, 1.35);
+      } else {
+        fuelMesh.scale.set(1.0, 1.0, 1.0);
+      }
+      fuelMat.color.set(matCfg.sampleColor);
+      fuelMat.emissive.set(isBlueSpherical ? '#38bdf8' : matCfg.emissiveColor);
+      fuelMat.emissiveIntensity = st.physics?.isExtinguished
+        ? 0.04
+        : 0.22 + (smoothO2 / 100) * 0.45;
+
+      // Update volumetric flame shell uniforms
       flameMaterials.forEach((shMat) => {
         shMat.uniforms.uTime.value = clockTime;
         shMat.uniforms.uGravity.value = smoothG;
@@ -809,73 +1057,24 @@ export function CombustionSim3D({
         shMat.uniforms.uExtinguished.value = st.physics?.isExtinguished ? 1.0 : 0.0;
       });
 
-      // Update 3D geodesic reaction boundary cage to match regime
-      boundaryCage.visible = !st.physics?.isExtinguished;
-      const cageScaleY = 1.0 + Math.pow(smoothG, 0.45) * 0.85;
-      const cageScaleX = 1.0 + smoothWind * 1.45;
-      boundaryCage.scale.set(cageScaleX, cageScaleY, 1.0);
-      boundaryCage.position.set(smoothWind * 0.52, Math.pow(smoothG, 0.45) * 0.35, 0);
-      boundaryCage.rotation.y = clockTime * 0.18;
-      boundaryMat.color.set(
-        smoothG < 0.05 && smoothWind < 0.08 ? 0x38bdf8 : 0xff8a58
-      );
-      boundaryMat.opacity = smoothG < 0.05 ? 0.18 : 0.08;
+      // Update GPU Fire & Soot Cloud uniforms
+      cloudMat.uniforms.uTime.value = clockTime;
+      cloudMat.uniforms.uGravity.value = smoothG;
+      cloudMat.uniforms.uAirflow.value = smoothWind;
+      cloudMat.uniforms.uOxygen.value = smoothO2;
+      cloudMat.uniforms.uCoolFlame.value = st.physics?.isCoolFlame ? 1.0 : 0.0;
+      cloudMat.uniforms.uExtinguished.value = st.physics?.isExtinguished ? 1.0 : 0.0;
+      cloudMat.uniforms.uSootScale.value = st.physics?.sootClusterScale || 5.0;
 
-      // Point light color matches flame regime
-      flamePointLight.color.set(
-        smoothG < 0.05 && smoothWind < 0.08 ? 0x38bdf8 : 0xff7b39
-      );
-      flamePointLight.intensity = st.physics?.isExtinguished
-        ? 0.2
-        : 2.4 + (smoothO2 / 100) * 2.2;
+      // Rotate subtle diagnostic gimbal rings
+      gimbalGroup.rotation.z = clockTime * 0.12;
+      gimbalRingMat1.color.set(isBlueSpherical ? 0x38bdf8 : 0xff8a58);
+      floorRingMat.color.set(isBlueSpherical ? 0x38bdf8 : 0xff8a58);
 
-      // Update 3D particles (soot agglomerates + convective wake + airflow streamlines)
-      const posAttr = particleGeo.getAttribute('position');
-      const colAttr = particleGeo.getAttribute('color');
-      // Soot particle visual size scales up in 0g (SAME-R agglomeration discovery)
-      particleMat.size =
-        smoothG < 0.05 && smoothWind < 0.12 ? 0.17 : smoothG < 0.3 ? 0.14 : 0.11;
-
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        const isStreamline = i % 5 === 0;
-        if (!prefersReducedMotion) {
-          pPhases[i] += dt * (isStreamline ? 0.45 + smoothWind * 1.6 : 0.42);
-          if (pPhases[i] >= 1.0 || pPositions[i * 3] > 3.6 || pPositions[i * 3 + 1] > 3.1) {
-            resetParticle(i, false);
-          } else {
-            pPositions[i * 3 + 0] +=
-              (pVelocities[i * 3 + 0] + smoothWind * 3.4) * dt;
-            pPositions[i * 3 + 1] +=
-              (pVelocities[i * 3 + 1] + Math.pow(smoothG, 0.45) * 1.45) * dt;
-            pPositions[i * 3 + 2] += pVelocities[i * 3 + 2] * dt;
-          }
-        }
-
-        const life = 1.0 - pPhases[i];
-        if (isStreamline) {
-          // Cool slate-cyan oxidizer airflow particle
-          const streamIntensity = Math.min(0.65, 0.12 + smoothWind * 1.1) * life;
-          pColors[i * 3 + 0] = 0.35 * streamIntensity;
-          pColors[i * 3 + 1] = 0.72 * streamIntensity;
-          pColors[i * 3 + 2] = 0.95 * streamIntensity;
-        } else if (st.physics?.isExtinguished) {
-          pColors[i * 3 + 0] = 0.2 * life;
-          pColors[i * 3 + 1] = 0.25 * life;
-          pColors[i * 3 + 2] = 0.3 * life;
-        } else if (smoothG < 0.05 && smoothWind < 0.09) {
-          // 0g blue-cyan diffusion & soot cluster particles
-          pColors[i * 3 + 0] = 0.24 * life;
-          pColors[i * 3 + 1] = 0.68 * life;
-          pColors[i * 3 + 2] = 0.98 * life;
-        } else {
-          // Warm glowing ember -> cooling soot particle
-          pColors[i * 3 + 0] = (0.98 * life + 0.35 * (1 - life)) * life;
-          pColors[i * 3 + 1] = (0.54 * life + 0.22 * (1 - life)) * life;
-          pColors[i * 3 + 2] = 0.16 * life * life;
-        }
-      }
-      posAttr.needsUpdate = true;
-      colAttr.needsUpdate = true;
+      flameLight.color.set(isBlueSpherical ? 0x38bdf8 : 0xff7b39);
+      flameLight.intensity = st.physics?.isExtinguished
+        ? 0.25
+        : 2.8 + (smoothO2 / 100) * 2.4;
 
       renderer.render(scene, camera);
     };
@@ -886,23 +1085,20 @@ export function CombustionSim3D({
       cancelAnimationFrame(frameId);
       ro.disconnect();
       canvas.removeEventListener('pointerdown', onPointerDown);
-      canvas.removeEventListener('wheel', onWheel);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
       flameGeo.dispose();
       flameMaterials.forEach((m) => m.dispose());
+      cloudGeo.dispose();
+      cloudMat.dispose();
       fuelGeo.dispose();
       fuelMat.dispose();
       stingGeo.dispose();
       stingMat.dispose();
-      strutGeo.dispose();
-      ringGeo.dispose();
-      ringMat.dispose();
-      boundaryGeo.dispose();
-      boundaryMat.dispose();
-      particleGeo.dispose();
-      particleMat.dispose();
-      spriteTex.dispose();
+      floorRingGeo.dispose();
+      floorRingMat.dispose();
+      gimbalRingGeo1.dispose();
+      gimbalRingMat1.dispose();
       renderer.dispose();
       if (canvas.parentNode === container) {
         container.removeChild(canvas);
@@ -924,32 +1120,22 @@ export function CombustionSim3D({
           aria-label={`3D combustion simulation of ${currentMaterial.name} under ${currentGravity.shortLabel} gravity at ${oxygen}% oxygen`}
         />
 
-        {/* Top-Left HUD: Chamber & Physics Regime Pill */}
+        {/* Top-Left HUD: Active 3D Regime Pill */}
         <div className="c3d-hud-top-left">
           <span className="c3d-regime-pill">
             <span
               className="c3d-regime-dot"
               style={{
                 background:
-                  gravityKey === '0g' && ventilation < 0.09 ? '#38bdf8' : '#ff8a58',
+                  gravityKey === '0g' && ventilation < 0.1 ? '#38bdf8' : '#ff8a58',
               }}
             />
-            {physics.isExtinguished
-              ? 'QUENCHED / BELOW LOI'
-              : physics.isCoolFlame
-              ? 'FLEX COOL-FLAME REGIME (600–800 K)'
-              : gravityKey === '0g' && ventilation < 0.09
-              ? '3D SPHERICAL DIFFUSION FLAME'
-              : ventilation >= 0.13
-              ? '3D FORCED-CONVECTION WAKE CONE'
-              : gravityKey === '1/6g'
-              ? '3D LUNAR PARTIAL-BUOYANCY PLUME'
-              : '3D BUOYANT TEARDROP PLUME'}
+            {physics.regimeTitle}
           </span>
-          <span className="c3d-drag-hint">↻ Drag to orbit 360° · Scroll to zoom</span>
+          <span className="c3d-drag-hint">↻ Drag 3D chamber to orbit 360°</span>
         </div>
 
-        {/* Top-Right HUD: Gravity Badge + Camera View Switcher */}
+        {/* Top-Right HUD: Compact Camera Switcher + Gravity Badge */}
         <div className="c3d-hud-top-right">
           <div className="c3d-cam-pills" role="group" aria-label="3D Camera View">
             {[
@@ -970,11 +1156,25 @@ export function CombustionSim3D({
           <span className="c3d-gravity-badge">{currentGravity.shortLabel}</span>
         </div>
 
-        {/* Bottom-Left HUD: Non-overlapping Material Sample Badge (Fixes 2D label collision!) */}
+        {/* Saffire-III Flashover Alert Pill (High-contrast text, docked cleanly below top bar) */}
+        {physics.flashoverWarning && (
+          <div className="c3d-flashover-banner" role="status">
+            <span className="c3d-flashover-dot" />
+            <span>
+              <strong className="c3d-flashover-strong">
+                Forced convection ({ventilation.toFixed(2)} m/s):
+              </strong>{' '}
+              smoldering transitions to open flashover (NASA Saffire-III / BASS-II).
+            </span>
+          </div>
+        )}
+
+        {/* Bottom-Left HUD: Non-overlapping Material Sample Badge */}
         <div className="c3d-hud-bottom-left">
           <span className="c3d-sample-title">{currentMaterial.name}</span>
           <span className="c3d-sample-sub">
-            {currentMaterial.geometryLabel} · LOI {physics.effectiveLOI}% · {currentMaterial.experimentRef}
+            {currentMaterial.geometryLabel} · LOI {physics.effectiveLOI}% ·{' '}
+            {currentMaterial.experimentRef}
           </span>
         </div>
 
@@ -987,20 +1187,9 @@ export function CombustionSim3D({
             FLOW: <b>{ventilation.toFixed(2)} m/s →</b>
           </span>
         </div>
-
-        {/* Non-overlapping Saffire-III Flashover Alert Banner */}
-        {physics.flashoverWarning && (
-          <div className="c3d-flashover-banner" role="status">
-            <span className="c3d-flashover-dot" />
-            <span>
-              <strong>Forced convection ({ventilation.toFixed(2)} m/s):</strong> smoldering can
-              transition to open flashover (NASA Saffire-III / BASS-II).
-            </span>
-          </div>
-        )}
       </div>
 
-      {/* 5-Column Live Telemetry Strip (Exact match to user's dashboard layout) */}
+      {/* 5-Column Live Telemetry Strip */}
       <div className="c3d-telemetry-strip">
         <div className="c3d-telemetry-cell">
           <span className="c3d-telemetry-label">SPREAD RATE</span>
@@ -1014,7 +1203,7 @@ export function CombustionSim3D({
             className="c3d-telemetry-val"
             style={{
               color:
-                physics.isCoolFlame || (gravityKey === '0g' && ventilation < 0.09)
+                physics.isCoolFlame || (gravityKey === '0g' && ventilation < 0.1)
                   ? '#38bdf8'
                   : '#ff8a58',
             }}
@@ -1047,7 +1236,12 @@ export function CombustionSim3D({
             key={g.id}
             type="button"
             className={`c3d-gravity-btn ${gravityKey === g.id ? 'is-active' : ''}`}
-            onClick={() => setGravityKey(g.id)}
+            onClick={() => {
+              setGravityKey(g.id);
+              logParameterChange(
+                `Gravity switched to ${g.shortLabel} (${g.subLabel}): 3D flame geometry adapted.`
+              );
+            }}
           >
             <strong>{g.shortLabel}</strong>
             <span>{g.subLabel}</span>
@@ -1055,21 +1249,26 @@ export function CombustionSim3D({
         ))}
       </div>
 
-      {/* Fuel Material Selector (PMMA, Cotton Fabric, Silicone Rubber, Nomex III) */}
+      {/* Fuel Material Selector */}
       <div className="c3d-material-grid" role="group" aria-label="Fuel Material">
         {Object.values(FUEL_MATERIALS).map((m) => (
           <button
             key={m.id}
             type="button"
             className={`c3d-material-btn ${materialKey === m.id ? 'is-active' : ''}`}
-            onClick={() => setMaterialKey(m.id)}
+            onClick={() => {
+              setMaterialKey(m.id);
+              logParameterChange(
+                `Fuel sample changed to ${m.shortName} (LOI ${m.loiMicro}% in 0g, Ref: ${m.experimentRef}).`
+              );
+            }}
           >
             {m.shortName}
           </button>
         ))}
       </div>
 
-      {/* Interactive Environmental Sliders: O2Concentration, Cabin Ventilation, Ambient Pressure */}
+      {/* Environmental Sliders */}
       <div className="c3d-sliders-grid">
         <div className="c3d-slider-box">
           <div className="c3d-slider-head">
@@ -1085,7 +1284,13 @@ export function CombustionSim3D({
             step="1"
             value={oxygen}
             aria-label="Oxygen Concentration Percentage"
-            onChange={(e) => setOxygen(Number(e.target.value))}
+            onChange={(e) => {
+              const val = Number(e.target.value);
+              setOxygen(val);
+              logParameterChange(
+                `O₂ updated to ${val}% (PO₂ = ${((val / 100) * pressure).toFixed(2)} psi).`
+              );
+            }}
           />
         </div>
 
@@ -1103,7 +1308,15 @@ export function CombustionSim3D({
             step="0.01"
             value={ventilation}
             aria-label="Cabin Ventilation Speed"
-            onChange={(e) => setVentilation(Number(e.target.value))}
+            onChange={(e) => {
+              const val = Number(e.target.value);
+              setVentilation(val);
+              logParameterChange(
+                `Cabin airflow adjusted to ${val.toFixed(2)} m/s (${
+                  val >= 0.14 ? 'Forced-Convection Wake' : 'Quiescent / Laminar Diffusion'
+                }).`
+              );
+            }}
           />
         </div>
 
@@ -1121,38 +1334,234 @@ export function CombustionSim3D({
             step="0.1"
             value={pressure}
             aria-label="Cabin Ambient Pressure"
-            onChange={(e) => setPressure(Number(e.target.value))}
+            onChange={(e) => {
+              const val = Number(e.target.value);
+              setPressure(val);
+              logParameterChange(
+                `Chamber pressure set to ${val.toFixed(1)} psi (${(val * 6.895).toFixed(0)} kPa).`
+              );
+            }}
           />
         </div>
       </div>
 
-      {/* Concise Physics Note */}
-      <div className="c3d-physics-footnote">
-        <strong>Active Physics Regime ({currentGravity.badge}):</strong> {currentGravity.physicsSummary}
-      </div>
+      {/* Dynamic Situational SI Assessment Report (Automatically adapts to every parameter change!) */}
+      {showReport && (
+        <CombustionSituationalReport
+          gravityKey={gravityKey}
+          materialKey={materialKey}
+          oxygen={oxygen}
+          ventilation={ventilation}
+          pressure={pressure}
+          physics={physics}
+          changeHistory={changeHistory}
+        />
+      )}
     </div>
   );
 }
 
 /* ============================================================================
-   Interactive Multi-Mode Scientific Data Visualizer (for AI Chat & Dashboard)
+   3. Dynamic Situational SI Assessment Report Component
+      Automatically updates engineering metrics, regime analysis & directives
+   ============================================================================ */
+
+export function CombustionSituationalReport({
+  gravityKey = '0g',
+  materialKey = 'pmma',
+  oxygen = 34,
+  ventilation = 0.08,
+  pressure = 4.3,
+  physics: passedPhysics,
+  changeHistory = [],
+}) {
+  const [copiedReport, setCopiedReport] = useState(false);
+
+  const physics =
+    passedPhysics ||
+    computeCombustionPhysics({
+      gravityKey,
+      materialKey,
+      oxygen,
+      ventilation,
+      pressure,
+    });
+
+  const grav = GRAVITY_REGIMES[gravityKey] || GRAVITY_REGIMES['0g'];
+  const mat = FUEL_MATERIALS[materialKey] || FUEL_MATERIALS.pmma;
+
+  const directives = useMemo(() => {
+    const list = [];
+    if (physics.isExtinguished) {
+      list.push(
+        `Oxygen (${oxygen}%) is below the effective Limiting Oxygen Index (${physics.effectiveLOI}% LOI for ${mat.shortName}): flame self-quenches via radiative heat loss.`
+      );
+      list.push(
+        'Maintain inert N₂/CO₂ purge for at least 180s until sample surface cools below 420 K pyrolysis threshold.'
+      );
+    } else if (physics.isCoolFlame) {
+      list.push(
+        `FLEX Cool-Flame Warning: Invisible low-temperature oxidation (${physics.flameTemp} K) persists near ${oxygen}% O₂. Re-introducing fresh air can trigger explosive flash reignition.`
+      );
+      list.push(
+        'Use mid-wave infrared (MWIR) radiometry and maintain CO₂/He dilution blanket before restoring cabin airflow.'
+      );
+    } else {
+      if (physics.flashoverWarning) {
+        list.push(
+          `CRITICAL FLOW ALERT (Saffire-III): Cabin ventilation (${ventilation.toFixed(
+            2
+          )} m/s) is feeding oxidizer into the boundary layer, stretching the flame into a ${physics.spreadRate.toFixed(
+            2
+          )}x wake cone. Throttle HVAC below 0.08 m/s immediately.`
+        );
+      } else {
+        list.push(
+          `Keep cabin ventilation below 0.10 m/s (${ventilation.toFixed(
+            2
+          )} m/s active) to starve the reaction zone of convective oxygen supply.`
+        );
+      }
+
+      if (oxygen >= 30) {
+        list.push(
+          `Elevated Oxygen Envelope (${oxygen}% O₂, PO₂ = ${physics.pO2} psi): Material LOI margin is +${physics.o2Margin}% above extinction. Enforce NASA-STD-6001 material exclusions.`
+        );
+      }
+
+      if (gravityKey === '0g' || gravityKey === '1/6g') {
+        list.push(
+          `SAME-R Smoke Sensor Calibration: Soot agglomerates are ${physics.sootClusterScale}× larger than 1g Earth soot due to reduced buoyancy. Switch optical detectors to low-gravity scatter profile.`
+        );
+      }
+    }
+    return list;
+  }, [physics, oxygen, ventilation, gravityKey, mat]);
+
+  const handleCopyReport = () => {
+    const reportText = [
+      `FLAME-SI SITUATIONAL ENGINEERING REPORT`,
+      `Regime: ${physics.regimeTitle} (${grav.badge})`,
+      `Material: ${mat.name} (${mat.experimentRef})`,
+      `Atmosphere: ${oxygen}% O2 | ${pressure.toFixed(1)} psi (PO2 = ${physics.pO2} psi) | Airflow = ${ventilation.toFixed(2)} m/s`,
+      `Telemetry: Spread Rate = ${physics.spreadRate}x | Flame Temp = ${physics.flameTemp} K | Burn Time = ${physics.burnTime}s | Soot Cluster = ${physics.sootClusterScale}x Earth | Hazard Score = ${physics.hazardScore}/100`,
+      `Directives:\n- ${directives.join('\n- ')}`,
+    ].join('\n');
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(reportText);
+      setCopiedReport(true);
+      setTimeout(() => setCopiedReport(false), 2000);
+    }
+  };
+
+  return (
+    <div className="c3d-situational-report">
+      <div className="c3d-report-header">
+        <div>
+          <span className="c3d-report-eyebrow">
+            LIVE ADAPTIVE SI SITUATION REPORT · REAL-TIME TELEMETRY SYNTHESIS
+          </span>
+          <h5>
+            {physics.regimeTitle} — {mat.shortName} ({oxygen}% O₂ · {ventilation.toFixed(2)} m/s ·{' '}
+            {grav.shortLabel})
+          </h5>
+        </div>
+        <div className="c3d-report-actions">
+          <span
+            className={`c3d-report-risk-pill ${
+              physics.hazardScore >= 75
+                ? 'is-critical'
+                : physics.hazardScore >= 50
+                ? 'is-elevated'
+                : 'is-managed'
+            }`}
+          >
+            SI Hazard Index: {physics.hazardScore}/100
+          </span>
+          <button type="button" className="c3d-report-copy-btn" onClick={handleCopyReport}>
+            {copiedReport ? '✓ Report Copied' : 'Copy SI Report'}
+          </button>
+        </div>
+      </div>
+
+      {/* Quantitative Situational Matrix */}
+      <div className="c3d-report-grid">
+        <div className="c3d-report-metric">
+          <span>O₂ Partial Pressure (PO₂)</span>
+          <strong>
+            {physics.pO2} psi ({(physics.pO2Ratio * 100).toFixed(0)}% of Earth)
+          </strong>
+        </div>
+        <div className="c3d-report-metric">
+          <span>LOI Flammability Margin</span>
+          <strong style={{ color: physics.o2Margin > 0 ? '#ff8a58' : '#34d399' }}>
+            {physics.o2Margin >= 0 ? `+${physics.o2Margin}% above LOI` : `${physics.o2Margin}% (Below LOI)`}
+          </strong>
+        </div>
+        <div className="c3d-report-metric">
+          <span>Soot Agglomeration (SAME-R)</span>
+          <strong>{physics.sootClusterScale}× Terrestrial Diameter</strong>
+        </div>
+        <div className="c3d-report-metric">
+          <span>Convective / Diffusive State</span>
+          <strong>{physics.ventilationRegime}</strong>
+        </div>
+      </div>
+
+      {/* Dynamic Directives List */}
+      <ul className="c3d-report-directives">
+        {directives.map((d, idx) => (
+          <li key={idx}>{d}</li>
+        ))}
+      </ul>
+
+      {/* Live Parameter Change Audit Log */}
+      {changeHistory.length > 0 && (
+        <div className="c3d-report-changelog">
+          <span>LIVE PARAMETER CHANGE LOG:</span>
+          <code>{changeHistory[0]}</code>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================================
+   4. Interactive Multi-Mode Scientific Data Visualizer (4 Dynamic Chart Modes)
    ============================================================================ */
 
 export function CombustionTelemetryChart({
   gravityKey = '0g',
   materialKey = 'pmma',
   oxygen = 34,
-  ventilation = 0.1,
+  ventilation = 0.08,
   pressure = 4.3,
   defaultTab = 'o2-curve',
 }) {
   const [chartTab, setChartTab] = useState(defaultTab);
+
+  useEffect(() => {
+    setChartTab(defaultTab);
+  }, [defaultTab]);
+
   const mat = FUEL_MATERIALS[materialKey] || FUEL_MATERIALS.pmma;
 
-  // Generate O2 vs Flame Spread curves across 0g, 1/6g, 1g
+  const activePhysics = useMemo(
+    () =>
+      computeCombustionPhysics({
+        gravityKey,
+        materialKey,
+        oxygen,
+        ventilation,
+        pressure,
+      }),
+    [gravityKey, materialKey, oxygen, ventilation, pressure]
+  );
+
+  // 1. O2 vs Spread Rate curves
   const o2Points = [14, 18, 21, 28, 34, 50, 70, 100];
-  const buildO2Path = (gKey) => {
-    return o2Points
+  const buildO2Path = (gKey) =>
+    o2Points
       .map((o2Val, idx) => {
         const res = computeCombustionPhysics({
           gravityKey: gKey,
@@ -1161,17 +1570,16 @@ export function CombustionTelemetryChart({
           ventilation,
           pressure,
         });
-        const x = 48 + ((o2Val - 14) / (100 - 14)) * 470;
+        const x = 48 + ((o2Val - 14) / 86) * 470;
         const y = 178 - Math.min(150, (res.spreadRate / 6.5) * 145);
         return `${idx === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
       })
       .join(' ');
-  };
 
-  // Generate Ventilation Velocity vs Flame Spread curve (BASS-II / Saffire-III dome)
+  // 2. Ventilation Velocity vs Spread Rate curves
   const ventPoints = [0.0, 0.03, 0.07, 0.12, 0.18, 0.25, 0.35, 0.45, 0.55];
-  const buildVentPath = (gKey) => {
-    return ventPoints
+  const buildVentPath = (gKey) =>
+    ventPoints
       .map((vVal, idx) => {
         const res = computeCombustionPhysics({
           gravityKey: gKey,
@@ -1185,15 +1593,30 @@ export function CombustionTelemetryChart({
         return `${idx === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
       })
       .join(' ');
-  };
 
-  const activePhysics = computeCombustionPhysics({
-    gravityKey,
-    materialKey,
-    oxygen,
-    ventilation,
-    pressure,
-  });
+  // 3. Time-Series Temperature & Cool-Flame Trajectory (0 - 120s)
+  const timePoints = [0, 10, 25, 45, 65, 85, 105, 120];
+  const buildTimeTempPath = () =>
+    timePoints
+      .map((tSec, idx) => {
+        const x = 48 + (tSec / 120) * 470;
+        let tempK = 300;
+        if (!activePhysics.isExtinguished) {
+          if (tSec <= 12) {
+            tempK = 300 + (activePhysics.flameTemp - 300) * (tSec / 12);
+          } else if (tSec <= activePhysics.burnTime) {
+            tempK = activePhysics.flameTemp - (tSec - 12) * 1.4;
+          } else if (gravityKey === '0g') {
+            // FLEX post-extinction cool-flame plateau (680 K)
+            tempK = 680 - Math.min(280, (tSec - activePhysics.burnTime) * 3.2);
+          } else {
+            tempK = Math.max(320, activePhysics.flameTemp * Math.exp(-(tSec - activePhysics.burnTime) * 0.045));
+          }
+        }
+        const y = 178 - Math.min(150, ((tempK - 300) / 2200) * 145);
+        return `${idx === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+      })
+      .join(' ');
 
   const activeO2X = 48 + ((Math.max(14, Math.min(100, oxygen)) - 14) / 86) * 470;
   const activeO2Y = 178 - Math.min(150, (activePhysics.spreadRate / 6.5) * 145);
@@ -1205,209 +1628,333 @@ export function CombustionTelemetryChart({
     <div className="c3d-viz-card">
       <div className="c3d-viz-header">
         <div>
-          <span className="c3d-viz-eyebrow">INTERACTIVE TELEMETRY VISUALIZER · NASA PSI</span>
+          <span className="c3d-viz-eyebrow">
+            DYNAMIC SITUATIONAL TELEMETRY VISUALIZER · LIVE PARAMETER SYNC
+          </span>
           <h4>
             {chartTab === 'o2-curve'
-              ? `Oxygen Flammability & Spread Rate Curve (${mat.shortName})`
+              ? `Oxygen Flammability & Spread Rate Curve (${mat.shortName} · ${pressure.toFixed(1)} psi)`
               : chartTab === 'airflow-curve'
-              ? 'Cabin Ventilation Flashover & Quench Envelope (Saffire-III / BASS-II)'
-              : 'Two-Stage Cool-Flame Temperature & Soot Agglomeration Profile (FLEX / SAME-R)'}
+              ? `Cabin Ventilation Flashover Envelope (${oxygen}% O₂ · ${gravityKey})`
+              : chartTab === 'time-series'
+              ? `Temporal Burn & FLEX Cool-Flame Temperature Trajectory (0–120s)`
+              : `Multi-Axis Mission Fire Hazard Breakdown (${mat.shortName} @ ${oxygen}% O₂)`}
           </h4>
         </div>
         <div className="c3d-viz-tabs" role="tablist">
-          <GlassSurface
-            as="button"
+          <button
             type="button"
             className={chartTab === 'o2-curve' ? 'is-active' : ''}
             onClick={() => setChartTab('o2-curve')}
-            borderRadius={8}
           >
             O₂ vs Spread
-          </GlassSurface>
-          <GlassSurface
-            as="button"
+          </button>
+          <button
             type="button"
             className={chartTab === 'airflow-curve' ? 'is-active' : ''}
             onClick={() => setChartTab('airflow-curve')}
-            borderRadius={8}
           >
-            Airflow Envelope
-          </GlassSurface>
-          <GlassSurface
-            as="button"
+            Airflow Dome
+          </button>
+          <button
             type="button"
-            className={chartTab === 'cool-soot' ? 'is-active' : ''}
-            onClick={() => setChartTab('cool-soot')}
-            borderRadius={8}
+            className={chartTab === 'time-series' ? 'is-active' : ''}
+            onClick={() => setChartTab('time-series')}
           >
-            Cool Flame & Soot
-          </GlassSurface>
+            Temp Timeline
+          </button>
+          <button
+            type="button"
+            className={chartTab === 'hazard-radar' ? 'is-active' : ''}
+            onClick={() => setChartTab('hazard-radar')}
+          >
+            Hazard Matrix
+          </button>
         </div>
       </div>
 
       {chartTab === 'o2-curve' && (
         <div className="c3d-viz-body">
-          <svg viewBox="0 0 550 215" className="c3d-viz-svg" role="img" aria-label="Oxygen concentration versus flame spread rate chart">
-            {/* Horizontal grid lines */}
+          <svg
+            viewBox="0 0 550 215"
+            className="c3d-viz-svg"
+            role="img"
+            aria-label="Oxygen concentration versus flame spread rate chart"
+          >
             {[40, 85, 130, 178].map((y, idx) => (
               <g key={y}>
-                <line x1="48" y1={y} x2="520" y2={y} stroke="#e1ecf6" strokeDasharray="3 3" />
-                <text x="40" y={y + 4} textAnchor="end" fill="#5c748f" fontSize="10" fontWeight="600">
+                <line
+                  x1="48"
+                  y1={y}
+                  x2="520"
+                  y2={y}
+                  stroke="rgba(255,255,255,0.07)"
+                  strokeDasharray="3 3"
+                />
+                <text x="40" y={y + 4} textAnchor="end" fill="#7d8983" fontSize="10">
                   {['6.0x', '4.0x', '2.0x', '0.0x'][idx]}
                 </text>
               </g>
             ))}
 
-            {/* LOI Threshold Vertical Marker */}
             {(() => {
               const loiX = 48 + ((activePhysics.effectiveLOI - 14) / 86) * 470;
               return (
                 <g>
-                  <line x1={loiX} y1="26" x2={loiX} y2="178" stroke="#c9272d" strokeWidth="1.5" strokeDasharray="4 3" />
-                  <text x={loiX + 5} y="36" fill="#c9272d" fontSize="9.5" fontWeight="700">
+                  <line
+                    x1={loiX}
+                    y1="26"
+                    x2={loiX}
+                    y2="178"
+                    stroke="#ef4444"
+                    strokeWidth="1.2"
+                    strokeDasharray="4 3"
+                  />
+                  <text x={loiX + 5} y="36" fill="#f87171" fontSize="9.5" fontWeight="600">
                     LOI Limit ({activePhysics.effectiveLOI}% O₂)
                   </text>
                 </g>
               );
             })()}
 
-            {/* 3 Gravity Curves */}
-            <path d={buildO2Path('1g')} fill="none" stroke="#64748b" strokeWidth="2" strokeDasharray="4 3" />
-            <path d={buildO2Path('1/6g')} fill="none" stroke="#c9272d" strokeWidth="2.5" />
-            <path d={buildO2Path('0g')} fill="none" stroke="#0284c7" strokeWidth="2.5" />
+            <path d={buildO2Path('1g')} fill="none" stroke="#94a3b8" strokeWidth="2" strokeDasharray="4 3" />
+            <path d={buildO2Path('1/6g')} fill="none" stroke="#ff8a58" strokeWidth="2.5" />
+            <path d={buildO2Path('0g')} fill="none" stroke="#38bdf8" strokeWidth="2.5" />
 
-            {/* Current Operating Point Cursor */}
-            <line x1={activeO2X} y1="26" x2={activeO2X} y2="178" stroke="#94a3b8" strokeDasharray="3 3" strokeWidth="1" />
+            <line x1={activeO2X} y1="26" x2={activeO2X} y2="178" stroke="rgba(255,255,255,0.28)" strokeWidth="1" />
             <circle
               cx={activeO2X}
               cy={activeO2Y}
               r="6"
-              fill={gravityKey === '0g' ? '#0284c7' : '#c9272d'}
-              stroke="#ffffff"
-              strokeWidth="2.5"
+              fill={gravityKey === '0g' ? '#38bdf8' : '#ff8a58'}
+              stroke="#0d1213"
+              strokeWidth="2"
             />
-            <rect x={Math.min(410, Math.max(52, activeO2X - 55))} y={Math.max(18, activeO2Y - 32)} width="118" height="22" rx="6" fill="#102b4e" stroke="#164f91" />
-            <text x={Math.min(469, Math.max(111, activeO2X + 4))} y={Math.max(33, activeO2Y - 17)} textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="700">
+            <rect
+              x={Math.min(410, Math.max(52, activeO2X - 55))}
+              y={Math.max(18, activeO2Y - 32)}
+              width="118"
+              height="22"
+              rx="5"
+              fill="#161f22"
+              stroke="rgba(255,138,88,0.45)"
+            />
+            <text
+              x={Math.min(469, Math.max(111, activeO2X + 4))}
+              y={Math.max(33, activeO2Y - 17)}
+              textAnchor="middle"
+              fill="#f7f3ed"
+              fontSize="10"
+              fontWeight="700"
+            >
               {oxygen}% O₂ → {activePhysics.spreadRate}x
             </text>
 
-            {/* X-axis labels */}
             {[14, 21, 34, 50, 75, 100].map((val) => {
               const x = 48 + ((val - 14) / 86) * 470;
               return (
-                <text key={val} x={x} y="198" textAnchor="middle" fill="#5c748f" fontSize="10" fontWeight="600">
+                <text key={val} x={x} y="198" textAnchor="middle" fill="#8b9690" fontSize="10">
                   {val}% O₂
                 </text>
               );
             })}
           </svg>
           <div className="c3d-viz-legend">
-            <span><i style={{ background: '#0284c7' }} /> 0g Microgravity</span>
-            <span><i style={{ background: '#c9272d' }} /> 1/6g Lunar Base</span>
-            <span><i style={{ background: '#64748b' }} /> 1g Earth Baseline</span>
+            <span>
+              <i style={{ background: '#38bdf8' }} /> 0g Microgravity
+            </span>
+            <span>
+              <i style={{ background: '#ff8a58' }} /> 1/6g Lunar Base
+            </span>
+            <span>
+              <i style={{ background: '#94a3b8' }} /> 1g Earth Baseline
+            </span>
           </div>
         </div>
       )}
 
       {chartTab === 'airflow-curve' && (
         <div className="c3d-viz-body">
-          <svg viewBox="0 0 550 215" className="c3d-viz-svg" role="img" aria-label="Cabin ventilation velocity versus flame spread chart">
-            {/* Flashover hazard zone shading (0.10 to 0.35 m/s) */}
+          <svg
+            viewBox="0 0 550 215"
+            className="c3d-viz-svg"
+            role="img"
+            aria-label="Cabin ventilation velocity versus flame spread chart"
+          >
             <rect
-              x={48 + (0.1 / 0.55) * 470}
+              x={48 + (0.14 / 0.55) * 470}
               y="26"
-              width={((0.35 - 0.1) / 0.55) * 470}
+              width={((0.36 - 0.14) / 0.55) * 470}
               height="152"
-              fill="rgba(201, 39, 45, 0.08)"
+              fill="rgba(239, 68, 68, 0.09)"
             />
-            <text x={48 + (0.225 / 0.55) * 470} y="40" textAnchor="middle" fill="#c9272d" fontSize="9.5" fontWeight="700">
-              Saffire-III Forced-Convection Flashover Zone (0.10–0.35 m/s)
+            <text
+              x={48 + (0.25 / 0.55) * 470}
+              y="39"
+              textAnchor="middle"
+              fill="#f87171"
+              fontSize="9.5"
+              fontWeight="600"
+            >
+              Saffire-III Forced-Convection Flashover Zone (0.14–0.36 m/s)
             </text>
 
             {[40, 85, 130, 178].map((y, idx) => (
               <g key={y}>
-                <line x1="48" y1={y} x2="520" y2={y} stroke="#e1ecf6" strokeDasharray="3 3" />
-                <text x="40" y={y + 4} textAnchor="end" fill="#5c748f" fontSize="10" fontWeight="600">
+                <line
+                  x1="48"
+                  y1={y}
+                  x2="520"
+                  y2={y}
+                  stroke="rgba(255,255,255,0.07)"
+                  strokeDasharray="3 3"
+                />
+                <text x="40" y={y + 4} textAnchor="end" fill="#7d8983" fontSize="10">
                   {['5.0x', '3.5x', '1.8x', '0.0x'][idx]}
                 </text>
               </g>
             ))}
 
-            <path d={buildVentPath('0g')} fill="none" stroke="#0284c7" strokeWidth="2.5" />
-            <path d={buildVentPath('1/6g')} fill="none" stroke="#c9272d" strokeWidth="2.5" />
+            <path d={buildVentPath('0g')} fill="none" stroke="#38bdf8" strokeWidth="2.5" />
+            <path d={buildVentPath('1/6g')} fill="none" stroke="#ff8a58" strokeWidth="2.5" />
 
-            <line x1={activeVentX} y1="26" x2={activeVentX} y2="178" stroke="#94a3b8" strokeDasharray="3 3" strokeWidth="1" />
-            <circle cx={activeVentX} cy={activeVentY} r="6" fill="#c9272d" stroke="#ffffff" strokeWidth="2.5" />
-            <rect x={Math.min(410, Math.max(52, activeVentX - 60))} y={Math.max(18, activeVentY - 32)} width="124" height="22" rx="6" fill="#102b4e" stroke="#164f91" />
-            <text x={Math.min(472, Math.max(114, activeVentX + 2))} y={Math.max(33, activeVentY - 17)} textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="700">
+            <line
+              x1={activeVentX}
+              y1="26"
+              x2={activeVentX}
+              y2="178"
+              stroke="rgba(255,255,255,0.28)"
+              strokeWidth="1"
+            />
+            <circle cx={activeVentX} cy={activeVentY} r="6" fill="#ff8a58" stroke="#0d1213" strokeWidth="2" />
+            <text
+              x={Math.min(475, Math.max(95, activeVentX))}
+              y={Math.max(36, activeVentY - 12)}
+              textAnchor="middle"
+              fill="#f7f3ed"
+              fontSize="10"
+              fontWeight="700"
+            >
               {ventilation.toFixed(2)} m/s ({activePhysics.spreadRate}x)
             </text>
 
             {[0, 0.1, 0.2, 0.3, 0.4, 0.55].map((val) => {
               const x = 48 + (val / 0.55) * 470;
               return (
-                <text key={val} x={x} y="198" textAnchor="middle" fill="#5c748f" fontSize="10" fontWeight="600">
+                <text key={val} x={x} y="198" textAnchor="middle" fill="#8b9690" fontSize="10">
                   {val.toFixed(2)} m/s
                 </text>
               );
             })}
           </svg>
           <div className="c3d-viz-legend">
-            <span><i style={{ background: '#0284c7' }} /> 0g Microgravity Flow Response</span>
-            <span><i style={{ background: '#c9272d' }} /> 1/6g Lunar Partial-Gravity Flow</span>
+            <span>
+              <i style={{ background: '#38bdf8' }} /> 0g Microgravity Flow Response
+            </span>
+            <span>
+              <i style={{ background: '#ff8a58' }} /> 1/6g Lunar Partial-Gravity Flow
+            </span>
           </div>
         </div>
       )}
 
-      {chartTab === 'cool-soot' && (
+      {chartTab === 'time-series' && (
+        <div className="c3d-viz-body">
+          <svg
+            viewBox="0 0 550 215"
+            className="c3d-viz-svg"
+            role="img"
+            aria-label="Flame temperature timeline and cool-flame plateau chart"
+          >
+            {[40, 85, 130, 178].map((y, idx) => (
+              <g key={y}>
+                <line
+                  x1="48"
+                  y1={y}
+                  x2="520"
+                  y2={y}
+                  stroke="rgba(255,255,255,0.07)"
+                  strokeDasharray="3 3"
+                />
+                <text x="40" y={y + 4} textAnchor="end" fill="#7d8983" fontSize="10">
+                  {['2400K', '1700K', '1000K', '300K'][idx]}
+                </text>
+              </g>
+            ))}
+
+            {/* FLEX Cool-Flame Band (600 - 800 K) */}
+            <rect x="48" y="138" width="472" height="20" fill="rgba(56, 189, 248, 0.09)" />
+            <text x="514" y="151" textAnchor="end" fill="#38bdf8" fontSize="9.5" fontWeight="600">
+              FLEX Cool-Flame Zone (600–800 K)
+            </text>
+
+            <path
+              d={buildTimeTempPath()}
+              fill="none"
+              stroke={gravityKey === '0g' ? '#38bdf8' : '#ff8a58'}
+              strokeWidth="2.8"
+            />
+
+            {[0, 20, 40, 60, 80, 100, 120].map((sec) => {
+              const x = 48 + (sec / 120) * 470;
+              return (
+                <text key={sec} x={x} y="198" textAnchor="middle" fill="#8b9690" fontSize="10">
+                  t = {sec}s
+                </text>
+              );
+            })}
+          </svg>
+          <div className="c3d-viz-legend">
+            <span>
+              <i style={{ background: gravityKey === '0g' ? '#38bdf8' : '#ff8a58' }} /> Active Peak Temp:{' '}
+              {activePhysics.flameTemp} K (Burn Duration: {activePhysics.burnTime}s)
+            </span>
+          </div>
+        </div>
+      )}
+
+      {chartTab === 'hazard-radar' && (
         <div className="c3d-viz-body c3d-viz-bars">
-          <div className="c3d-bar-group">
-            <div className="c3d-bar-head">
-              <span>Hot-Flame Reaction Zone (CH* / OH* Visible Emission)</span>
-              <strong>{activePhysics.flameTemp} K</strong>
+          {[
+            {
+              label: 'Ignition & Oxidation Susceptibility (PO₂ & LOI Margin)',
+              val: activePhysics.radarMetrics.ignitionRisk,
+              col: 'linear-gradient(90deg, #ff8a58, #ef4444)',
+            },
+            {
+              label: `Flame Spread Velocity Index (${activePhysics.spreadRate}x Baseline)`,
+              val: activePhysics.radarMetrics.spreadVelocity,
+              col: 'linear-gradient(90deg, #fbbf24, #ff8a58)',
+            },
+            {
+              label: `SAME-R Soot Agglomeration & Sensor Obscuration (${activePhysics.sootClusterScale}× Earth)`,
+              val: activePhysics.radarMetrics.sootObscuration,
+              col: 'linear-gradient(90deg, #38bdf8, #818cf8)',
+            },
+            {
+              label: `Forced-Convection Flashover Potential (${ventilation.toFixed(2)} m/s)`,
+              val: activePhysics.radarMetrics.flashoverHazard,
+              col: 'linear-gradient(90deg, #f97316, #ef4444)',
+            },
+            {
+              label: 'Suppression & Cool-Flame Reignition Complexity (FLEX)',
+              val: activePhysics.radarMetrics.suppressionDifficulty,
+              col: 'linear-gradient(90deg, #34d399, #38bdf8)',
+            },
+          ].map((item, idx) => (
+            <div key={idx} className="c3d-bar-group">
+              <div className="c3d-bar-head">
+                <span>{item.label}</span>
+                <strong>{item.val}/100</strong>
+              </div>
+              <div className="c3d-bar-track">
+                <div
+                  className="c3d-bar-fill"
+                  style={{ width: `${item.val}%`, background: item.col }}
+                />
+              </div>
             </div>
-            <div className="c3d-bar-track">
-              <div
-                className="c3d-bar-fill"
-                style={{
-                  width: `${Math.min(100, (activePhysics.flameTemp / 2300) * 100)}%`,
-                  background: 'linear-gradient(90deg, #ff8a58, #fde047)',
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="c3d-bar-group">
-            <div className="c3d-bar-head">
-              <span>FLEX Post-Extinction Cool-Flame Secondary Oxidation Plateau</span>
-              <strong>680 K (Invisible Reignition Hazard)</strong>
-            </div>
-            <div className="c3d-bar-track">
-              <div
-                className="c3d-bar-fill"
-                style={{
-                  width: '34%',
-                  background: 'linear-gradient(90deg, #38bdf8, #818cf8)',
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="c3d-bar-group">
-            <div className="c3d-bar-head">
-              <span>SAME-R Soot Agglomerate Diameter vs. Earth 1g</span>
-              <strong>{activePhysics.sootClusterScale}× Larger Clusters</strong>
-            </div>
-            <div className="c3d-bar-track">
-              <div
-                className="c3d-bar-fill"
-                style={{
-                  width: `${Math.min(100, (activePhysics.sootClusterScale / 10) * 100)}%`,
-                  background: 'linear-gradient(90deg, #34d399, #38bdf8)',
-                }}
-              />
-            </div>
-          </div>
+          ))}
         </div>
       )}
     </div>
