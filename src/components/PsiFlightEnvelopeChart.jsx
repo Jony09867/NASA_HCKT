@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import './PsiFlightEnvelopeChart.css';
 
 // 58 Curated Empirical NASA PSI Flight Test Records (BASS-II, Saffire-I/II/III, ACME, FLEX)
@@ -69,11 +69,15 @@ export const EMPIRICAL_SCATTER_POINTS = [
 
 export function PsiFlightEnvelopeChart({
   oxygen = 34,
-  pressure = 4.3, // in psi
-  gravityKey = '0g',
+  pressure = 10.2, // in psi
+  gravityKey = '1/6g',
   onSelectTestPoint,
 }) {
   const [hoveredPoint, setHoveredPoint] = useState(null);
+  const [radarMode, setRadarMode] = useState(true);
+  const [radarSpeed, setRadarSpeed] = useState(1);
+  const [isPaused, setIsPaused] = useState(false);
+  const [sweepAngle, setSweepAngle] = useState(0);
 
   const currentPKpa = useMemo(() => Number((pressure * 6.89476).toFixed(1)), [pressure]);
 
@@ -113,6 +117,23 @@ export function PsiFlightEnvelopeChart({
   const targetX = mapX(oxygen);
   const targetY = mapY(currentPKpa);
 
+  // Radar Animation Loop (Smooth 60fps sweep)
+  useEffect(() => {
+    if (!radarMode || isPaused) return;
+    let last = performance.now();
+    let animId;
+
+    const frame = (now) => {
+      const dt = (now - last) / 1000;
+      last = now;
+      setSweepAngle((prev) => (prev + dt * 64 * radarSpeed) % 360);
+      animId = requestAnimationFrame(frame);
+    };
+
+    animId = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(animId);
+  }, [radarMode, radarSpeed, isPaused]);
+
   // Status computation for active target point
   const isLunar = gravityKey === '1/6g' || (oxygen >= 28 && oxygen <= 34 && currentPKpa >= 60 && currentPKpa <= 80);
   const isMars = gravityKey === '3/8g';
@@ -124,11 +145,11 @@ export function PsiFlightEnvelopeChart({
 
   if (gravityKey === '1/6g') {
     statusLabel = `Lunar habitat: ${oxygen}%, ${currentPKpa} kPa`;
-    statusSub = 'at 0.16 g: no PSI test';
+    statusSub = 'at 0.16 g: no PSI flight test';
     isGap = true;
   } else if (isMars) {
     statusLabel = `Mars habitat: ${oxygen}%, ${currentPKpa} kPa`;
-    statusSub = 'at 0.38 g: no PSI test';
+    statusSub = 'at 0.38 g: no PSI flight test';
     isGap = true;
   } else if (oxygen > 40 || currentPKpa < 50 || currentPKpa > 500) {
     statusLabel = `Target: ${oxygen}%, ${currentPKpa} kPa`;
@@ -143,35 +164,131 @@ export function PsiFlightEnvelopeChart({
   const pTicks = [50, 70, 100, 200, 300, 500];
   const o2Ticks = [10, 15, 20, 25, 30, 35, 40];
 
+  // Radar Geometry Calculations (Concentric rings & spokes centered on Target)
+  const RADAR_RINGS = [45, 95, 155, 225, 310];
+  const RADAR_SPOKES = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+
+  // Radar Sweep Ray & Phosphor Trail Fan geometry
+  const maxRadarR = 340;
+  const leadRad = (sweepAngle * Math.PI) / 180;
+  const leadX = targetX + maxRadarR * Math.cos(leadRad);
+  const leadY = targetY + maxRadarR * Math.sin(leadRad);
+
+  // Phosphor trail slices behind the leading beam
+  const TRAIL_SLICES = [
+    { spanDeg: 8, opacity: 0.24 },
+    { spanDeg: 18, opacity: 0.16 },
+    { spanDeg: 32, opacity: 0.10 },
+    { spanDeg: 52, opacity: 0.05 },
+    { spanDeg: 75, opacity: 0.02 },
+  ];
+
   return (
     <div className="psi-env-container">
+      {/* Header & Radar Control HUD */}
       <div className="psi-env-topbar">
         <div>
-          <span className="psi-env-badge">NASA PHYSICAL SCIENCES INFORMATICS (PSI) AUDIT</span>
-          <h4 className="psi-env-title">Microgravity Combustion Envelope & Mission Gap Map</h4>
+          <div className="psi-badge-row">
+            <span className="psi-env-badge">NASA PHYSICAL SCIENCES INFORMATICS (PSI) AUDIT</span>
+            <span className={`psi-radar-mode-tag ${radarMode ? 'is-active' : ''}`}>
+              {radarMode ? '✦ RADAR SCAN: ACTIVE' : 'RADAR: STANDBY'}
+            </span>
+          </div>
+          <h4 className="psi-env-title">Microgravity Combustion Envelope & Mission Radar Gap Map</h4>
           <p className="psi-env-sub">
-            Empirical PSI flight test distribution (BASS-II, Saffire, FLEX, ACME) vs. Artemis Lunar Habitat (30% O₂, 70.3 kPa).
+            Empirical PSI flight test distribution (BASS-II, Saffire, FLEX, ACME) scanned against Artemis Lunar Habitat
+            ({oxygen}% O₂, {currentPKpa} kPa).
           </p>
         </div>
-        <div className="psi-env-stats">
-          <div className="psi-stat-chip">
-            <span>PSI Flight Runs</span>
-            <strong>1,450</strong>
+
+        <div className="psi-env-right-panel">
+          {/* Radar Mode Toggles */}
+          <div className="psi-radar-controls" role="group" aria-label="Radar scan controls">
+            <button
+              type="button"
+              className={`psi-ctrl-btn ${radarMode ? 'is-active' : ''}`}
+              onClick={() => setRadarMode(!radarMode)}
+              title="Toggle Live Aerospace Radar Sweep"
+            >
+              ✦ Radar Sweep
+            </button>
+            {radarMode && (
+              <>
+                <button
+                  type="button"
+                  className={`psi-ctrl-btn ${isPaused ? 'is-paused' : ''}`}
+                  onClick={() => setIsPaused(!isPaused)}
+                  title={isPaused ? 'Resume radar sweep' : 'Pause radar sweep'}
+                >
+                  {isPaused ? '▶ Play' : '⏸ Pause'}
+                </button>
+                <button
+                  type="button"
+                  className={`psi-ctrl-btn ${radarSpeed === 2 ? 'is-active' : ''}`}
+                  onClick={() => setRadarSpeed(radarSpeed === 1 ? 2 : 1)}
+                  title="Toggle sweep speed"
+                >
+                  {radarSpeed}×
+                </button>
+              </>
+            )}
           </div>
-          <div className="psi-stat-chip">
-            <span>Lunar 0.16g Tests</span>
-            <strong className="psi-gap-val">0 (Data Gap)</strong>
+
+          <div className="psi-env-stats">
+            <div className="psi-stat-chip">
+              <span>PSI Flight Runs</span>
+              <strong>1,450</strong>
+            </div>
+            <div className="psi-stat-chip">
+              <span>Lunar 0.16g Tests</span>
+              <strong className="psi-gap-val">0 (Data Gap)</strong>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Live Radar Scope HUD Readout */}
+      {radarMode && (
+        <div className="psi-radar-hud-bar">
+          <div className="psi-hud-item">
+            <span className="psi-hud-label">BEARING:</span>
+            <strong className="psi-hud-val">{Math.round(sweepAngle)}° AZ</strong>
+          </div>
+          <div className="psi-hud-item">
+            <span className="psi-hud-label">SCAN RANGE:</span>
+            <strong className="psi-hud-val">50–500 kPa · 10–40% O₂</strong>
+          </div>
+          <div className="psi-hud-item">
+            <span className="psi-hud-label">CONTACTS DETECTED:</span>
+            <strong className="psi-hud-val">58 FLIGHT RUNS</strong>
+          </div>
+          <div className="psi-hud-item highlight-gap">
+            <span className="psi-hud-label">LUNAR 0.16g SECTOR:</span>
+            <strong className="psi-hud-val gap-blink">NO RADAR ECHO (UNTESTED GAP)</strong>
+          </div>
+        </div>
+      )}
+
       <div className="psi-env-svg-wrap">
         <svg
           viewBox={`0 0 ${W} ${H}`}
-          className="psi-env-svg"
+          className={`psi-env-svg ${radarMode ? 'is-radar-active' : ''}`}
           role="img"
-          aria-label="NASA PSI Microgravity Envelope: Pressure versus Oxygen Scatter Plot"
+          aria-label="NASA PSI Microgravity Envelope: Pressure versus Oxygen Radar Scatter Plot"
         >
+          <defs>
+            {/* Plot area clip path */}
+            <clipPath id="psi-plot-clip">
+              <rect x={margin.left} y={margin.top} width={plotW} height={plotH} />
+            </clipPath>
+
+            {/* Phosphor Glow Filter */}
+            <filter id="radar-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
           {/* Background Grid Lines (Horizontal Pressure) */}
           {pTicks.map((pVal) => {
             const y = mapY(pVal);
@@ -229,26 +346,111 @@ export function PsiFlightEnvelopeChart({
             Microgravity envelope (PSI)
           </text>
 
-          {/* Empirical Scatter Points */}
+          {/* =================================================================
+              RADAR SCOPE VISUAL ELEMENTS (Scoped inside clipPath)
+              ================================================================= */}
+          {radarMode && (
+            <g clipPath="url(#psi-plot-clip)" className="psi-radar-scope-layer">
+              {/* Concentric Range Rings radiating from Target */}
+              {RADAR_RINGS.map((radius, idx) => (
+                <circle
+                  key={`radar-ring-${idx}`}
+                  cx={targetX}
+                  cy={targetY}
+                  r={radius}
+                  className="psi-radar-range-ring"
+                />
+              ))}
+
+              {/* Radial Azimuth Spokes */}
+              {RADAR_SPOKES.map((deg) => {
+                const rad = (deg * Math.PI) / 180;
+                const spkX = targetX + maxRadarR * Math.cos(rad);
+                const spkY = targetY + maxRadarR * Math.sin(rad);
+                return (
+                  <line
+                    key={`radar-spoke-${deg}`}
+                    x1={targetX}
+                    y1={targetY}
+                    x2={spkX}
+                    y2={spkY}
+                    className="psi-radar-azimuth-spoke"
+                  />
+                );
+              })}
+
+              {/* Phosphor Afterglow Trail Fan Slices */}
+              {TRAIL_SLICES.map((slice, i) => {
+                const trailRad = ((sweepAngle - slice.spanDeg) * Math.PI) / 180;
+                const tx = targetX + maxRadarR * Math.cos(trailRad);
+                const ty = targetY + maxRadarR * Math.sin(trailRad);
+                const d = `M ${targetX} ${targetY} L ${leadX} ${leadY} A ${maxRadarR} ${maxRadarR} 0 0 0 ${tx} ${ty} Z`;
+                return (
+                  <path
+                    key={`trail-${i}`}
+                    d={d}
+                    fill="#0284c7"
+                    opacity={slice.opacity}
+                    className="psi-radar-trail-fan"
+                  />
+                );
+              })}
+
+              {/* Leading High-Intensity Radar Sweep Beam */}
+              <line
+                x1={targetX}
+                y1={targetY}
+                x2={leadX}
+                y2={leadY}
+                className="psi-radar-sweep-beam"
+                filter="url(#radar-glow)"
+              />
+            </g>
+          )}
+
+          {/* Empirical Scatter Points with Radar Ping Resonance */}
           {EMPIRICAL_SCATTER_POINTS.map((pt) => {
             const cx = mapX(pt.o2);
             const cy = mapY(pt.pKpa);
             const isSolid = pt.type === 'solid';
             const isHovered = hoveredPoint?.id === pt.id;
 
+            // Compute angular distance between Radar Beam and this data point
+            const dx = cx - targetX;
+            const dy = cy - targetY;
+            const ptAngle = ((Math.atan2(dy, dx) * 180) / Math.PI + 360) % 360;
+            const diff = (sweepAngle - ptAngle + 360) % 360;
+            const isPinged = radarMode && diff < 42;
+            const pingFactor = isPinged ? 1 - diff / 42 : 0;
+
             return (
-              <circle
-                key={pt.id}
-                cx={cx}
-                cy={cy}
-                r={isHovered ? 5.5 : 3.6}
-                className={`psi-scatter-dot ${isSolid ? 'is-solid' : 'is-fluid'} ${
-                  isHovered ? 'is-hovered' : ''
-                }`}
-                onMouseEnter={() => setHoveredPoint(pt)}
-                onMouseLeave={() => setHoveredPoint(null)}
-                onClick={() => onSelectTestPoint && onSelectTestPoint(pt)}
-              />
+              <g key={pt.id} className="psi-point-group">
+                {/* Expanding Radar Echo Ping Ring */}
+                {isPinged && (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={4 + (1 - pingFactor) * 11}
+                    className="psi-radar-echo-ping"
+                    style={{
+                      opacity: pingFactor * 0.9,
+                      stroke: isSolid ? '#0284c7' : '#0ea5e9',
+                    }}
+                  />
+                )}
+
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={isHovered ? 6.5 : isPinged ? 4.8 : 3.6}
+                  className={`psi-scatter-dot ${isSolid ? 'is-solid' : 'is-fluid'} ${
+                    isHovered ? 'is-hovered' : ''
+                  } ${isPinged ? 'is-ping-illuminated' : ''}`}
+                  onMouseEnter={() => setHoveredPoint(pt)}
+                  onMouseLeave={() => setHoveredPoint(null)}
+                  onClick={() => onSelectTestPoint && onSelectTestPoint(pt)}
+                />
+              </g>
             );
           })}
 
@@ -268,21 +470,31 @@ export function PsiFlightEnvelopeChart({
             className="psi-crosshair-line"
           />
 
-          {/* Active Target Reticle & Animated Pulsing Ring */}
+          {/* Active Target Reticle & Radar Brackets */}
           <circle cx={targetX} cy={targetY} r="10" className="psi-target-pulse" />
           <circle cx={targetX} cy={targetY} r="5" className="psi-target-ring" />
           <circle cx={targetX} cy={targetY} r="2.2" className="psi-target-center" />
 
+          {/* Rotating Target Acquisition Brackets in Radar Mode */}
+          {radarMode && (
+            <g transform={`rotate(${sweepAngle * 0.5}, ${targetX}, ${targetY})`} className="psi-target-brackets">
+              <path d={`M ${targetX - 12} ${targetY - 6} L ${targetX - 12} ${targetY - 12} L ${targetX - 6} ${targetY - 12}`} />
+              <path d={`M ${targetX + 6} ${targetY - 12} L ${targetX + 12} ${targetY - 12} L ${targetX + 12} ${targetY - 6}`} />
+              <path d={`M ${targetX + 12} ${targetY + 6} L ${targetX + 12} ${targetY + 12} L ${targetX + 6} ${targetY + 12}`} />
+              <path d={`M ${targetX - 6} ${targetY + 12} L ${targetX - 12} ${targetY + 12} L ${targetX - 12} ${targetY + 6}`} />
+            </g>
+          )}
+
           {/* Crosshair Target Label Box */}
           <g
             transform={`translate(${
-              targetX > W - 180 ? targetX - 170 : targetX + 12
-            }, ${targetY > margin.top + plotH - 30 ? targetY - 26 : targetY + 12})`}
+              targetX > W - 180 ? targetX - 170 : targetX + 14
+            }, ${targetY > margin.top + plotH - 30 ? targetY - 26 : targetY + 14})`}
           >
             <rect
               x="0"
               y="0"
-              width="162"
+              width="164"
               height="28"
               rx="4"
               className={`psi-target-card ${isGap ? 'is-gap-card' : ''}`}
@@ -402,9 +614,9 @@ export function PsiFlightEnvelopeChart({
           </span>
         </div>
         <div className="psi-takeaway-box">
-          <strong>Key Scientific Finding:</strong> Artemis Lunar Habitat operates at 30% O₂ and 70.3 kPa (0.16g). 
+          <strong>Key Scientific Finding:</strong> Artemis Lunar Habitat operates at 30–34% O₂ and 70.3 kPa (0.16g). 
           While this sits inside the NASA PSI oxygen/pressure range, <em>zero flight tests exist in lunar gravity (0.16g)</em>. 
-          FLAME-SI utilizes physics-informed ML cross-entropy extrapolation to bridge this exact empirical flight gap.
+          The live radar scanner highlights this empirical void in real time, validating FLAME-SI's physics-informed extrapolation.
         </div>
       </div>
     </div>

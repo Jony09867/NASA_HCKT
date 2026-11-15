@@ -12,6 +12,7 @@ import OptionWheel from './OptionWheel';
 import MagicBento from './MagicBento';
 import Stepper, { Step } from './Stepper';
 import ScrubField from './ScrubField';
+import Radar from './Radar';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -396,6 +397,9 @@ export default function SIDashboard() {
   const [artemisO2, setArtemisO2] = useState(34);
   const [artemisPressure, setArtemisPressure] = useState(10.2);
   const [artemisGravity, setArtemisGravity] = useState(0.16);
+
+  // Companion Orbital Radar Scope Toggle
+  const [showOrbitalRadar, setShowOrbitalRadar] = useState(false);
 
   // Ranking Tab Controls
   const [rankingMission, setRankingMission] = useState('moon');
@@ -1791,7 +1795,7 @@ export default function SIDashboard() {
       )}
 
       {/* =========================================================================
-          TAB 5: PSI FLIGHT ENVELOPE (Matching User Scatter Chart)
+          TAB 5: PSI FLIGHT ENVELOPE (Matching User Scatter Chart with Radar HUD)
           ========================================================================= */}
       {activeMainTab === 'envelope' && (
         <div className="si-envelope-view-wrap">
@@ -1805,6 +1809,43 @@ export default function SIDashboard() {
               setActiveMainTab('lab');
             }}
           />
+
+          {/* Optional Companion 3D WebGL Orbital Radar Scope */}
+          <div className="si-orbital-radar-card">
+            <div className="si-orbital-radar-header">
+              <div>
+                <span className="si-lunar-env-pill">Deep Space Sensor Telemetry</span>
+                <h4 className="si-orbital-radar-title">Orbital Combustion Tracking Radar (WebGL)</h4>
+                <p className="si-orbital-radar-desc">
+                  Live 3D WebGL radar tracking active microgravity and lunar flight experiments in real time.
+                </p>
+              </div>
+              <button
+                type="button"
+                className={`si-radar-toggle-btn ${showOrbitalRadar ? 'is-active' : ''}`}
+                onClick={() => setShowOrbitalRadar(!showOrbitalRadar)}
+              >
+                {showOrbitalRadar ? 'Collapse Scope ▴' : '✦ Open 3D WebGL Scope ▾'}
+              </button>
+            </div>
+
+            {showOrbitalRadar && (
+              <div className="si-orbital-radar-stage">
+                <Radar
+                  color="#0284c7"
+                  mode="sweep"
+                  speed={1}
+                  trail={0.35}
+                  scale={0.92}
+                  ringCount={6}
+                  spokeCount={12}
+                  targets={6}
+                  clutter={0.3}
+                  mouseInteraction={true}
+                />
+              </div>
+            )}
+          </div>
         </div>
       )}
 

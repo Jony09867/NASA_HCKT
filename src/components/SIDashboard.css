@@ -1811,6 +1811,85 @@
 }
 
 /* ==========================================================================
+   TAB 5: PSI FLIGHT ENVELOPE & COMPANION ORBITAL RADAR
+   ========================================================================= */
+.si-envelope-view-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.si-orbital-radar-card {
+  background: var(--si-card-bg);
+  border: 1px solid var(--si-line);
+  border-radius: 12px;
+  padding: 1.35rem 1.65rem;
+  box-shadow: 0 2px 10px rgba(16, 43, 78, 0.04);
+}
+
+.si-orbital-radar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.si-orbital-radar-title {
+  font-size: 1.18rem;
+  font-weight: 700;
+  font-family: var(--si-heading-font);
+  color: var(--si-text-ink);
+  margin: 0.35rem 0 0.2rem 0;
+  letter-spacing: -0.01em;
+}
+
+.si-orbital-radar-desc {
+  font-size: 0.88rem;
+  color: var(--si-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.si-radar-toggle-btn {
+  background: #edf3fa;
+  color: var(--si-primary);
+  border: 1px solid var(--si-line);
+  border-radius: 8px;
+  font-family: var(--si-heading-font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.55rem 1.15rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.si-radar-toggle-btn:hover {
+  background: #e1edf8;
+  border-color: var(--si-primary);
+}
+
+.si-radar-toggle-btn.is-active {
+  background: var(--si-primary);
+  color: #ffffff;
+  border-color: var(--si-primary);
+  box-shadow: 0 2px 6px rgba(22, 79, 145, 0.25);
+}
+
+.si-orbital-radar-stage {
+  margin-top: 1.25rem;
+  width: 100%;
+  height: 380px;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0a1628;
+  border: 1px solid #1e3a5f;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
    RESPONSIVE ADAPTATIONS
    ========================================================================= */
 @media (max-width: 1280px) {

@@ -20,6 +20,14 @@
   flex-wrap: wrap;
 }
 
+.psi-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
 .psi-env-badge {
   display: inline-block;
   font-size: 10px;
@@ -31,7 +39,131 @@
   border: 1px solid #bae6fd;
   padding: 3px 8px;
   border-radius: 4px;
-  margin-bottom: 6px;
+}
+
+.psi-radar-mode-tag {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0284c7;
+  background: #e0f2fe;
+  border: 1px solid #7dd3fc;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'Space Grotesk', monospace;
+  transition: all 0.2s ease;
+}
+
+.psi-radar-mode-tag.is-active {
+  color: #0369a1;
+  background: #bae6fd;
+  border-color: #38bdf8;
+  box-shadow: 0 0 6px rgba(2, 132, 199, 0.25);
+}
+
+.psi-env-right-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.psi-radar-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.psi-ctrl-btn {
+  background: #ffffff;
+  color: #102b4e;
+  border: 1px solid #cbd8e8;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  padding: 4px 9px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.psi-ctrl-btn:hover {
+  background: #eef5fc;
+  border-color: #164f91;
+}
+
+.psi-ctrl-btn.is-active {
+  background: #164f91;
+  color: #ffffff;
+  border-color: #164f91;
+}
+
+.psi-ctrl-btn.is-paused {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.c3d-viz-card .psi-ctrl-btn {
+  background: #161f22;
+  color: #f1f5f9;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.c3d-viz-card .psi-ctrl-btn.is-active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+/* Radar Scope Telemetry HUD Bar */
+.psi-radar-hud-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #0f1f33;
+  color: #e0f2fe;
+  border: 1px solid #1e3a5f;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.psi-hud-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.psi-hud-label {
+  color: #7dd3fc;
+  font-weight: 600;
+}
+
+.psi-hud-val {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.psi-hud-item.highlight-gap .psi-hud-label {
+  color: #fca5a5;
+}
+
+.psi-hud-item.highlight-gap .psi-hud-val {
+  color: #ef4444;
+}
+
+.gap-blink {
+  animation: gapBlinkAnim 2s infinite ease-in-out;
+}
+
+@keyframes gapBlinkAnim {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
 }
 
 .psi-env-title {
@@ -173,6 +305,68 @@
 
 .c3d-viz-card .psi-envelope-label {
   fill: #38bdf8;
+}
+
+/* ============================================================================
+   Radar Scope SVG Graphic Styles
+   ============================================================================ */
+.psi-radar-range-ring {
+  fill: none;
+  stroke: rgba(2, 132, 199, 0.22);
+  stroke-width: 0.9;
+  stroke-dasharray: 4 4;
+}
+
+.c3d-viz-card .psi-radar-range-ring {
+  stroke: rgba(56, 189, 248, 0.25);
+}
+
+.psi-radar-azimuth-spoke {
+  stroke: rgba(2, 132, 199, 0.12);
+  stroke-width: 0.75;
+}
+
+.c3d-viz-card .psi-radar-azimuth-spoke {
+  stroke: rgba(56, 189, 248, 0.15);
+}
+
+.psi-radar-sweep-beam {
+  stroke: #0284c7;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.c3d-viz-card .psi-radar-sweep-beam {
+  stroke: #38bdf8;
+}
+
+.psi-radar-trail-fan {
+  pointer-events: none;
+}
+
+.psi-radar-echo-ping {
+  fill: none;
+  pointer-events: none;
+  animation: radarPingPulse 0.4s ease-out;
+}
+
+.psi-scatter-dot.is-ping-illuminated {
+  filter: drop-shadow(0 0 5px #0284c7);
+}
+
+.c3d-viz-card .psi-scatter-dot.is-ping-illuminated {
+  filter: drop-shadow(0 0 6px #38bdf8);
+}
+
+.psi-target-brackets path {
+  stroke: #dc2626;
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.c3d-viz-card .psi-target-brackets path {
+  stroke: #f87171;
 }
 
 /* Scatter Dots */
