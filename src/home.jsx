@@ -105,12 +105,12 @@ function initReactHome() {
           repeat={2}
           ring={false}
           fontWeight={500}
-          color="#315b86"
+          color="#416B9A"
         />
         <div className="saturn-wrap">
           <ParticleSaturn
-            coreColor="#1855a0"
-            ringColor="#8cc7ff"
+            coreColor="#0B3D91"
+            ringColor="#4DA6FF"
             density={20}
             particleSize={15}
             glow={26}
