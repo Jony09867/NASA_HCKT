@@ -20,6 +20,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 1);
   overflow: hidden;
   isolation: isolate;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .c3d-sim-card--compact {
@@ -31,8 +33,9 @@
 .c3d-viewport-wrap {
   position: relative;
   width: 100%;
-  height: clamp(440px, 48vh, 580px);
-  min-height: 400px;
+  height: clamp(450px, 50vh, 600px);
+  min-height: 440px;
+  flex-shrink: 0;
   border-radius: 18px;
   overflow: hidden;
   border: 1px solid #cbd8e8;
@@ -588,6 +591,8 @@
   flex-direction: column;
   gap: 0.85rem;
   box-shadow: 0 4px 20px rgba(16, 43, 78, 0.05);
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .c3d-viz-header {

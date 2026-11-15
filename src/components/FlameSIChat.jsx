@@ -400,6 +400,9 @@ export default function FlameSIChat() {
   // View mode switcher: 'studio' (split) | 'chat' (dialogue focus) | 'stage' (3D chamber focus)
   const [viewMode, setViewMode] = useState('studio');
 
+  // Sub-tab view selector for the 3D Stage pane: 'sim' (3D chamber) | 'chart' (telemetry) | 'all' (both)
+  const [stageTab, setStageTab] = useState('sim');
+
   // Master Active Simulation State synchronized with 3D Stage
   const [activeSim, setActiveSim] = useState({
     gravityKey: '1/6g',
@@ -445,6 +448,13 @@ export default function FlameSIChat() {
   const [feedback, setFeedback] = useState({});
 
   const chatBodyRef = useRef(null);
+  const stageScrollRef = useRef(null);
+
+  const scrollToStageTop = useCallback(() => {
+    if (stageScrollRef.current) {
+      stageScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
 
   // Auto-scroll chat body only within the dialogue pane
   useEffect(() => {
@@ -573,9 +583,10 @@ export default function FlameSIChat() {
       };
     }
 
-    // Immediately morph the 3D Stage on the right
+    // Immediately morph the 3D Stage on the right and scroll to top
     if (matched.simConfig) {
       setActiveSim(matched.simConfig);
+      scrollToStageTop();
     }
 
     const assistantMsgId = `asst-${Date.now()}`;
@@ -802,7 +813,9 @@ export default function FlameSIChat() {
                             className="sync-action-btn"
                             onClick={() => {
                               setActiveSim(msg.simConfig);
+                              setStageTab('sim');
                               if (viewMode === 'chat') setViewMode('stage');
+                              scrollToStageTop();
                             }}
                           >
                             Inspect in 3D Stage ↗
@@ -997,36 +1010,78 @@ export default function FlameSIChat() {
               <SparklesIcon size={16} />
               <h4>3D Volumetric Combustion Stage & Telemetry Visualizer</h4>
             </div>
+
+            {/* Segmented Mode Selector: 3D Stage vs Telemetry Visualizer vs Both */}
+            <div className="stage-sub-toggles" role="tablist" aria-label="3D Stage Display Mode">
+              <button
+                type="button"
+                className={`stage-sub-btn ${stageTab === 'sim' ? 'is-active' : ''}`}
+                onClick={() => {
+                  setStageTab('sim');
+                  scrollToStageTop();
+                }}
+                title="Focus on 3D WebGL Chamber, Controls & SI Report"
+              >
+                🔥 3D Chamber Stage
+              </button>
+              <button
+                type="button"
+                className={`stage-sub-btn ${stageTab === 'chart' ? 'is-active' : ''}`}
+                onClick={() => {
+                  setStageTab('chart');
+                  scrollToStageTop();
+                }}
+                title="Focus on Dynamic Telemetry Visualizer & Flight Envelope"
+              >
+                📊 Telemetry Visualizer
+              </button>
+              <button
+                type="button"
+                className={`stage-sub-btn ${stageTab === 'all' ? 'is-active' : ''}`}
+                onClick={() => {
+                  setStageTab('all');
+                  scrollToStageTop();
+                }}
+                title="View 3D Chamber and Telemetry Curves stacked"
+              >
+                ✦ Both
+              </button>
+            </div>
+
             <div className="stage-sync-status">
               <span className="sync-pulse-dot" />
               <span>Real-Time WebGL Engine · {activeGrav.badge}</span>
             </div>
           </div>
 
-          <div className="stage-scroll-body">
+          <div className="stage-scroll-body" ref={stageScrollRef}>
             {/* Full-Featured 3D WebGL Combustion Chamber (with orbit, zoom, sliders & live situational report) */}
-            <CombustionSim3D
-              initialGravity={activeSim.gravityKey}
-              initialMaterial={activeSim.materialKey}
-              initialOxygen={activeSim.oxygen}
-              initialVentilation={activeSim.ventilation}
-              initialPressure={activeSim.pressure}
-              compact={false}
-              showReport={true}
-              onStateChange={handleSimStateChange}
-            />
-
-            {/* Dynamic Telemetry Visualizer with 4 Interactive Tabs */}
-            <div className="stage-chart-wrapper">
-              <CombustionTelemetryChart
-                gravityKey={activeSim.gravityKey}
-                materialKey={activeSim.materialKey}
-                oxygen={activeSim.oxygen}
-                ventilation={activeSim.ventilation}
-                pressure={activeSim.pressure}
-                defaultTab={activeSim.chartTab || 'o2-curve'}
+            {(stageTab === 'sim' || stageTab === 'all') && (
+              <CombustionSim3D
+                initialGravity={activeSim.gravityKey}
+                initialMaterial={activeSim.materialKey}
+                initialOxygen={activeSim.oxygen}
+                initialVentilation={activeSim.ventilation}
+                initialPressure={activeSim.pressure}
+                compact={false}
+                showReport={true}
+                onStateChange={handleSimStateChange}
               />
-            </div>
+            )}
+
+            {/* Dynamic Telemetry Visualizer with Interactive Tabs */}
+            {(stageTab === 'chart' || stageTab === 'all') && (
+              <div className="stage-chart-wrapper">
+                <CombustionTelemetryChart
+                  gravityKey={activeSim.gravityKey}
+                  materialKey={activeSim.materialKey}
+                  oxygen={activeSim.oxygen}
+                  ventilation={activeSim.ventilation}
+                  pressure={activeSim.pressure}
+                  defaultTab={activeSim.chartTab || 'o2-curve'}
+                />
+              </div>
+            )}
           </div>
         </aside>
       </div>
