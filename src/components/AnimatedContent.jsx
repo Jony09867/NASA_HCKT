@@ -8,6 +8,31 @@ gsap.registerPlugin(ScrollTrigger);
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
+// One observer for all entrances: filters, fonts and React islands can move
+// sections after ScrollTrigger has measured their initial positions.
+let layoutUsers = 0;
+let layoutObserver;
+let refreshFrame = 0;
+function observeLayout() {
+  if (layoutUsers++ === 0 && typeof ResizeObserver !== 'undefined') {
+    layoutObserver = new ResizeObserver(() => {
+      if (!refreshFrame) refreshFrame = requestAnimationFrame(() => {
+        refreshFrame = 0;
+        ScrollTrigger.refresh();
+      });
+    });
+    layoutObserver.observe(document.body);
+  }
+  return () => {
+    if (--layoutUsers === 0) {
+      layoutObserver?.disconnect();
+      layoutObserver = undefined;
+      cancelAnimationFrame(refreshFrame);
+      refreshFrame = 0;
+    }
+  };
+}
+
 const WIPES = {
   up: 'linear-gradient(to top, #000 calc(var(--ac-wipe) * 140% - 40%), transparent calc(var(--ac-wipe) * 140%))',
   down: 'linear-gradient(to bottom, #000 calc(var(--ac-wipe) * 140% - 40%), transparent calc(var(--ac-wipe) * 140%))',
@@ -26,7 +51,7 @@ const AnimatedContent = ({
   direction = 'vertical',
   reverse = false,
   duration = 0.9,
-  ease = 'power2.inOut',
+  ease = 'power2.out',
   initialOpacity = 0,
   animateOpacity = true,
   scale = 1,
@@ -34,7 +59,7 @@ const AnimatedContent = ({
   rotate = 0,
   tilt = 0,
   wipe = 'none',
-  threshold = 0.18,
+  threshold = 0.08,
   delay = 0,
   stagger = 0,
   staggerFrom = 'start',
@@ -64,6 +89,7 @@ const AnimatedContent = ({
 
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
+    const stopObservingLayout = trigger === 'scroll' && !reduce ? observeLayout() : () => {};
     let entrance;
     const ctx = gsap.context(() => {
       const targets = stagger > 0 && el.children.length ? Array.from(el.children) : [el];
@@ -190,6 +216,7 @@ const AnimatedContent = ({
     return () => {
       el.removeEventListener('focusin', revealOnFocus);
       motionPreference.removeEventListener('change', stopMotion);
+      stopObservingLayout();
       ctx.revert();
     };
   }, [
