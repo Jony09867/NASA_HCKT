@@ -441,4 +441,3 @@ export function magnetizeAllPageButtons() {
 }
 
 export default Magnet;
-
