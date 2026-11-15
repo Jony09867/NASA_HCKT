@@ -28,7 +28,7 @@ const arbitrate = () => {
     if (!entry.wrapper.isConnected) { entry.dispose?.(); continue; }
     const s = entry.settings.current;
     let near = null;
-    if (field.pointer && !s.disabled && !entry.reduce && !entry.wrapper.matches(":disabled") && entry.wrapper.getClientRects().length) {
+    if (field.pointer && !s.disabled && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && window.matchMedia('(hover: hover) and (pointer: fine)').matches && !entry.wrapper.matches(":disabled") && entry.wrapper.getClientRects().length) {
       near = reach(entry.measureRect?.() ?? entry.wrapper.getBoundingClientRect(), field.pointer);
       if (near.outside > s.padding) near = null;
     }
@@ -52,7 +52,7 @@ const arbitrate = () => {
 
 const attach = () => {
   const onPointerMove = event => {
-    if (event.pointerType === 'touch') return;
+    if (event.pointerType === 'touch') { field.pointer=null; arbitrate(); return; }
     field.pointer = { x: event.clientX, y: event.clientY };
     arbitrate();
   };
@@ -60,11 +60,14 @@ const attach = () => {
     field.pointer = null;
     arbitrate();
   };
+  const preference=window.matchMedia('(prefers-reduced-motion: reduce)');
+  preference.addEventListener('change',onLeave);
   window.addEventListener('pointermove', onPointerMove, { passive: true });
   window.addEventListener('scroll', arbitrate, { passive: true, capture: true });
   document.documentElement.addEventListener('pointerleave', onLeave);
   window.addEventListener('blur', onLeave);
   return () => {
+    preference.removeEventListener('change',onLeave);
     window.removeEventListener('pointermove', onPointerMove);
     window.removeEventListener('scroll', arbitrate, { capture: true });
     document.documentElement.removeEventListener('pointerleave', onLeave);
@@ -137,7 +140,7 @@ export const Magnet = ({
     const measure = () => {
       const s = settingsRef.current;
       const target = { x: 0, y: 0, tiltX: 0, tiltY: 0, scale: 1 };
-      if (s.disabled || reduce || !field.pointer) return { target, engaged: false };
+      if (s.disabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(hover: hover) and (pointer: fine)').matches || !field.pointer) return { target, engaged: false };
       if (s.exclusive && field.owner !== entry) return { target, engaged: false };
       const rect = wrapper.getBoundingClientRect();
       const { dx, dy, outside } = reach(rect, field.pointer);
@@ -400,7 +403,7 @@ export function magnetizeAllPageButtons() {
   const query = () => {
     for (const entry of registry) if (!entry.wrapper.isConnected) entry.dispose?.();
     const targets = document.querySelectorAll(
-      'header nav a, header .badge, header .brand, #explore button, #explore a[href], #compare button, #compare a[href], .compare-toast-close'
+      '[data-primary], #explore .btn-compare, #compare .specular-button'
     );
     targets.forEach(el => {
       if (!el.closest('.magnet-wrapper') && !el.dataset.magnetized) {

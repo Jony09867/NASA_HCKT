@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Magnet from './Magnet';
-import FlameSIChat from './FlameSIChat';
+
 import SpotlightCard from './SpotlightCard';
 import AnimatedContent from './AnimatedContent';
 import CountUp from './CountUp';
@@ -54,7 +54,7 @@ const PRESETS = {
 };
 
 export default function SIDashboard() {
-  const [viewMode, setViewMode] = useState('simulator');
+
   const [activePreset, setActivePreset] = useState('moon');
   const [oxygen, setOxygen] = useState(34);
   const [pressure, setPressure] = useState(10.2);
@@ -159,22 +159,8 @@ export default function SIDashboard() {
     return scored.sort((a, b) => b.siScore - a.siScore).slice(0, 4);
   }, [experiments, activePreset, oxygen]);
 
-  const handleInspectInExplorer = (id, targetO2) => {
-    const exploreSection = document.querySelector('#explore');
-    if (exploreSection) {
-      exploreSection.scrollIntoView({ behavior: 'smooth' });
-    }
-    const o2Input = document.querySelector('#oxygen');
-    const searchInput = document.querySelector('#search');
-    if (o2Input) {
-      o2Input.value = targetO2 || oxygen;
-      o2Input.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-    if (searchInput) {
-      searchInput.value = '';
-      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  };
+  const handleInspectInExplorer = (id) => { window.location.assign('/explore/?id='+encodeURIComponent(id)); };
+  const askInvestigation = (name) => { window.location.assign('/chat/?investigation='+encodeURIComponent(name)); };
 
   return (
     <section className="si-dashboard-section" id="si-intelligence">
@@ -184,7 +170,7 @@ export default function SIDashboard() {
           Super Intelligence (SI) · Mission Fire Safety Engine
         </div>
         <h2>
-          Predictive Fire Hazard <strong>Analysis & Ranking</strong>
+          Mission <strong>Simulator</strong>
         </h2>
         <p>
           Simulating microgravity and partial-gravity combustion dynamics across Moon, Mars, and ISS mission profiles.
@@ -192,38 +178,13 @@ export default function SIDashboard() {
         </p>
       </AnimatedContent>
 
-      {/* View Switcher: Simulator vs AI Chat */}
-      <div className="si-view-switcher">
-        <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-<button
-          type="button"
-          className={`si-view-btn ${viewMode === 'simulator' ? 'is-active' : ''}`}
-          onClick={() => setViewMode('simulator')}
-        >
-          Mission Hazard Simulator & Rankings
-        </button>
-</Magnet>
-        <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-<button
-          type="button"
-          className={`si-view-btn ${viewMode === 'chat' ? 'is-active' : ''}`}
-          onClick={() => setViewMode('chat')}
-        >
-          Chat with FLAME-SI Co-Pilot (Chain-of-Thought)
-        </button>
-</Magnet>
-      </div>
-
-      {viewMode === 'chat' ? (
-        <AnimatedContent trigger="mount" distance={0} duration={0.2}><FlameSIChat /></AnimatedContent>
-      ) : (
-        <>
           {/* Preset Environments */}
           <span className="si-preset-label">Select Mission Profile or Atmospheric Condition:</span>
       <AnimatedContent className="si-presets-grid">
         {Object.entries(PRESETS).map(([key, p]) => (
-          <Magnet key={key} wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1} style={{ display: 'grid', minWidth: 0 }}>
+          
           <SpotlightCard
+            key={key}
             style={{ width: '100%', height: '100%' }}
             as="button"
             type="button"
@@ -245,9 +206,9 @@ export default function SIDashboard() {
           >
             <span className="si-preset-title">{p.title}</span>
             <span className="si-preset-specs">{p.specs}</span>
-            <span className="si-preset-desc">{p.desc}</span>
+            
           </SpotlightCard>
-          </Magnet>
+          
         ))}
       </AnimatedContent>
 
@@ -365,6 +326,8 @@ export default function SIDashboard() {
 
                 <h4>{inv.name}</h4>
 
+                <p className="si-result-summary">{inv.objective}</p>
+                <details className="si-result-details"><summary>Research details</summary>
                 <div className="si-rank-tags">
                   <span className="si-tag">Fuel: {inv.fuel}</span>
                   <span className="si-tag">O₂: {inv.oxygen}</span>
@@ -376,27 +339,28 @@ export default function SIDashboard() {
                   {inv.siInterpretation || inv.objective}
                 </div>
 
+                </details>
                 <div className="si-rank-actions">
-                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-<button
+                  
+<Magnet padding={35} maxOffset={5} magnetStrength={3}><button
                     type="button"
                     className="si-action-btn primary"
                     onClick={() => handleInspectInExplorer(inv.id, inv.oxygen ? parseInt(inv.oxygen, 10) : oxygen)}
                   >
                     Inspect in Explorer ↗
-                  </button>
-</Magnet>
-                  <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+                  </button></Magnet>
+
+                  
 <button
                     type="button"
                     className="si-action-btn secondary"
-                    onClick={() => setViewMode('chat')}
+                    onClick={() => askInvestigation(inv.name)}
                   >
                     Ask FLAME-SI
                   </button>
-</Magnet>
+
                   {inv.sourceUrl && (
-                    <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+                    
 <a
                       href={inv.sourceUrl}
                       target="_blank"
@@ -405,7 +369,7 @@ export default function SIDashboard() {
                     >
                       NASA PSI Source ↗
                     </a>
-</Magnet>
+
                   )}
                 </div>
               </div>
@@ -417,7 +381,7 @@ export default function SIDashboard() {
       {/* Pillars of Fire Safety & Terrestrial Impact Tabs */}
       <div className="si-pillars-container">
         <AnimatedContent className="si-tabs-nav" >
-          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+          
 <button
             type="button"
             className={`si-tab-btn ${activeTab === 'prevention' ? 'is-active' : ''}`}
@@ -425,8 +389,8 @@ export default function SIDashboard() {
           >
             01. Prevention Protocols
           </button>
-</Magnet>
-          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+
+          
 <button
             type="button"
             className={`si-tab-btn ${activeTab === 'detection' ? 'is-active' : ''}`}
@@ -434,8 +398,8 @@ export default function SIDashboard() {
           >
             02. Detection Dynamics
           </button>
-</Magnet>
-          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+
+          
 <button
             type="button"
             className={`si-tab-btn ${activeTab === 'suppression' ? 'is-active' : ''}`}
@@ -443,8 +407,8 @@ export default function SIDashboard() {
           >
             03. Suppression Architecture
           </button>
-</Magnet>
-          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
+
+          
 <button
             type="button"
             className={`si-tab-btn ${activeTab === 'earth' ? 'is-active' : ''}`}
@@ -452,13 +416,13 @@ export default function SIDashboard() {
           >
             04. Earth Applications
           </button>
-</Magnet>
+
         </AnimatedContent>
 
         <AnimatedContent className="si-tab-content-panel" animateKey={activeTab} trigger="mount" distance={0} duration={0.2}>
           {activeTab === 'prevention' && (
             <>
-              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+              
 <div className="si-pillar-card">
                 <h4>NASA-STD-6001 Compliance</h4>
                 <p>
@@ -467,8 +431,8 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by BASS-II & ACME-BRE</span>
               </div>
-</Magnet>
-              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+
+              
 <div className="si-pillar-card">
                 <h4>Ventilation Velocity Thresholds</h4>
                 <p>
@@ -477,13 +441,13 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by Saffire-I & III</span>
               </div>
-</Magnet>
+
             </>
           )}
 
           {activeTab === 'detection' && (
             <>
-              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+              
 <div className="si-pillar-card">
                 <h4>Soot Particle Agglomeration</h4>
                 <p>
@@ -492,8 +456,8 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by SAME & SAME-R</span>
               </div>
-</Magnet>
-              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+
+              
 <div className="si-pillar-card">
                 <h4>Dust Discrimination (DAFT-2)</h4>
                 <p>
@@ -502,13 +466,13 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by DAFT / DAFT-2</span>
               </div>
-</Magnet>
+
             </>
           )}
 
           {activeTab === 'suppression' && (
             <>
-              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+              
 <div className="si-pillar-card">
                 <h4>Cool-Flame Reignition Hazards</h4>
                 <p>
@@ -517,8 +481,8 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by FLEX & FLEX-2</span>
               </div>
-</Magnet>
-              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+
+              
 <div className="si-pillar-card">
                 <h4>Inert Dilution Limits (CO₂ & He)</h4>
                 <p>
@@ -527,13 +491,13 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Validated by ACME CFI & CIR</span>
               </div>
-</Magnet>
+
             </>
           )}
 
           {activeTab === 'earth' && (
             <>
-              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+              
 <div className="si-pillar-card">
                 <h4>Fine-Water-Mist Suppression</h4>
                 <p>
@@ -542,8 +506,8 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Terrestrial Fire Technology</span>
               </div>
-</Magnet>
-              <Magnet wrapperClassName="magnet-wrapper" padding={30} magnetStrength={6} maxOffset={3} tilt={0} scale={1} style={{ width: '100%', minWidth: 0 }}>
+
+              
 <div className="si-pillar-card">
                 <h4>Firefighter Protective Gear</h4>
                 <p>
@@ -552,13 +516,11 @@ export default function SIDashboard() {
                 </p>
                 <span className="si-pillar-badge">Global Firefighter Safety</span>
               </div>
-</Magnet>
+
             </>
           )}
         </AnimatedContent>
       </div>
-        </>
-      )}
     </section>
   );
 }
