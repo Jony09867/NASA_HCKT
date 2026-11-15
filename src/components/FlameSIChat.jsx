@@ -523,8 +523,16 @@ export default function FlameSIChat() {
   const [feedback, setFeedback] = useState({});
 
   const chatBodyRef = useRef(null);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      if (chatBodyRef.current) {
+        chatBodyRef.current.scrollTop = 0;
+      }
+      return;
+    }
     if (chatBodyRef.current && followLatest.current) {
       chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
     }

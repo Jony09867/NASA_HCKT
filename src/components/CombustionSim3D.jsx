@@ -1240,8 +1240,8 @@ export function CombustionTelemetryChart({
             {/* Horizontal grid lines */}
             {[40, 85, 130, 178].map((y, idx) => (
               <g key={y}>
-                <line x1="48" y1={y} x2="520" y2={y} stroke="rgba(255,255,255,0.07)" strokeDasharray="3 3" />
-                <text x="40" y={y + 4} textAnchor="end" fill="#7d8983" fontSize="10">
+                <line x1="48" y1={y} x2="520" y2={y} stroke="#e1ecf6" strokeDasharray="3 3" />
+                <text x="40" y={y + 4} textAnchor="end" fill="#5c748f" fontSize="10" fontWeight="600">
                   {['6.0x', '4.0x', '2.0x', '0.0x'][idx]}
                 </text>
               </g>
@@ -1252,8 +1252,8 @@ export function CombustionTelemetryChart({
               const loiX = 48 + ((activePhysics.effectiveLOI - 14) / 86) * 470;
               return (
                 <g>
-                  <line x1={loiX} y1="26" x2={loiX} y2="178" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="4 3" />
-                  <text x={loiX + 5} y="36" fill="#ef4444" fontSize="9.5" fontWeight="600">
+                  <line x1={loiX} y1="26" x2={loiX} y2="178" stroke="#c9272d" strokeWidth="1.5" strokeDasharray="4 3" />
+                  <text x={loiX + 5} y="36" fill="#c9272d" fontSize="9.5" fontWeight="700">
                     LOI Limit ({activePhysics.effectiveLOI}% O₂)
                   </text>
                 </g>
@@ -1261,22 +1261,22 @@ export function CombustionTelemetryChart({
             })()}
 
             {/* 3 Gravity Curves */}
-            <path d={buildO2Path('1g')} fill="none" stroke="#94a3b8" strokeWidth="2" strokeDasharray="4 3" />
-            <path d={buildO2Path('1/6g')} fill="none" stroke="#ff8a58" strokeWidth="2.5" />
-            <path d={buildO2Path('0g')} fill="none" stroke="#38bdf8" strokeWidth="2.5" />
+            <path d={buildO2Path('1g')} fill="none" stroke="#64748b" strokeWidth="2" strokeDasharray="4 3" />
+            <path d={buildO2Path('1/6g')} fill="none" stroke="#c9272d" strokeWidth="2.5" />
+            <path d={buildO2Path('0g')} fill="none" stroke="#0284c7" strokeWidth="2.5" />
 
             {/* Current Operating Point Cursor */}
-            <line x1={activeO2X} y1="26" x2={activeO2X} y2="178" stroke="rgba(255,255,255,0.28)" strokeWidth="1" />
+            <line x1={activeO2X} y1="26" x2={activeO2X} y2="178" stroke="#94a3b8" strokeDasharray="3 3" strokeWidth="1" />
             <circle
               cx={activeO2X}
               cy={activeO2Y}
               r="6"
-              fill={gravityKey === '0g' ? '#38bdf8' : '#ff8a58'}
-              stroke="#0d1213"
-              strokeWidth="2"
+              fill={gravityKey === '0g' ? '#0284c7' : '#c9272d'}
+              stroke="#ffffff"
+              strokeWidth="2.5"
             />
-            <rect x={Math.min(410, Math.max(52, activeO2X - 55))} y={Math.max(18, activeO2Y - 32)} width="118" height="22" rx="5" fill="#161f22" stroke="rgba(255,138,88,0.45)" />
-            <text x={Math.min(469, Math.max(111, activeO2X + 4))} y={Math.max(33, activeO2Y - 17)} textAnchor="middle" fill="#f7f3ed" fontSize="10" fontWeight="700">
+            <rect x={Math.min(410, Math.max(52, activeO2X - 55))} y={Math.max(18, activeO2Y - 32)} width="118" height="22" rx="6" fill="#102b4e" stroke="#164f91" />
+            <text x={Math.min(469, Math.max(111, activeO2X + 4))} y={Math.max(33, activeO2Y - 17)} textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="700">
               {oxygen}% O₂ → {activePhysics.spreadRate}x
             </text>
 
@@ -1284,16 +1284,16 @@ export function CombustionTelemetryChart({
             {[14, 21, 34, 50, 75, 100].map((val) => {
               const x = 48 + ((val - 14) / 86) * 470;
               return (
-                <text key={val} x={x} y="198" textAnchor="middle" fill="#8b9690" fontSize="10">
+                <text key={val} x={x} y="198" textAnchor="middle" fill="#5c748f" fontSize="10" fontWeight="600">
                   {val}% O₂
                 </text>
               );
             })}
           </svg>
           <div className="c3d-viz-legend">
-            <span><i style={{ background: '#38bdf8' }} /> 0g Microgravity</span>
-            <span><i style={{ background: '#ff8a58' }} /> 1/6g Lunar Base</span>
-            <span><i style={{ background: '#94a3b8' }} /> 1g Earth Baseline</span>
+            <span><i style={{ background: '#0284c7' }} /> 0g Microgravity</span>
+            <span><i style={{ background: '#c9272d' }} /> 1/6g Lunar Base</span>
+            <span><i style={{ background: '#64748b' }} /> 1g Earth Baseline</span>
           </div>
         </div>
       )}
@@ -1307,42 +1307,43 @@ export function CombustionTelemetryChart({
               y="26"
               width={((0.35 - 0.1) / 0.55) * 470}
               height="152"
-              fill="rgba(239, 68, 68, 0.08)"
+              fill="rgba(201, 39, 45, 0.08)"
             />
-            <text x={48 + (0.225 / 0.55) * 470} y="40" textAnchor="middle" fill="#f87171" fontSize="9.5" fontWeight="600">
+            <text x={48 + (0.225 / 0.55) * 470} y="40" textAnchor="middle" fill="#c9272d" fontSize="9.5" fontWeight="700">
               Saffire-III Forced-Convection Flashover Zone (0.10–0.35 m/s)
             </text>
 
             {[40, 85, 130, 178].map((y, idx) => (
               <g key={y}>
-                <line x1="48" y1={y} x2="520" y2={y} stroke="rgba(255,255,255,0.07)" strokeDasharray="3 3" />
-                <text x="40" y={y + 4} textAnchor="end" fill="#7d8983" fontSize="10">
+                <line x1="48" y1={y} x2="520" y2={y} stroke="#e1ecf6" strokeDasharray="3 3" />
+                <text x="40" y={y + 4} textAnchor="end" fill="#5c748f" fontSize="10" fontWeight="600">
                   {['5.0x', '3.5x', '1.8x', '0.0x'][idx]}
                 </text>
               </g>
             ))}
 
-            <path d={buildVentPath('0g')} fill="none" stroke="#38bdf8" strokeWidth="2.5" />
-            <path d={buildVentPath('1/6g')} fill="none" stroke="#ff8a58" strokeWidth="2.5" />
+            <path d={buildVentPath('0g')} fill="none" stroke="#0284c7" strokeWidth="2.5" />
+            <path d={buildVentPath('1/6g')} fill="none" stroke="#c9272d" strokeWidth="2.5" />
 
-            <line x1={activeVentX} y1="26" x2={activeVentX} y2="178" stroke="rgba(255,255,255,0.28)" strokeWidth="1" />
-            <circle cx={activeVentX} cy={activeVentY} r="6" fill="#ff8a58" stroke="#0d1213" strokeWidth="2" />
-            <text x={Math.min(475, Math.max(95, activeVentX))} y={Math.max(36, activeVentY - 12)} textAnchor="middle" fill="#f7f3ed" fontSize="10" fontWeight="700">
+            <line x1={activeVentX} y1="26" x2={activeVentX} y2="178" stroke="#94a3b8" strokeDasharray="3 3" strokeWidth="1" />
+            <circle cx={activeVentX} cy={activeVentY} r="6" fill="#c9272d" stroke="#ffffff" strokeWidth="2.5" />
+            <rect x={Math.min(410, Math.max(52, activeVentX - 60))} y={Math.max(18, activeVentY - 32)} width="124" height="22" rx="6" fill="#102b4e" stroke="#164f91" />
+            <text x={Math.min(472, Math.max(114, activeVentX + 2))} y={Math.max(33, activeVentY - 17)} textAnchor="middle" fill="#ffffff" fontSize="10" fontWeight="700">
               {ventilation.toFixed(2)} m/s ({activePhysics.spreadRate}x)
             </text>
 
             {[0, 0.1, 0.2, 0.3, 0.4, 0.55].map((val) => {
               const x = 48 + (val / 0.55) * 470;
               return (
-                <text key={val} x={x} y="198" textAnchor="middle" fill="#8b9690" fontSize="10">
+                <text key={val} x={x} y="198" textAnchor="middle" fill="#5c748f" fontSize="10" fontWeight="600">
                   {val.toFixed(2)} m/s
                 </text>
               );
             })}
           </svg>
           <div className="c3d-viz-legend">
-            <span><i style={{ background: '#38bdf8' }} /> 0g Microgravity Flow Response</span>
-            <span><i style={{ background: '#ff8a58' }} /> 1/6g Lunar Partial-Gravity Flow</span>
+            <span><i style={{ background: '#0284c7' }} /> 0g Microgravity Flow Response</span>
+            <span><i style={{ background: '#c9272d' }} /> 1/6g Lunar Partial-Gravity Flow</span>
           </div>
         </div>
       )}
