@@ -478,8 +478,8 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
                 {msg.sources && msg.sources.length > 0 && (
                   <div className="sources-bar">
                     {msg.sources.map((src, idx) => (
+                      <Magnet key={idx} wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
                       <a
-                        key={idx}
                         href={src.url}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -488,6 +488,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
                         <GlobeIcon size={12} />
                         <span>{src.title} ↗</span>
                       </a>
+                      </Magnet>
                     ))}
                   </div>
                 )}
@@ -589,7 +590,7 @@ In microgravity and enclosed space environments, fire behaves in ways counterint
               </select>
             </div>
 
-            <Magnet padding={60} magnetStrength={2.5} tilt={8} scale={1.08}>
+            <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
               <button
                 type="button"
                 className="chat-send-btn"
