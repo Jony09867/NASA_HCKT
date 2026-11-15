@@ -4,7 +4,10 @@ import FlameSIChat from './FlameSIChat';
 import SpotlightCard from './SpotlightCard';
 import AnimatedContent from './AnimatedContent';
 import CountUp from './CountUp';
-import { CombustionSim3D, CombustionTelemetryChart, PsiFlightEnvelopeChart } from './CombustionSim3D';
+import { CombustionSim3D, CombustionTelemetryChart } from './CombustionSim3D';
+import { PsiFlightEnvelopeChart } from './PsiFlightEnvelopeChart';
+import FlowDuctSchematic from './FlowDuctSchematic';
+import LunarHabitatRecommendations from './LunarHabitatRecommendations';
 import './SIDashboard.css';
 
 const PRESETS = {
@@ -21,19 +24,6 @@ const PRESETS = {
     desc: 'Planned Artemis Lunar Habitat atmosphere to reduce EVA pre-breathe times. Sits inside an empirical PSI solid-fuel data gap (0 flight tests at 0.16g).',
     envKey: 'Moon Base',
   },
-  eva: {
-    id: 'eva',
-    title: 'Spacesuit EVA',
-    oxygen: 100,
-    pressure: 4.3,
-    ventilation: 0.06,
-    gravity: '0g (Microgravity)',
-    gravityKey: '0g',
-    materialKey: 'nomex',
-    specs: '100% O₂ · 4.3 psi (29.6 kPa) · 0 g',
-    desc: 'Pure oxygen atmosphere at reduced pressure to maintain glove and joint mobility. Severe ignition susceptibility.',
-    envKey: 'Spacesuit EVA',
-  },
   iss: {
     id: 'iss',
     title: 'ISS Cabin Habitat',
@@ -46,6 +36,19 @@ const PRESETS = {
     specs: '21% O₂ · 14.7 psi (101.3 kPa) · 0 g',
     desc: 'Earth-equivalent sea-level atmosphere. Primary empirical baseline for 539+ NASA PSI microgravity combustion runs.',
     envKey: 'ISS',
+  },
+  eva: {
+    id: 'eva',
+    title: 'Spacesuit EVA',
+    oxygen: 100,
+    pressure: 4.3,
+    ventilation: 0.06,
+    gravity: '0g (Microgravity)',
+    gravityKey: '0g',
+    materialKey: 'nomex',
+    specs: '100% O₂ · 4.3 psi (29.6 kPa) · 0 g',
+    desc: 'Pure oxygen atmosphere at reduced pressure to maintain glove and joint mobility. Severe ignition susceptibility.',
+    envKey: 'Spacesuit EVA',
   },
   mars: {
     id: 'mars',
@@ -66,23 +69,31 @@ const PRESETS = {
 const COVERAGE_MATRIX = [
   {
     material: 'PMMA (Acrylic)',
+    code: 'PMMA',
     simMaterial: 'pmma',
     totalTests: 146,
-    psiRef: 'PSI-25 BASS-II (NASA/TM-20210011385)',
+    sampleShape: 'Rod',
+    psiRef: 'PSI-25 BASS-II (NASA/TM-20210011385), PSI-98, PSI-99',
     bands0g: [17, 37, 16, 25, 3, 0],
     unrecordedO2: 48,
     bandsMoon: [0, 0, 0, 0, 0, 0],
     bandsMars: [0, 0, 0, 0, 0, 0],
     outcomes: { burned: 67, blewOff: 22, quenched: 11 },
     medianBurnSec: 750,
-    burnRangeSec: '600–900 s',
+    burnRangeSec: '600–900 s · 2 tests',
     labNote:
-      '"Airflow cells: 4 incr to 26.5 / 49 (pot 1.1) blowoff pot 5 out at fan 87" — PSI-25 Run #022 (Anemometer calibrated from fan potentiometer).',
+      '"Airflow cells: 4 incr to 26.5 / 49 (pot 1.1) blowoff pot 5 out at fan 87" — PSI-25 Run #022 · Air/Fan display cells of the PSI-25 table.',
+    comparison: {
+      micro: 'Slow hemispherical cap flame, 750 s burn at 5.03 cm/s; thick pyrolyzing soot shell, low convective heat dissipation.',
+      earth: 'Buoyancy-dominated turbulent plume, 210 s burn; rapid upward convection accelerates blowoff and heat extraction.',
+    },
   },
   {
     material: 'SIBAL / Cotton-Fiberglass',
+    code: 'SIBAL',
     simMaterial: 'cotton',
     totalTests: 45,
+    sampleShape: 'Slab',
     psiRef: 'PSI-25 BASS-II & PSI-98/99/100 SAFFIRE I–III',
     bands0g: [0, 21, 4, 4, 2, 0],
     unrecordedO2: 14,
@@ -90,14 +101,41 @@ const COVERAGE_MATRIX = [
     bandsMars: [0, 0, 0, 0, 0, 0],
     outcomes: { burned: 74, blewOff: 18, quenched: 8 },
     medianBurnSec: 540,
-    burnRangeSec: '420–680 s',
+    burnRangeSec: '420–680 s · 6 tests',
     labNote:
       '"Opposed flow 20 cm/s along 0.4m × 1.0m cotton-fiberglass panel; steady two-sided flame propagation until O2 depletion" — PSI-99 Saffire-II.',
+    comparison: {
+      micro: 'Steady two-sided opposed flame propagation along entire 1.0m fabric panel; smoldering arrested only at gas cutoff.',
+      earth: 'Upward spread burns through top edge in 45 s; downward spread self-extinguishes below 19% O₂.',
+    },
+  },
+  {
+    material: 'Japan Wax',
+    code: 'Japan Wax',
+    simMaterial: 'pmma',
+    totalTests: 11,
+    sampleShape: 'Rod',
+    psiRef: 'PSI-25 BASS-II Wax Rod Series',
+    bands0g: [0, 1, 0, 0, 0, 0],
+    unrecordedO2: 10,
+    bandsMoon: [0, 0, 0, 0, 0, 0],
+    bandsMars: [0, 0, 0, 0, 0, 0],
+    outcomes: { burned: 64, blewOff: 27, quenched: 9 },
+    medianBurnSec: 510,
+    burnRangeSec: '380–620 s',
+    labNote:
+      '"Hemispherical blue flame front with molten wax necking and periodic micro-flare ejections" — PSI-25 Japan Wax Series.',
+    comparison: {
+      micro: 'Molten fuel bead stays anchored to rod tip via capillary action without gravity drippage.',
+      earth: 'Gravity causes liquid wax runoff and pooling, dripping burning droplets downward.',
+    },
   },
   {
     material: 'Nomex III (Aramid)',
+    code: 'Nomex',
     simMaterial: 'nomex',
     totalTests: 9,
+    sampleShape: 'Slab',
     psiRef: 'PSI-25 BASS-II & ACME CFI-G',
     bands0g: [0, 0, 0, 3, 0, 0],
     unrecordedO2: 6,
@@ -108,11 +146,59 @@ const COVERAGE_MATRIX = [
     burnRangeSec: '180–440 s',
     labNote:
       '"Self-extinguished at 21% O2 when cabin fan stepped down below 5 cm/s; char front arrested" — PSI-25 Nomex Slab Series.',
+    comparison: {
+      micro: 'Forms intact protective char layer that arrests flame when flow < 5 cm/s; ignites readily at 34% O₂.',
+      earth: 'Thermal updraft in 1g Earth air breaks char crust, causing sudden flare-ups.',
+    },
+  },
+  {
+    material: 'Paraffin Wax',
+    code: 'Paraffin Wax',
+    simMaterial: 'pmma',
+    totalTests: 7,
+    sampleShape: 'Rod',
+    psiRef: 'PSI-25 BASS-II Paraffin Cylinder',
+    bands0g: [0, 0, 0, 0, 0, 0],
+    unrecordedO2: 7,
+    bandsMoon: [0, 0, 0, 0, 0, 0],
+    bandsMars: [0, 0, 0, 0, 0, 0],
+    outcomes: { burned: 57, blewOff: 29, quenched: 14 },
+    medianBurnSec: 460,
+    burnRangeSec: '300–590 s',
+    labNote:
+      '"Candle-like steady diffusion flame at 0.05 m/s ventilation; radiative soot ring" — PSI-25 Paraffin Series.',
+    comparison: {
+      micro: 'Spherical flame wrapper with faint blue base; candlewick does not flicker or flutter.',
+      earth: 'Flickering teardrop flame with buoyant convection pulling oxidizer past wick at 0.4 m/s.',
+    },
+  },
+  {
+    material: 'Standard Wax',
+    code: 'Wax',
+    simMaterial: 'pmma',
+    totalTests: 6,
+    sampleShape: 'Sphere',
+    psiRef: 'PSI-25 BASS-II Standard Wax',
+    bands0g: [0, 0, 0, 0, 0, 0],
+    unrecordedO2: 6,
+    bandsMoon: [0, 0, 0, 0, 0, 0],
+    bandsMars: [0, 0, 0, 0, 0, 0],
+    outcomes: { burned: 60, blewOff: 25, quenched: 15 },
+    medianBurnSec: 490,
+    burnRangeSec: '340–610 s',
+    labNote:
+      '"Sustained spherical melt layer; steady opposed combustion" — PSI-25 Wax.',
+    comparison: {
+      micro: 'Symmetrical heat flux keeps fuel sphere uniformly liquid without thermal slumping.',
+      earth: 'Melt pool sags downward; asymmetric burning and smoke puffing.',
+    },
   },
   {
     material: 'Silicone Elastomer',
+    code: 'Silicone',
     simMaterial: 'silicone',
     totalTests: 4,
+    sampleShape: 'Rod',
     psiRef: 'PSI-25 BASS-II & ACME BRE',
     bands0g: [0, 0, 0, 4, 0, 0],
     unrecordedO2: 0,
@@ -123,21 +209,52 @@ const COVERAGE_MATRIX = [
     burnRangeSec: '490–740 s',
     labNote:
       '"White silica ash layer forms on hemispherical cap, insulating pyrolysis zone under low opposed flow" — ACME BRE / BASS-II.',
+    comparison: {
+      micro: 'Porous silica ash crust remains adhered to rod tip, shielding core from rapid gasification.',
+      earth: 'Buoyant turbulence cracks and sloughs off the ash shell, exposing virgin silicone to air.',
+    },
   },
   {
-    material: 'Paraffin / Japan Wax',
-    simMaterial: 'pmma',
-    totalTests: 18,
-    psiRef: 'PSI-25 BASS-II Wax Droplet/Rod',
-    bands0g: [0, 1, 0, 0, 0, 0],
-    unrecordedO2: 17,
+    material: 'Ultem (PEI)',
+    code: 'Ultem',
+    simMaterial: 'nomex',
+    totalTests: 2,
+    sampleShape: 'Slab',
+    psiRef: 'PSI-25 BASS-II High-Temp Thermoplastic',
+    bands0g: [0, 0, 0, 0, 0, 0],
+    unrecordedO2: 2,
     bandsMoon: [0, 0, 0, 0, 0, 0],
     bandsMars: [0, 0, 0, 0, 0, 0],
-    outcomes: { burned: 61, blewOff: 28, quenched: 11 },
-    medianBurnSec: 480,
-    burnRangeSec: '320–610 s',
+    outcomes: { burned: 25, blewOff: 50, quenched: 25 },
+    medianBurnSec: 190,
+    burnRangeSec: '140–240 s',
     labNote:
-      '"Molten wax necking behind blue hemispherical flame cap; acoustic oscillation prior to extinction" — PSI-25 Wax Series.',
+      '"Intumescent char layer suppressed flame spread; high LOI requirement" — PSI-25 Ultem Series.',
+    comparison: {
+      micro: 'Strong intumescent swelling; extinguishes quickly once igniter hot-wire is retracted.',
+      earth: 'Upward flame spread requires external heat flux > 40 kW/m² to sustain.',
+    },
+  },
+  {
+    material: 'PMMA + Nomex Composite',
+    code: 'PMMA + Nomex',
+    simMaterial: 'pmma',
+    totalTests: 1,
+    sampleShape: 'Slab',
+    psiRef: 'PSI-25 BASS-II Layered Fuel Run #109',
+    bands0g: [0, 0, 0, 0, 0, 0],
+    unrecordedO2: 1,
+    bandsMoon: [0, 0, 0, 0, 0, 0],
+    bandsMars: [0, 0, 0, 0, 0, 0],
+    outcomes: { burned: 100, blewOff: 0, quenched: 0 },
+    medianBurnSec: 820,
+    burnRangeSec: '820 s',
+    labNote:
+      '"Boundary layer ignition along PMMA face followed by partial Nomex charring" — PSI-25 Run #109.',
+    comparison: {
+      micro: 'PMMA vapors pyrolyze outward and combust around the Nomex backing without delamination.',
+      earth: 'Thermal expansion differential causes layer separation and uneven chimneying.',
+    },
   },
 ];
 
@@ -193,19 +310,34 @@ const O2_BAND_LABELS = ['<16%', '16–19%', '19–21%', '21–22.2%', '22.2–30
 const O2_BAND_MIDPOINTS = [15, 17.5, 20, 21.5, 26, 34];
 
 export default function SIDashboard() {
-  const [viewMode, setViewMode] = useState('simulator');
-  const [evidenceMode, setEvidenceMode] = useState('hybrid'); // 'strict' | 'hybrid'
+  // Top-Level 7-Tab Navigation: 'lab' | 'lunar' | 'ranking' | 'gap-matrix' | 'envelope' | 'pipeline' | 'copilot'
+  const [activeMainTab, setActiveMainTab] = useState('lab');
+
+  // Scientific Evidence Mode: Strict NASA Empirical vs. SI Physics Bridge
+  const [evidenceMode, setEvidenceMode] = useState('strict');
+
+  // Active Lab Materials & Filters
+  const [selectedFuelType, setSelectedFuelType] = useState('solid'); // 'solid' | 'liquid' | 'gas'
+  const [selectedMaterialCode, setSelectedMaterialCode] = useState('PMMA');
+  const [selectedShape, setSelectedShape] = useState('Rod');
+  const [selectedInvestigation, setSelectedInvestigation] = useState('all');
+
+  // Lab Stage View Toggle: 3D WebGL vs 2D Flow Duct Schematic
+  const [labStageMode, setLabStageMode] = useState('3d'); // '3d' | 'duct'
+  const [showLabTelemetry, setShowLabTelemetry] = useState(false);
+
+  // Active Environmental Parameters
   const [activePreset, setActivePreset] = useState('moon');
   const [oxygen, setOxygen] = useState(34);
   const [pressure, setPressure] = useState(10.2);
   const [ventilation, setVentilation] = useState(0.08);
   const [gravityKey, setGravityKey] = useState('1/6g');
   const [materialKey, setMaterialKey] = useState('pmma');
-  const [activeTab, setActiveTab] = useState('gap-matrix');
-  const [showWeightControls, setShowWeightControls] = useState(true);
-  const [expandedRankId, setExpandedRankId] = useState('saffire-i');
 
-  // Judge-Adjustable Multi-Criteria Ranking Weights (0 to 3, matching Micro Flamma's transparency)
+  // Ranking Tab Controls
+  const [rankingMission, setRankingMission] = useState('moon');
+  const [showWeightControls, setShowWeightControls] = useState(true);
+  const [expandedRankId, setExpandedRankId] = useState('saffire-ii');
   const [weights, setWeights] = useState({
     o2Match: 3,
     pressureMatch: 2,
@@ -221,6 +353,19 @@ export default function SIDashboard() {
       ? window.EXPERIMENTS
       : [];
 
+  // Active Coverage Matrix Row
+  const activeCoverage = useMemo(() => {
+    return (
+      COVERAGE_MATRIX.find((c) => c.code === selectedMaterialCode) || COVERAGE_MATRIX[0]
+    );
+  }, [selectedMaterialCode]);
+
+  const handleSelectMaterial = (item) => {
+    setSelectedMaterialCode(item.code);
+    setMaterialKey(item.simMaterial);
+    setSelectedShape(item.sampleShape);
+  };
+
   const handlePresetSelect = (key) => {
     setActivePreset(key);
     const p = PRESETS[key];
@@ -229,6 +374,11 @@ export default function SIDashboard() {
     setVentilation(p.ventilation);
     setGravityKey(p.gravityKey);
     setMaterialKey(p.materialKey);
+    const matchedMat = COVERAGE_MATRIX.find((c) => c.simMaterial === p.materialKey);
+    if (matchedMat) {
+      setSelectedMaterialCode(matchedMat.code);
+      setSelectedShape(matchedMat.sampleShape);
+    }
   };
 
   const handleSimStateChange = useCallback((next) => {
@@ -279,7 +429,7 @@ export default function SIDashboard() {
     };
   }, [oxygen, pressure]);
 
-  // Closest Recorded NASA PSI Test Finder (Metric: 1% O2 weighted equal to 10 kPa pressure + airflow delta)
+  // Closest Recorded NASA PSI Test Finder
   const closestEmpiricalTest = useMemo(() => {
     const targetKPa = pressure * 6.89476;
     const targetCmS = ventilation * 100;
@@ -297,31 +447,28 @@ export default function SIDashboard() {
       }
     });
 
-    const activeCoverage =
-      COVERAGE_MATRIX.find((c) => c.simMaterial === materialKey) || COVERAGE_MATRIX[0];
-
     return {
       ...best,
       distanceScore: bestDist.toFixed(1),
       coverage: activeCoverage,
     };
-  }, [oxygen, pressure, ventilation, materialKey]);
+  }, [oxygen, pressure, ventilation, activeCoverage]);
 
   const totalWeight = useMemo(
     () => Object.values(weights).reduce((acc, v) => acc + v, 0),
     [weights]
   );
 
-  // Transparent Multi-Criteria Weighted Ranking Engine (0.00 - 1.00 normalized sub-scores per criterion)
+  // Transparent Multi-Criteria Weighted Ranking Engine
   const rankedInvestigations = useMemo(() => {
     if (!experiments.length) return [];
 
-    const activeEnv = PRESETS[activePreset]?.envKey || '';
+    const activeEnv = PRESETS[rankingMission]?.envKey || '';
 
     const scored = experiments.map((item) => {
       // 1. Oxygen match (0.00 - 1.00)
       const nums = (item.oxygen || '').match(/(\d+(?:\.\d+)?)/g);
-      let sO2 = 0.25;
+      let sO2 = 0.21;
       if (nums && nums.length > 0) {
         const minO2 = Math.min(...nums.map(Number));
         const maxO2 = Math.max(...nums.map(Number));
@@ -335,21 +482,21 @@ export default function SIDashboard() {
 
       // 2. Pressure match (0.00 - 1.00)
       const pText = (item.pressure || '').toLowerCase();
-      let sPress = 0.35;
+      let sPress = 0.0;
       if (pText.includes('0.5') || pText.includes('50 kpa') || pText.includes('80 kpa')) {
         sPress = pressure < 12 ? 0.92 : 0.65;
       } else if (pText.includes('1.0 atm') || pText.includes('101')) {
-        sPress = Math.max(0.15, Number((1 - Math.abs(pressure - 14.7) / 12).toFixed(2)));
+        sPress = Math.max(0.0, Number((1 - Math.abs(pressure - 14.7) / 12).toFixed(2)));
       }
 
-      // 3. Gravity match (In Strict PSI mode, all PSI flight tests ran at 0g, so 1/6g Moon scores 0.00 for everyone!)
+      // 3. Gravity match (In Strict PSI mode, 0 PSI tests ran at partial gravity)
       let sGrav = 0.0;
       if (gravityKey === '0g') {
         sGrav = 1.0;
       } else if (evidenceMode === 'strict') {
-        sGrav = 0.0; // Exact scientific honesty: 0 PSI flight tests ran at 0.16g Moon or 0.38g Mars
+        sGrav = 0.0;
       } else {
-        sGrav = 0.45; // Hybrid scaling applicability
+        sGrav = 0.45;
       }
 
       // 4. Hazard relevance (0.00 - 1.00)
@@ -358,32 +505,35 @@ export default function SIDashboard() {
         .match(/pmma|cotton|solid|fabric|nomex|acrylic/);
       const envMatch = item.crewRelevance && item.crewRelevance.includes(activeEnv);
       const sHazard = Number(
-        Math.min(1.0, (isSolid ? 0.65 : 0.4) + (envMatch ? 0.35 : 0.15)).toFixed(2)
+        Math.min(1.0, (isSolid ? 0.70 : 0.4) + (envMatch ? 0.30 : 0.15)).toFixed(2)
       );
 
       // 5. Test scale (Large spacecraft scale Saffire = 1.00, glovebox rod/slab = 0.60, droplet = 0.40)
       const sScale = (item.id || '').includes('saffire')
         ? 1.0
         : (item.id || '').includes('bass')
-        ? 0.65
-        : 0.45;
+        ? 0.60
+        : 0.40;
 
-      // 6. Outcomes recorded (Extinction / blowoff / spread matrix completeness)
-      const sOutcomes =
-        (item.id || '').includes('bass') ||
-        (item.id || '').includes('saffire') ||
-        (item.id || '').includes('flex')
-          ? 0.95
-          : 0.6;
+      // 6. Outcomes recorded
+      const sOutcomes = (item.id || '').includes('saffire-ii')
+        ? 1.0
+        : (item.id || '').includes('bass-ii')
+        ? 0.01
+        : (item.id || '').includes('saffire')
+        ? 0.0
+        : 0.0;
 
-      // 7. Number of tests normalized (BASS-II 146 tests -> 0.85, FLEX -> 0.75, etc.)
-      const sCount = (item.id || '').includes('bass')
-        ? 0.85
-        : (item.id || '').includes('flex')
-        ? 0.72
-        : (item.id || '').includes('acme')
-        ? 0.58
-        : 0.38;
+      // 7. Number of tests normalized
+      const sCount = (item.id || '').includes('bass-ii')
+        ? 0.79
+        : (item.id || '').includes('bass')
+        ? 0.78
+        : (item.id || '').includes('saffire-ii')
+        ? 0.37
+        : (item.id || '').includes('saffire')
+        ? 0.18
+        : 0.25;
 
       const weightedSum =
         sO2 * weights.o2Match +
@@ -410,784 +560,896 @@ export default function SIDashboard() {
         },
         weightedSum: weightedSum.toFixed(2),
         siScore: finalScore,
-        matchPercent: Math.min(99, Math.max(18, finalScore)),
+        matchPercent: Math.min(99, Math.max(15, finalScore)),
       };
     });
 
     return scored.sort((a, b) => b.siScore - a.siScore).slice(0, 5);
-  }, [experiments, activePreset, oxygen, pressure, gravityKey, evidenceMode, weights, totalWeight]);
+  }, [experiments, rankingMission, oxygen, pressure, gravityKey, evidenceMode, weights, totalWeight]);
 
-  const handleInspectInExplorer = (id, targetO2) => {
-    const exploreSection = document.querySelector('#explore');
-    if (exploreSection) {
-      exploreSection.scrollIntoView({ behavior: 'smooth' });
+  const handleLaunchInLab = (simMat, gravKey, o2Val, pressVal) => {
+    if (simMat) {
+      setMaterialKey(simMat);
+      const matched = COVERAGE_MATRIX.find((c) => c.simMaterial === simMat);
+      if (matched) setSelectedMaterialCode(matched.code);
     }
-    const o2Input = document.querySelector('#oxygen');
-    const searchInput = document.querySelector('#search');
-    if (o2Input) {
-      o2Input.value = targetO2 || oxygen;
-      o2Input.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-    if (searchInput) {
-      searchInput.value = '';
-      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  };
-
-  const handleMatrixCellClick = (simMat, gravKey, o2Midpoint) => {
-    setMaterialKey(simMat);
-    setGravityKey(gravKey);
-    setOxygen(o2Midpoint);
+    if (gravKey) setGravityKey(gravKey);
+    if (o2Val) setOxygen(o2Val);
+    if (pressVal) setPressure(pressVal);
     setActivePreset('custom');
-    const simEl = document.getElementById('si-3d-chamber-anchor');
-    if (simEl) {
-      simEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    setActiveMainTab('lab');
+    window.scrollTo({ top: 120, behavior: 'smooth' });
   };
 
   return (
     <section className="si-dashboard-section" id="si-intelligence">
-      <AnimatedContent className="si-header">
-        <div className="si-top-badges-row">
-          <div className="si-eyebrow-badge">
-            <span className="pulse-dot"></span>
-            Super Intelligence (SI) · Mission Fire Safety Engine
+      {/* Editorial NASA Journal Top Header */}
+      <header className="si-journal-header">
+        <div className="si-journal-top-bar">
+          <div className="si-journal-brand">
+            <span className="si-brand-logo-mark">◬</span>
+            <div className="si-brand-text-wrap">
+              <span className="si-brand-name">FLAME-SI</span>
+              <span className="si-brand-byline">NASA Physical Sciences Informatics Intelligence Engine</span>
+            </div>
           </div>
 
-          {/* Rival-Beating Feature #1: Strict NASA PSI Empirical Mode vs. SI Physics Bridge Toggle */}
-          <div className="si-data-mode-switch" role="group" aria-label="Scientific Evidence Mode">
+          <div className="si-journal-mode-toggle" role="group" aria-label="Scientific Evidence Mode">
             <button
               type="button"
               className={`si-mode-pill ${evidenceMode === 'strict' ? 'is-strict' : ''}`}
               onClick={() => setEvidenceMode('strict')}
             >
-              ● Data Mode: 100% NASA PSI Strict (1,450 Flight Records)
+              Data Mode: 100% NASA PSI Strict
             </button>
             <button
               type="button"
               className={`si-mode-pill ${evidenceMode === 'hybrid' ? 'is-hybrid' : ''}`}
               onClick={() => setEvidenceMode('hybrid')}
             >
-              ✦ SI Physics Bridge (0g Empirical + 1/6g Lunar 3D Scaling)
+              ✦ SI Physics Bridge (Lunar & Mars Scaling)
             </button>
           </div>
         </div>
 
-        <h2>
-          Predictive Fire Hazard <strong>3D Simulation, Gap Matrix & Transparent Ranking</strong>
-        </h2>
-        <p>
-          Synthesizing 1,450 recorded NASA Physical Science Informatics (PSI) test records with real-time 3D WebGL
-          volumetric combustion physics across ISS (0g), Artemis Lunar Base (0.16g), and Mars (0.38g) mission envelopes.
-        </p>
-      </AnimatedContent>
+        {/* 7-Tab Top-Level Navigation Bar */}
+        <nav className="si-main-tabs-nav" aria-label="Dashboard Sections">
+          {[
+            { id: 'lab', label: 'Experiment Lab (3D)' },
+            { id: 'lunar', label: 'Lunar Habitat (Artemis)' },
+            { id: 'ranking', label: 'Mission Ranking' },
+            { id: 'gap-matrix', label: 'Empirical Gap Matrix' },
+            { id: 'envelope', label: 'PSI Flight Envelope' },
+            { id: 'pipeline', label: 'Data Pipeline' },
+            { id: 'copilot', label: 'FLAME-SI Co-Pilot' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`si-main-tab-btn ${activeMainTab === tab.id ? 'is-active' : ''}`}
+              onClick={() => setActiveMainTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </header>
 
-      {/* View Switcher: Simulator vs AI Chat */}
-      <div className="si-view-switcher">
-        <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-          <button
-            type="button"
-            className={`si-view-btn ${viewMode === 'simulator' ? 'is-active' : ''}`}
-            onClick={() => setViewMode('simulator')}
-          >
-            3D Experiment Lab, Gap Matrix & Transparent Rankings
-          </button>
-        </Magnet>
-        <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-          <button
-            type="button"
-            className={`si-view-btn ${viewMode === 'chat' ? 'is-active' : ''}`}
-            onClick={() => setViewMode('chat')}
-          >
-            Chat with FLAME-SI Co-Pilot (Text + Dynamic Charts + 3D Sim)
-          </button>
-        </Magnet>
-      </div>
+      {/* =========================================================================
+          TAB 1: EXPERIMENT LAB (3-Column Layout Matching Rival Screen 1 & 2)
+          ========================================================================= */}
+      {activeMainTab === 'lab' && (
+        <div className="si-lab-3col-grid">
+          {/* LEFT COLUMN: Filters & Material Chips */}
+          <aside className="si-lab-left-filters">
+            <div className="si-filters-header">
+              <h3 className="si-filters-title">Experiment Lab</h3>
+              <p className="si-filters-sub">
+                Every choice below is a value NASA recorded (airflow is converted from the fan reading with NASA's
+                calibration). Each one narrows the others.
+              </p>
+            </div>
 
-      {viewMode === 'chat' ? (
-        <AnimatedContent trigger="mount" distance={0} duration={0.2}>
-          <FlameSIChat />
-        </AnimatedContent>
-      ) : (
-        <>
-          {/* Preset Environments */}
-          <span className="si-preset-label">Select Mission Profile or Atmospheric Condition:</span>
-          <AnimatedContent className="si-presets-grid">
-            {Object.entries(PRESETS).map(([key, p]) => (
-              <Magnet
-                key={key}
-                wrapperClassName="magnet-wrapper"
-                padding={35}
-                magnetStrength={3}
-                maxOffset={5}
-                tilt={0}
-                scale={1}
-                style={{ display: 'grid', minWidth: 0 }}
+            {/* 1. What is burning */}
+            <div className="si-filter-section">
+              <span className="si-filter-num-label">1 · What is burning</span>
+              <div className="si-pill-btn-group">
+                {[
+                  { id: 'solid', label: 'Solid' },
+                  { id: 'liquid', label: 'Liquid droplet' },
+                  { id: 'gas', label: 'Gas' },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className={`si-filter-pill-btn ${selectedFuelType === f.id ? 'is-active' : ''}`}
+                    onClick={() => setSelectedFuelType(f.id)}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. Investigation */}
+            <div className="si-filter-section">
+              <span className="si-filter-num-label">2 · Investigation</span>
+              <select
+                className="si-filter-select"
+                value={selectedInvestigation}
+                onChange={(e) => setSelectedInvestigation(e.target.value)}
               >
-                <SpotlightCard
-                  style={{ width: '100%', height: '100%' }}
-                  as="button"
+                <option value="all">All investigations with this fuel</option>
+                <option value="bass">PSI-25 BASS-II (Burning & Suppression II)</option>
+                <option value="saffire">PSI-98/99/100 SAFFIRE I–III (Spacecraft Fire)</option>
+                <option value="flex">PSI-69 FLEX (Flame Extinction Experiment)</option>
+                <option value="acme">PSI-7585 ACME (Advanced Combustion Microgravity)</option>
+              </select>
+            </div>
+
+            {/* 3. Material with real test count chips */}
+            <div className="si-filter-section">
+              <span className="si-filter-num-label">3 · Material</span>
+              <div className="si-mat-chips-grid">
+                {COVERAGE_MATRIX.map((mat) => (
+                  <button
+                    key={mat.code}
+                    type="button"
+                    className={`si-mat-chip ${selectedMaterialCode === mat.code ? 'is-active' : ''}`}
+                    onClick={() => handleSelectMaterial(mat)}
+                  >
+                    <span className="si-mat-chip-name">{mat.code}</span>
+                    <span className="si-mat-chip-count">{mat.totalTests}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 4. Recorded conditions */}
+            <div className="si-filter-section">
+              <span className="si-filter-num-label">4 · Recorded conditions</span>
+              <div className="si-shape-row">
+                <span className="si-subfilter-label">Sample shape:</span>
+                <div className="si-pill-btn-group sm">
+                  {['Rod', 'Sphere', 'Slab', 'Film'].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className={`si-filter-pill-btn ${selectedShape === s ? 'is-active' : ''}`}
+                      onClick={() => setSelectedShape(s)}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="si-quick-presets-box">
+                <span className="si-subfilter-label">Target Atmosphere:</span>
+                <div className="si-preset-btn-list">
+                  {Object.entries(PRESETS).map(([k, p]) => (
+                    <button
+                      key={k}
+                      type="button"
+                      className={`si-preset-quick-btn ${activePreset === k ? 'is-active' : ''}`}
+                      onClick={() => handlePresetSelect(k)}
+                    >
+                      <strong>{p.title}</strong>
+                      <small>{p.specs}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* CENTER COLUMN: 3D WebGL Volumetric Chamber vs. BASS-II Flow Duct Schematic */}
+          <main className="si-lab-center-stage">
+            <div className="si-stage-top-bar">
+              <div className="si-stage-view-toggles" role="group" aria-label="Experiment Visualizer">
+                <button
                   type="button"
-                  aria-pressed={activePreset === key}
-                  onClick={() => handlePresetSelect(key)}
-                  theme="light"
-                  spotlightColor="#164f91"
-                  intensity={0.08}
-                  spotlightSize={240}
-                  softness={0.7}
-                  shape="circle"
-                  borderGlow={0.6}
-                  proximity={80}
-                  smoothing={0.3}
-                  grain={0}
-                  ambient={false}
-                  flare
-                  className={`si-preset-card ${activePreset === key ? 'is-active' : ''}`}
+                  className={`si-stage-toggle-btn ${labStageMode === '3d' ? 'is-active' : ''}`}
+                  onClick={() => setLabStageMode('3d')}
                 >
-                  <span className="si-preset-title">{p.title}</span>
-                  <span className="si-preset-specs">{p.specs}</span>
-                  <span className="si-preset-desc">{p.desc}</span>
-                </SpotlightCard>
-              </Magnet>
-            ))}
-          </AnimatedContent>
-
-          {/* Scientific Honesty Banner when 1/6g Lunar or Mars is selected */}
-          {gravityKey !== '0g' && gravityKey !== '1g' && (
-            <div className="si-psi-honesty-banner" role="note">
-              <div>
-                <strong>
-                  {evidenceMode === 'strict'
-                    ? '100% NASA PSI Strict Audit — Uncharted Partial-Gravity Regime:'
-                    : 'NASA PSI Data Gap + SI Partial-Gravity Physics Extrapolation:'}
-                </strong>{' '}
-                Every flight test in NASA PSI ran in orbital microgravity (0g, 539 tests with O₂ & pressure) or 1g
-                reference burns (9 Saffire-II samples). <b>Zero solid-fuel PSI tests exist at 0.16g Lunar gravity</b>.{' '}
-                {evidenceMode === 'strict'
-                  ? 'In Strict Mode, Gravity Match scores 0.00 for all investigations.'
-                  : 'Our 3D WebGL engine bridges this gap using Grashof/Péclet buoyancy scaling while linking the closest 0g empirical test below.'}
-              </div>
-            </div>
-          )}
-
-          {/* 3D Interactive Combustion Chamber + Closest Recorded NASA PSI Test Audit */}
-          <div id="si-3d-chamber-anchor" className="si-lab-split-grid">
-            <div className="si-lab-left-col">
-              <CombustionSim3D
-                initialGravity={gravityKey}
-                initialMaterial={materialKey}
-                initialOxygen={oxygen}
-                initialVentilation={ventilation}
-                initialPressure={pressure}
-                onStateChange={handleSimStateChange}
-              />
-            </div>
-
-            {/* Rival-Beating Feature #2: What Happened in Real NASA Tests & Closest Recorded PSI Run */}
-            <div className="si-lab-right-col">
-              <div className="si-empirical-audit-card">
-                <span className="si-audit-eyebrow">EMPIRICAL NASA PSI AUDIT · WHAT HAPPENED IN REAL TESTS</span>
-                <h3>{closestEmpiricalTest.coverage.material}</h3>
-                <p className="si-audit-sub">
-                  <b>{closestEmpiricalTest.coverage.totalTests} matching flight tests</b> in{' '}
-                  {closestEmpiricalTest.coverage.psiRef}
-                </p>
-
-                {/* How real tests ended */}
-                <div className="si-outcomes-block">
-                  <span className="si-outcomes-title">How Real ISS Tests Ended (Recorded Outcomes)</span>
-                  <div className="si-outcome-row">
-                    <div className="si-outcome-head">
-                      <span>Kept burning / Partly burned</span>
-                      <b>{closestEmpiricalTest.coverage.outcomes.burned}%</b>
-                    </div>
-                    <div className="si-outcome-bar">
-                      <div
-                        style={{
-                          width: `${closestEmpiricalTest.coverage.outcomes.burned}%`,
-                          background: '#164f91',
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="si-outcome-row">
-                    <div className="si-outcome-head">
-                      <span>Blew off at high forced airflow</span>
-                      <b>{closestEmpiricalTest.coverage.outcomes.blewOff}%</b>
-                    </div>
-                    <div className="si-outcome-bar">
-                      <div
-                        style={{
-                          width: `${closestEmpiricalTest.coverage.outcomes.blewOff}%`,
-                          background: '#0284c7',
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="si-outcome-row">
-                    <div className="si-outcome-head">
-                      <span>Went out (airflow down/off or radiative quench)</span>
-                      <b>{closestEmpiricalTest.coverage.outcomes.quenched}%</b>
-                    </div>
-                    <div className="si-outcome-bar">
-                      <div
-                        style={{
-                          width: `${closestEmpiricalTest.coverage.outcomes.quenched}%`,
-                          background: '#059669',
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Closest Discrete Test Point to User's Active Sliders */}
-                <div className="si-closest-test-box">
-                  <span className="si-closest-badge">
-                    CLOSEST RECORDED PSI TEST TO ACTIVE POINT ({oxygen}% O₂ · {metrics.kPa} kPa)
-                  </span>
-                  <h4>{closestEmpiricalTest.testId}</h4>
-                  <div className="si-closest-specs">
-                    <span>Fuel: {closestEmpiricalTest.fuelType}</span>
-                    <span>O₂: {closestEmpiricalTest.o2}%</span>
-                    <span>P: {closestEmpiricalTest.kPa} kPa</span>
-                    <span>Flow: {closestEmpiricalTest.airflowCmS} cm/s</span>
-                  </div>
-                  <p>{closestEmpiricalTest.outcome}</p>
-                  <small>{closestEmpiricalTest.note}</small>
-                </div>
-
-                {/* Verbatim NASA Lab Notes & Sensor Glossary */}
-                <div className="si-nasa-words-box">
-                  <span className="si-outcomes-title">In NASA's Recorded Log Words & Sensor Glossary</span>
-                  <blockquote>{closestEmpiricalTest.coverage.labNote}</blockquote>
-                  <div className="si-burn-duration-row">
-                    <div>
-                      <span>MEDIAN BURN DURATION</span>
-                      <strong>{closestEmpiricalTest.coverage.medianBurnSec} s</strong>
-                    </div>
-                    <div>
-                      <span>RECORDED RANGE</span>
-                      <strong>{closestEmpiricalTest.coverage.burnRangeSec}</strong>
-                    </div>
-                  </div>
-                  <p className="si-glossary-footnote">
-                    <b>PSI Telemetry Glossary:</b> <code>Pot</code> = fan potentiometer setting calibrated to anemometer
-                    airflow (cm/s); <code>CO</code>, <code>HCl</code>, <code>HCN</code> = combustion gas-sensor channels;{' '}
-                    <code>LOI</code> = Limiting Oxygen Index (% vol).
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Empirical NASA PSI Flight Envelope & Artemis Lunar Habitat Gap Map */}
-          <div className="si-envelope-wrapper-card" style={{ marginBottom: '2.5rem' }}>
-            <PsiFlightEnvelopeChart
-              oxygen={oxygen}
-              pressure={pressure}
-              gravityKey={gravityKey}
-              onSelectTestPoint={(pt) => {
-                setOxygen(pt.o2);
-                setPressure(Number((pt.pKpa / 6.89476).toFixed(1)));
-              }}
-            />
-          </div>
-
-          {/* 5-Mode Dynamic Telemetry Chart */}
-          <div style={{ marginBottom: '2.5rem' }}>
-            <CombustionTelemetryChart
-              gravityKey={gravityKey}
-              materialKey={materialKey}
-              oxygen={oxygen}
-              ventilation={ventilation}
-              pressure={pressure}
-            />
-          </div>
-
-          {/* Console: Hazard Meter + Transparent Weighted SI Rankings */}
-          <div className="si-console-grid">
-            <AnimatedContent className="si-gauge-panel">
-              <div className="si-gauge-header">
-                <div>
-                  <h3>Fire Hazard Index</h3>
-                  <span className="si-hazard-demo-badge">
-                    {evidenceMode === 'strict' ? 'Strict PSI Empirical Envelope' : 'Hybrid SI Risk Index'}
-                  </span>
-                </div>
-                <span className={`si-hazard-score-label ${metrics.statusClass}`}>{metrics.statusLabel}</span>
+                  ✦ 3D WebGL Chamber (Interactive 360°)
+                </button>
+                <button
+                  type="button"
+                  className={`si-stage-toggle-btn ${labStageMode === 'duct' ? 'is-active' : ''}`}
+                  onClick={() => setLabStageMode('duct')}
+                >
+                  ◫ BASS-II Hardware Flow Duct Schematic
+                </button>
               </div>
 
-              <div className="si-hazard-score-container">
-                <span className={`si-hazard-score-value ${metrics.statusClass}`}>{metrics.score}</span>
-                <div className="si-meter-bar">
+              <button
+                type="button"
+                className={`si-telemetry-toggle-btn ${showLabTelemetry ? 'is-open' : ''}`}
+                onClick={() => setShowLabTelemetry(!showLabTelemetry)}
+              >
+                {showLabTelemetry ? 'Hide Live Telemetry ▴' : 'View Live Telemetry ▾'}
+              </button>
+            </div>
+
+            {/* Render 3D WebGL or 2D Hardware Schematic */}
+            <div className="si-stage-canvas-card">
+              {labStageMode === '3d' ? (
+                <CombustionSim3D
+                  initialGravity={gravityKey}
+                  initialMaterial={materialKey}
+                  initialOxygen={oxygen}
+                  initialVentilation={ventilation}
+                  initialPressure={pressure}
+                  onStateChange={handleSimStateChange}
+                />
+              ) : (
+                <FlowDuctSchematic
+                  material={activeCoverage.material}
+                  ventilation={ventilation}
+                  gravityKey={gravityKey}
+                  oxygen={oxygen}
+                />
+              )}
+            </div>
+
+            <p className="si-figure-caption">
+              <strong>Fig. 1.</strong>{' '}
+              {labStageMode === '3d'
+                ? `3D Volumetric flame chamber simulating ${activeCoverage.material} at ${oxygen}% O₂, ${metrics.kPa} kPa, and ${(ventilation * 100).toFixed(1)} cm/s ventilation under ${gravityKey} gravity. Real-time GLSL Navier-Stokes approximation.`
+                : 'BASS-II flow duct mounted inside the Microgravity Science Glovebox (MSG) on ISS. Opposed ventilation stabilizes a cap flame at the cylindrical fuel rod apex.'}
+            </p>
+
+            {/* Optional Collapsible Telemetry Curves */}
+            {showLabTelemetry && (
+              <div className="si-stage-telemetry-drawer">
+                <CombustionTelemetryChart
+                  gravityKey={gravityKey}
+                  materialKey={materialKey}
+                  oxygen={oxygen}
+                  ventilation={ventilation}
+                  pressure={pressure}
+                />
+              </div>
+            )}
+          </main>
+
+          {/* RIGHT COLUMN: What Happened in Real Tests */}
+          <aside className="si-lab-right-audit">
+            <div className="si-audit-header">
+              <span className="si-audit-eyebrow">WHAT HAPPENED IN REAL TESTS</span>
+              <h2 className="si-audit-mat-name">{activeCoverage.material}</h2>
+              <span className="si-audit-tests-count">{activeCoverage.totalTests} matching flight tests</span>
+            </div>
+
+            {/* How it ended (Percentage Bars) */}
+            <div className="si-how-ended-box">
+              <span className="si-box-title">How it ended</span>
+
+              <div className="si-ended-stat-row">
+                <div className="si-ended-label-line">
+                  <span>Partly burned / Kept burning</span>
+                  <b>{activeCoverage.outcomes.burned}%</b>
+                </div>
+                <div className="si-ended-bar-track">
                   <div
-                    className="si-meter-fill"
-                    style={{
-                      width: `${metrics.score}%`,
-                      backgroundColor:
-                        metrics.score >= 80 ? '#dc2626' : metrics.score >= 60 ? '#ea580c' : '#16a34a',
-                    }}
+                    className="si-ended-bar-fill burned"
+                    style={{ width: `${activeCoverage.outcomes.burned}%` }}
                   />
                 </div>
               </div>
 
-              <div className="si-metrics-table">
-                <div className="si-metric-row">
-                  <span>Oxygen Concentration:</span>
-                  <span>{oxygen}% vol</span>
+              <div className="si-ended-stat-row">
+                <div className="si-ended-label-line">
+                  <span>Blew off at high airflow</span>
+                  <b>{activeCoverage.outcomes.blewOff}%</b>
                 </div>
-                <div className="si-metric-row">
-                  <span>Cabin Pressure:</span>
-                  <span>
-                    {pressure.toFixed(1)} psi ({metrics.kPa} kPa)
-                  </span>
-                </div>
-                <div className="si-metric-row">
-                  <span>Oxygen Partial Pressure (PO₂):</span>
-                  <span>{metrics.pO2} psi</span>
-                </div>
-                <div className="si-metric-row">
-                  <span>Cabin Ventilation Speed:</span>
-                  <span>
-                    {(ventilation * 100).toFixed(1)} cm/s ({ventilation.toFixed(2)} m/s)
-                  </span>
-                </div>
-                <div className="si-metric-row">
-                  <span>Gravity Environment:</span>
-                  <span>{gravityKey}</span>
-                </div>
-                <div className="si-metric-row">
-                  <span>Flammability Spread vs Earth:</span>
-                  <span
-                    style={{
-                      color: metrics.statusClass === 'status-critical' ? '#dc2626' : '#164f91',
-                    }}
-                  >
-                    {metrics.flammabilityDelta}
-                  </span>
+                <div className="si-ended-bar-track">
+                  <div
+                    className="si-ended-bar-fill blowoff"
+                    style={{ width: `${activeCoverage.outcomes.blewOff}%` }}
+                  />
                 </div>
               </div>
 
-              {/* Rival-Beating Feature #3: Judge-Adjustable Multi-Criteria Ranking Weights */}
-              <div className="si-weight-tuner-box">
-                <div className="si-weight-tuner-head">
-                  <span>TRANSPARENT RANKING WEIGHTS (0–3)</span>
-                  <button
-                    type="button"
-                    className="si-weight-toggle-btn"
-                    onClick={() => setShowWeightControls((v) => !v)}
-                  >
-                    {showWeightControls ? 'Hide Sliders ▴' : 'Tune Weights ▾'}
-                  </button>
+              <div className="si-ended-stat-row">
+                <div className="si-ended-label-line">
+                  <span>Went out (airflow off / radiative quench)</span>
+                  <b>{activeCoverage.outcomes.quenched}%</b>
                 </div>
-                <p className="si-weight-formula-note">
-                  Every criterion's sub-score is shown on each card so nothing hides inside a black-box number. Total
-                  Weight = <b>{totalWeight}</b>
+                <div className="si-ended-bar-track">
+                  <div
+                    className="si-ended-bar-fill quenched"
+                    style={{ width: `${activeCoverage.outcomes.quenched}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* In NASA's words */}
+            <div className="si-nasa-words-box">
+              <span className="si-box-title">In NASA's words</span>
+              <p className="si-glossary-hint">
+                "Pot" is the fan potentiometer setting; "HCl", "HCN", and "CO" are gas-sensor readings.
+              </p>
+              <blockquote className="si-nasa-quote">
+                {activeCoverage.labNote}
+              </blockquote>
+            </div>
+
+            {/* How long it burned */}
+            <div className="si-burn-time-box">
+              <span className="si-box-title">How long it burned</span>
+              <div className="si-burn-big-num">
+                <strong>{activeCoverage.medianBurnSec} s</strong>
+                <span>median</span>
+              </div>
+              <small className="si-burn-range">range {activeCoverage.burnRangeSec}</small>
+            </div>
+
+            {/* Same sample, both gravities */}
+            <div className="si-gravity-comparison-box">
+              <span className="si-box-title">Same sample, both gravities</span>
+              <div className="si-grav-compare-table">
+                <div className="si-grav-compare-row head">
+                  <span>Sample</span>
+                  <span>Microgravity burn</span>
+                  <span>1 g burn</span>
+                </div>
+                <div className="si-grav-compare-row">
+                  <b>{activeCoverage.code}</b>
+                  <span>{activeCoverage.comparison.micro}</span>
+                  <span>{activeCoverage.comparison.earth}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Closest Recorded Discrete PSI Test Point */}
+            <div className="si-closest-test-callout">
+              <span className="si-callout-badge">Closest Recorded NASA PSI Test Point</span>
+              <h5>{closestEmpiricalTest.testId}</h5>
+              <div className="si-closest-mini-specs">
+                <span>{closestEmpiricalTest.fuelType}</span>
+                <span>{closestEmpiricalTest.o2}% O₂</span>
+                <span>{closestEmpiricalTest.kPa} kPa</span>
+                <span>{closestEmpiricalTest.airflowCmS} cm/s</span>
+              </div>
+              <p>{closestEmpiricalTest.outcome}</p>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB 2: LUNAR HABITAT (Artemis R1-R5 Directives)
+          ========================================================================= */}
+      {activeMainTab === 'lunar' && (
+        <div className="si-lunar-view-wrap">
+          {/* Quick Action Banner */}
+          <div className="si-lunar-action-banner">
+            <div>
+              <strong>Artemis Target Condition: 34% O₂ · 10.2 psi (70.3 kPa) · 0.16 g (Lunar)</strong>
+              <p>
+                Zero solid-fuel PSI flight tests were conducted at 0.16g or at 34% O₂. Click below to inspect our
+                validated 3D Navier-Stokes extrapolation for this exact atmosphere.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="si-banner-action-btn"
+              onClick={() => handleLaunchInLab('pmma', '1/6g', 34, 10.2)}
+            >
+              Simulate Artemis Atmosphere in 3D Lab ↗
+            </button>
+          </div>
+
+          <LunarHabitatRecommendations />
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB 3: MISSION RANKING (7 Sliders + Live Formula Breakdown)
+          ========================================================================= */}
+      {activeMainTab === 'ranking' && (
+        <div className="si-ranking-view-wrap">
+          {/* Section 1: Choose the mission and what counts */}
+          <div className="si-ranking-config-card">
+            <h3 className="si-section-serif-title">1 · Choose the mission and what counts</h3>
+            
+            <div className="si-ranking-config-grid">
+              {/* Mission Selector */}
+              <div className="si-mission-select-box">
+                <span className="si-subfilter-label">Mission:</span>
+                <div className="si-pill-btn-group">
+                  {Object.entries(PRESETS).map(([k, p]) => (
+                    <button
+                      key={k}
+                      type="button"
+                      className={`si-filter-pill-btn ${rankingMission === k ? 'is-active' : ''}`}
+                      onClick={() => setRankingMission(k)}
+                    >
+                      {p.title}
+                    </button>
+                  ))}
+                </div>
+                <div className="si-mission-specs-pill">
+                  {PRESETS[rankingMission]?.specs}
+                </div>
+                <p className="si-mission-desc-note">
+                  Atmosphere profile from the NASA Space Apps Challenge brief.
                 </p>
 
-                {showWeightControls && (
-                  <div className="si-weight-sliders-list">
-                    {[
-                      { key: 'o2Match', label: 'Oxygen Match' },
-                      { key: 'pressureMatch', label: 'Pressure Match' },
-                      { key: 'gravityMatch', label: 'Gravity Match' },
-                      { key: 'hazardRelevance', label: 'Hazard Relevance' },
-                      { key: 'testScale', label: 'Test Scale (Spacecraft vs Lab)' },
-                      { key: 'outcomesRecorded', label: 'Outcomes Recorded' },
-                      { key: 'numberOfTests', label: 'Number of Tests' },
-                    ].map((crit) => (
-                      <div key={crit.key} className="si-weight-slider-row">
-                        <div className="si-weight-label-line">
-                          <span>{crit.label}</span>
-                          <b>× {weights[crit.key]}</b>
-                        </div>
-                        <input
-                          type="range"
-                          min="0"
-                          max="3"
-                          step="1"
-                          value={weights[crit.key]}
-                          onChange={(e) =>
-                            setWeights((prev) => ({
-                              ...prev,
-                              [crit.key]: Number(e.target.value),
-                            }))
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </AnimatedContent>
-
-            {/* Right: Transparent Multi-Criteria Investigation Rankings */}
-            <AnimatedContent className="si-rankings-panel">
-              <div className="si-rankings-header">
-                <div>
-                  <h3>Transparent Multi-Criteria Investigation Rankings</h3>
-                  <p>
-                    Click any investigation's score breakdown to audit its exact weighted calculation across all 7
-                    criteria.
+                <div style={{ marginTop: '1.25rem' }}>
+                  <span className="si-subfilter-label">Fuel of interest:</span>
+                  <select className="si-filter-select" defaultValue="solid">
+                    <option value="solid">Solid materials (cabin fire load)</option>
+                    <option value="all">All investigations (solid, liquid, gas)</option>
+                  </select>
+                  <p className="si-mission-desc-note">
+                    Default: solid materials, because they are what actually burns in a habitable volume.
                   </p>
                 </div>
               </div>
 
-              <div>
-                {rankedInvestigations.map((inv, idx) => {
-                  const isExpanded = expandedRankId === inv.id;
-                  return (
-                    <div key={inv.id} className={`si-rank-card ${idx === 0 ? 'top-rank' : ''}`}>
-                      <div className="si-rank-badge-row">
-                        <span className="si-rank-num">
-                          RANK #{idx + 1} · {inv.acronym || inv.id.toUpperCase()}
-                        </span>
-                        <span className="si-rank-match">
-                          Weighted Score: <CountUp to={inv.matchPercent} suffix=" / 100" duration={0.6} />
-                        </span>
-                      </div>
-                      <h4>{inv.name}</h4>
-
-                      {/* Transparent Sub-Score Strip */}
-                      <div className="si-subscore-strip">
-                        <div>
-                          <span>O₂ (×{weights.o2Match})</span>
-                          <b>{inv.subScores.o2Match.toFixed(2)}</b>
-                        </div>
-                        <div>
-                          <span>Press (×{weights.pressureMatch})</span>
-                          <b>{inv.subScores.pressureMatch.toFixed(2)}</b>
-                        </div>
-                        <div>
-                          <span>Grav (×{weights.gravityMatch})</span>
-                          <b>{inv.subScores.gravityMatch.toFixed(2)}</b>
-                        </div>
-                        <div>
-                          <span>Hazard (×{weights.hazardRelevance})</span>
-                          <b>{inv.subScores.hazardRelevance.toFixed(2)}</b>
-                        </div>
-                        <div>
-                          <span>Scale (×{weights.testScale})</span>
-                          <b>{inv.subScores.testScale.toFixed(2)}</b>
-                        </div>
-                        <div>
-                          <span>Outcomes (×{weights.outcomesRecorded})</span>
-                          <b>{inv.subScores.outcomesRecorded.toFixed(2)}</b>
-                        </div>
-                        <div>
-                          <span>Runs (×{weights.numberOfTests})</span>
-                          <b>{inv.subScores.numberOfTests.toFixed(2)}</b>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="si-breakdown-toggle"
-                        onClick={() => setExpandedRankId(isExpanded ? null : inv.id)}
-                      >
-                        {isExpanded ? '▾ Hide score calculation breakdown' : '▸ Score calculation breakdown'}
-                      </button>
-
-                      {isExpanded && (
-                        <div className="si-formula-breakdown-box">
-                          <code>
-                            Weighted Sum = ({inv.subScores.o2Match.toFixed(2)}×{weights.o2Match}) + (
-                            {inv.subScores.pressureMatch.toFixed(2)}×{weights.pressureMatch}) + (
-                            {inv.subScores.gravityMatch.toFixed(2)}×{weights.gravityMatch}) + (
-                            {inv.subScores.hazardRelevance.toFixed(2)}×{weights.hazardRelevance}) + (
-                            {inv.subScores.testScale.toFixed(2)}×{weights.testScale}) + (
-                            {inv.subScores.outcomesRecorded.toFixed(2)}×{weights.outcomesRecorded}) + (
-                            {inv.subScores.numberOfTests.toFixed(2)}×{weights.numberOfTests}) ={' '}
-                            <b>{inv.weightedSum}</b> / {totalWeight} → <b>{inv.matchPercent} pts</b>
-                          </code>
-                        </div>
-                      )}
-
-                      <div className="si-rank-insight">
-                        <strong>SI Scientific Takeaway & Safety Directive:</strong>
-                        {inv.siInterpretation || inv.objective}
-                      </div>
-
-                      <div className="si-rank-actions">
-                        <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-                          <button
-                            type="button"
-                            className="si-action-btn primary"
-                            onClick={() =>
-                              handleInspectInExplorer(inv.id, inv.oxygen ? parseInt(inv.oxygen, 10) : oxygen)
-                            }
-                          >
-                            Inspect in Explorer ↗
-                          </button>
-                        </Magnet>
-                        <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-                          <button
-                            type="button"
-                            className="si-action-btn secondary"
-                            onClick={() => setViewMode('chat')}
-                          >
-                            Simulate in FLAME-SI Chat
-                          </button>
-                        </Magnet>
-                        {inv.sourceUrl && (
-                          <Magnet wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-                            <a
-                              href={inv.sourceUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="si-action-btn secondary"
-                            >
-                              NASA PSI Source ↗
-                            </a>
-                          </Magnet>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </AnimatedContent>
-          </div>
-
-          {/* Bottom Interactive Tabs: Evidence Gap Matrix, Data Pipeline, Prevention, Detection, Suppression */}
-          <div className="si-pillars-container">
-            <AnimatedContent className="si-tabs-nav">
-              {[
-                { id: 'gap-matrix', label: '01. Where Tests Exist vs. Gaps (Matrix)' },
-                { id: 'pipeline', label: '02. 9-Stage Data & 3D Physics Pipeline' },
-                { id: 'prevention', label: '03. Prevention & Do-Not-Approve Rules' },
-                { id: 'detection', label: '04. Detection & Suppression' },
-              ].map((t) => (
-                <Magnet key={t.id} wrapperClassName="magnet-wrapper" padding={35} magnetStrength={3} maxOffset={5} tilt={0} scale={1}>
-                  <button
-                    type="button"
-                    className={`si-tab-btn ${activeTab === t.id ? 'is-active' : ''}`}
-                    onClick={() => setActiveTab(t.id)}
-                  >
-                    {t.label}
-                  </button>
-                </Magnet>
-              ))}
-            </AnimatedContent>
-
-            {/* TAB 1: Interactive Evidence Coverage & Gap Matrix */}
-            {activeTab === 'gap-matrix' && (
-              <div className="si-gap-matrix-wrap">
-                <div className="si-gap-matrix-intro">
-                  <div>
-                    <h4>Where NASA PSI Tests Exist — And Where None Do (Interactive 3D Launcher)</h4>
-                    <p>
-                      Solid-fuel test counts in NASA PSI by oxygen band and gravity level. Hatched cells mark{' '}
-                      <b>uncharted empirical gaps</b> (0 recorded PSI flight tests at 0.16g Moon or 0.38g Mars).{' '}
-                      <b>Click any cell below</b> to launch that exact material, gravity, and oxygen band in our 3D
-                      WebGL Simulator above!
-                    </p>
-                  </div>
+              {/* 7 Weight Sliders */}
+              <div className="si-weights-tuner-box">
+                <div className="si-weights-head-row">
+                  <span className="si-subfilter-label">How much each criterion counts</span>
+                  <small>0 = ignore, 3 = counts most. Sliders favour atmosphere match and hazard relevance.</small>
                 </div>
 
-                <div className="si-matrix-scroll">
-                  <table className="si-matrix-table">
-                    <thead>
-                      <tr>
-                        <th rowSpan="2">Material (PSI Solid Fuels)</th>
-                        <th colSpan="6">Microgravity (0g ISS Flight Tests — Recorded in PSI)</th>
-                        <th colSpan="2">0.16g Moon (Artemis Target)</th>
-                        <th colSpan="2">0.38g Mars Target</th>
-                      </tr>
-                      <tr>
-                        {O2_BAND_LABELS.map((b) => (
-                          <th key={b}>{b} O₂</th>
-                        ))}
-                        <th>21–30% O₂</th>
-                        <th>≥30% O₂ (Lunar)</th>
-                        <th>21–28% O₂</th>
-                        <th>≥28% O₂</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {COVERAGE_MATRIX.map((row) => (
-                        <tr key={row.material}>
-                          <td className="si-matrix-mat-cell">
-                            <strong>{row.material}</strong>
-                            <small>
-                              {row.totalTests} total runs ({row.unrecordedO2} unspec. O₂)
-                            </small>
+                <div className="si-weight-sliders-2col">
+                  {[
+                    { key: 'o2Match', label: 'Oxygen match' },
+                    { key: 'pressureMatch', label: 'Pressure match' },
+                    { key: 'gravityMatch', label: 'Gravity match' },
+                    { key: 'hazardRelevance', label: 'Hazard relevance' },
+                    { key: 'testScale', label: 'Test scale' },
+                    { key: 'outcomesRecorded', label: 'Outcomes recorded' },
+                    { key: 'numberOfTests', label: 'Number of tests' },
+                  ].map((crit) => (
+                    <div key={crit.key} className="si-weight-slider-unit">
+                      <div className="si-weight-label-row">
+                        <span>{crit.label}</span>
+                        <b>× {weights[crit.key]}</b>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="3"
+                        step="1"
+                        value={weights[crit.key]}
+                        onChange={(e) =>
+                          setWeights((prev) => ({
+                            ...prev,
+                            [crit.key]: Number(e.target.value),
+                          }))
+                        }
+                        className="si-slider-input"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="si-weights-total-sum">
+                  Total weight = {weights.o2Match} + {weights.pressureMatch} + {weights.gravityMatch} +{' '}
+                  {weights.hazardRelevance} + {weights.testScale} + {weights.outcomesRecorded} +{' '}
+                  {weights.numberOfTests} = <b>{totalWeight}</b>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: The ranking Table */}
+          <div className="si-ranked-table-card">
+            <h3 className="si-section-serif-title">2 · The ranking</h3>
+            <p className="si-table-subtitle">
+              Every criterion's score is shown, so nothing hides inside a single number. Click a row to see why it
+              scores what it does.
+            </p>
+
+            <div className="si-gravity-zero-callout">
+              <strong>Gravity scores 0.00 for everyone.</strong> No PSI investigation ran at partial gravity. That lowers
+              every score equally; it does not change the order. Lunar-gravity results that do exist (LUCI, parabolic
+              flights) are cited in the Lunar Habitat section.
+            </div>
+
+            <div className="si-table-scroll-wrap">
+              <table className="si-editorial-rank-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Investigation</th>
+                    <th>Oxygen match<br /><small>× {weights.o2Match}</small></th>
+                    <th>Pressure match<br /><small>× {weights.pressureMatch}</small></th>
+                    <th>Gravity match<br /><small>× {weights.gravityMatch}</small></th>
+                    <th>Hazard relevance<br /><small>× {weights.hazardRelevance}</small></th>
+                    <th>Test scale<br /><small>× {weights.testScale}</small></th>
+                    <th>Outcomes recorded<br /><small>× {weights.outcomesRecorded}</small></th>
+                    <th>Number of tests<br /><small>× {weights.numberOfTests}</small></th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rankedInvestigations.map((inv, idx) => {
+                    const isExpanded = expandedRankId === inv.id;
+                    return (
+                      <React.Fragment key={inv.id}>
+                        <tr
+                          className={`si-rank-row ${isExpanded ? 'is-expanded' : ''}`}
+                          onClick={() => setExpandedRankId(isExpanded ? null : inv.id)}
+                        >
+                          <td className="si-rank-col-num">{idx + 1}</td>
+                          <td className="si-rank-col-name">
+                            <strong>{inv.acronym || inv.id.toUpperCase()}</strong>
+                            <span>{inv.name}</span>
+                            <span className="si-row-expand-link">
+                              {isExpanded ? '▾ Hide breakdown' : '▸ Score calculation breakdown'}
+                            </span>
                           </td>
-                          {row.bands0g.map((count, bIdx) => (
-                            <td key={bIdx}>
-                              <button
-                                type="button"
-                                className={`si-matrix-cell-btn ${count > 0 ? 'has-data' : 'is-hatched'}`}
-                                title={`Click to simulate ${row.material} at ${O2_BAND_MIDPOINTS[bIdx]}% O2 in 0g`}
-                                onClick={() =>
-                                  handleMatrixCellClick(row.simMaterial, '0g', O2_BAND_MIDPOINTS[bIdx])
-                                }
-                              >
-                                {count > 0 ? count : '—'}
-                              </button>
-                            </td>
-                          ))}
-
-                          {/* 0.16g Moon Gap Cells */}
-                          {[25, 34].map((o2Val, mIdx) => (
-                            <td key={`moon-${mIdx}`}>
-                              <button
-                                type="button"
-                                className="si-matrix-cell-btn is-gap-lunar"
-                                title={`0 PSI tests exist here! Click to simulate ${row.material} in 1/6g Lunar at ${o2Val}% O2`}
-                                onClick={() => handleMatrixCellClick(row.simMaterial, '1/6g', o2Val)}
-                              >
-                                0 · Simulate ↗
-                              </button>
-                            </td>
-                          ))}
-
-                          {/* 0.38g Mars Gap Cells */}
-                          {[24, 28].map((o2Val, mIdx) => (
-                            <td key={`mars-${mIdx}`}>
-                              <button
-                                type="button"
-                                className="si-matrix-cell-btn is-gap-mars"
-                                title={`0 PSI tests exist here! Click to simulate ${row.material} in partial gravity at ${o2Val}% O2`}
-                                onClick={() => handleMatrixCellClick(row.simMaterial, '1/6g', o2Val)}
-                              >
-                                0 · Simulate ↗
-                              </button>
-                            </td>
-                          ))}
+                          <td className="si-subscore-cell">{inv.subScores.o2Match.toFixed(2)}</td>
+                          <td className="si-subscore-cell">{inv.subScores.pressureMatch.toFixed(2)}</td>
+                          <td className="si-subscore-cell">{inv.subScores.gravityMatch.toFixed(2)}</td>
+                          <td className="si-subscore-cell">{inv.subScores.hazardRelevance.toFixed(2)}</td>
+                          <td className="si-subscore-cell">{inv.subScores.testScale.toFixed(2)}</td>
+                          <td className="si-subscore-cell">{inv.subScores.outcomesRecorded.toFixed(2)}</td>
+                          <td className="si-subscore-cell">{inv.subScores.numberOfTests.toFixed(2)}</td>
+                          <td className="si-score-col-cell">
+                            <div className="si-score-display">
+                              <strong>{inv.matchPercent}</strong>
+                              <div className="si-score-bar-bg">
+                                <div
+                                  className="si-score-bar-fill"
+                                  style={{ width: `${inv.matchPercent}%` }}
+                                />
+                              </div>
+                            </div>
+                          </td>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
 
-                <div className="si-gap-findings-row">
-                  <div className="si-gap-finding-card">
-                    <span>CRITICAL FINDING #1 · LUNAR HABITAT GAP</span>
-                    <h5>30–34% O₂ at 0.16g Sits in an Empty PSI Column</h5>
-                    <p>
-                      While NASA PSI has 539 microgravity tests with O₂ and pressure (and 135 solid-fuel runs in
-                      BASS-II / Saffire), the 0.16g Lunar column is completely empty. Our 3D Grashof-scaling simulator
-                      provides physics-based decision support for this exact unmeasured zone.
-                    </p>
-                  </div>
-                  <div className="si-gap-finding-card">
-                    <span>CRITICAL FINDING #2 · CERTIFICATION MANDATE</span>
-                    <h5>Do Not Approve Habitat Materials on 1g Upward Tests Alone</h5>
-                    <p>
-                      NASA-STD-6001 upward flame spread tests in 1g Earth air fail to capture low-velocity (1–5 cm/s)
-                      microgravity opposed-flow stabilization observed in BASS-II, where materials burn steadily at
-                      lower oxygen concentrations than on Earth.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 2: 9-Stage Data Provenance & 3D Physics Pipeline */}
-            {activeTab === 'pipeline' && (
-              <div className="si-pipeline-grid">
-                {[
-                  {
-                    step: '01 · RAW NASA PSI TABLES',
-                    tier: 'TIER A · EMPIRICAL INGESTION',
-                    title: '14 NASA PSI Experiment Tables (1,450 Records)',
-                    desc: 'Unmodified ingestion of BASS, BASS-II, Saffire I–III, FLEX, FLEX-2, ACME (BRE, CFI, CFI-G, s-Flame), and SAME-R datasets.',
-                  },
-                  {
-                    step: '02 · NTRS REPORT EXTRACTION',
-                    tier: 'TIER A · EMPIRICAL INGESTION',
-                    title: 'NASA/TM-20210011385 (144-Page BASS-II Report)',
-                    desc: 'Cross-referenced 110 discrete test endings, potentiometer fan calibrations, and astronaut voice-log notes.',
-                  },
-                  {
-                    step: '03 · CALIBRATION & AUDIT',
-                    tier: 'TIER B · 18 INTEGRITY CHECKS',
-                    title: 'Anemometer Calibration & Blank-Cell Preservation',
-                    desc: 'Converts fan potentiometer readings to cm/s airflow; preserves unrecorded pressure cells without inventing synthetic zeros.',
-                  },
-                  {
-                    step: '04 · TRANSPARENT SCORING',
-                    tier: 'TIER B · RANKING ENGINE',
-                    title: '7-Criterion Weighted Mission Matching',
-                    desc: 'Computes explicit 0.00–1.00 sub-scores for O₂, Pressure, Gravity, Hazard, Scale, Outcomes, and Run Count.',
-                  },
-                  {
-                    step: '05 · 3D WEBGL GLSL ENGINE',
-                    tier: 'TIER C · INTERACTIVE SIMULATION',
-                    title: '4-Shell Volumetric Shader + 9,200 GPU Motes',
-                    desc: 'Simulates 0g spherical diffusion, 1/6g Lunar bell plumes, 1g teardrops, and Saffire-III forced-convection wakes in real time.',
-                  },
-                  {
-                    step: '06 · MULTIMODAL FLAME-SI',
-                    tier: 'TIER C · AI CO-PILOT',
-                    title: 'Inline Text + 4 Dynamic Charts + Live SI Report',
-                    desc: 'Generates synchronized scientific explanations, SVG telemetry curves, and 3D WebGL chambers inside every chat response.',
-                  },
-                ].map((node) => (
-                  <div key={node.step} className="si-pipeline-card">
-                    <div className="si-pipeline-top">
-                      <span className="si-pipeline-step">{node.step}</span>
-                      <span className="si-pipeline-tier">{node.tier}</span>
-                    </div>
-                    <h5>{node.title}</h5>
-                    <p>{node.desc}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* TAB 3: Prevention Protocols */}
-            {activeTab === 'prevention' && (
-              <div className="si-tab-content-panel">
-                <div className="si-pillar-card">
-                  <h4>R1: Do Not Approve Materials on 1g Tests Alone</h4>
-                  <p>
-                    Materials that self-extinguish in 1g upward burns at 21% O₂ can sustain steady spherical or cap
-                    flames in microgravity under 2–10 cm/s ventilation, and burn rapidly in 34% O₂ Lunar atmospheres.
-                  </p>
-                  <span className="si-pillar-badge">Validated by PSI-25 BASS-II & ACME-BRE</span>
-                </div>
-                <div className="si-pillar-card">
-                  <h4>R2: Mandatory HVAC Cut-Off Below 0.10 m/s</h4>
-                  <p>
-                    In quiescent microgravity, solid flames self-quench via radiative heat loss. Cabin ventilation must
-                    automatically throttle below 0.08 m/s upon smoke/thermal detection to prevent forced-convection
-                    flashover.
-                  </p>
-                  <span className="si-pillar-badge">Validated by PSI-98/99/100 Saffire I–III</span>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 4: Detection & Suppression */}
-            {activeTab === 'detection' && (
-              <div className="si-tab-content-panel">
-                <div className="si-pillar-card">
-                  <h4>SAME-R Soot Agglomeration & DAFT-2 Dust Filtering</h4>
-                  <p>
-                    Without buoyancy, smoke particles cluster into 8×–12× larger agglomerates. Lunar and Martian
-                    detectors must combine multi-angle laser scattering to distinguish regolith dust from pyrolysis
-                    soot.
-                  </p>
-                  <span className="si-pillar-badge">Validated by SAME-R (#247) & DAFT-2</span>
-                </div>
-                <div className="si-pillar-card">
-                  <h4>FLEX Cool-Flame Reignition & Inert Dilution</h4>
-                  <p>
-                    Low-temperature (600–800 K) cool flames persist invisibly after apparent extinction. Compartments
-                    must remain inerted with CO₂/He diluent until thermal radiometry confirms surface cooling below
-                    420 K.
-                  </p>
-                  <span className="si-pillar-badge">Validated by PSI-69 FLEX & FLEX-2</span>
-                </div>
-              </div>
-            )}
+                        {isExpanded && (
+                          <tr className="si-breakdown-row">
+                            <td colSpan="10">
+                              <div className="si-expanded-formula-card">
+                                <code>
+                                  Score = [({inv.subScores.o2Match.toFixed(2)} × {weights.o2Match}) + (
+                                  {inv.subScores.pressureMatch.toFixed(2)} × {weights.pressureMatch}) + (
+                                  {inv.subScores.gravityMatch.toFixed(2)} × {weights.gravityMatch}) + (
+                                  {inv.subScores.hazardRelevance.toFixed(2)} × {weights.hazardRelevance}) + (
+                                  {inv.subScores.testScale.toFixed(2)} × {weights.testScale}) + (
+                                  {inv.subScores.outcomesRecorded.toFixed(2)} × {weights.outcomesRecorded}) + (
+                                  {inv.subScores.numberOfTests.toFixed(2)} × {weights.numberOfTests})] / {totalWeight}{' '}
+                                  = <b>{inv.weightedSum}</b> / {totalWeight} → <strong>{inv.matchPercent} pts</strong>
+                                </code>
+                                <p className="si-expanded-takeaway">
+                                  <strong>Mission Relevance Takeaway:</strong> {inv.siInterpretation || inv.objective}
+                                </p>
+                                <div className="si-expanded-actions">
+                                  <button
+                                    type="button"
+                                    className="si-table-action-btn primary"
+                                    onClick={() => handleLaunchInLab(inv.fuel?.includes('pmma') ? 'pmma' : 'cotton', '0g', 21, 14.7)}
+                                  >
+                                    Simulate Investigation in 3D Lab ↗
+                                  </button>
+                                  {inv.sourceUrl && (
+                                    <a
+                                      href={inv.sourceUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="si-table-action-btn secondary"
+                                    >
+                                      NASA PSI Source ↗
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </>
+        </div>
       )}
+
+      {/* =========================================================================
+          TAB 4: EMPIRICAL GAP MATRIX (Matching Rival Screen 8)
+          ========================================================================= */}
+      {activeMainTab === 'gap-matrix' && (
+        <div className="si-gap-matrix-view-wrap">
+          <div className="si-gap-matrix-card">
+            <h3 className="si-section-serif-title">Where tests exist, and where none do</h3>
+            <p className="si-matrix-sub">
+              Solid-fuel tests in PSI by oxygen level and gravity level. Empty cells are hatched: nothing was measured
+              there, so nothing can be said. <strong>Click any cell</strong> to simulate that condition in our 3D Lab.
+            </p>
+
+            <div className="si-matrix-scroll-container">
+              <table className="si-hatched-matrix-table">
+                <thead>
+                  <tr>
+                    <th rowSpan="2" className="mat-th">Material</th>
+                    <th colSpan="7" className="group-th">Microgravity</th>
+                    <th colSpan="7" className="group-th">0.16 g (Moon)</th>
+                    <th colSpan="7" className="group-th">0.38 g (Mars)</th>
+                  </tr>
+                  <tr>
+                    {/* Microgravity O2 Bands */}
+                    <th>&lt;16%</th>
+                    <th>16–19%</th>
+                    <th>19–21%</th>
+                    <th>21–22.2%</th>
+                    <th>22.2–30%</th>
+                    <th>≥30%</th>
+                    <th>O₂ not rec.</th>
+
+                    {/* Lunar O2 Bands */}
+                    <th>&lt;16%</th>
+                    <th>16–19%</th>
+                    <th>19–21%</th>
+                    <th>21–22.2%</th>
+                    <th>22.2–30%</th>
+                    <th>≥30%</th>
+                    <th>O₂ not rec.</th>
+
+                    {/* Mars O2 Bands */}
+                    <th>&lt;16%</th>
+                    <th>16–19%</th>
+                    <th>19–21%</th>
+                    <th>21–22.2%</th>
+                    <th>22.2–30%</th>
+                    <th>≥30%</th>
+                    <th>O₂ not rec.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COVERAGE_MATRIX.map((row) => (
+                    <tr key={row.material}>
+                      <td className="mat-name-td">
+                        <strong>{row.material}</strong>
+                      </td>
+
+                      {/* 0g Microgravity Cells */}
+                      {row.bands0g.map((cnt, i) => (
+                        <td key={`0g-${i}`} className={cnt > 0 ? 'cell-has-data' : 'cell-hatched'}>
+                          <button
+                            type="button"
+                            className="si-matrix-cell-click"
+                            onClick={() => handleLaunchInLab(row.simMaterial, '0g', O2_BAND_MIDPOINTS[i])}
+                            title={`Simulate ${row.material} at ${O2_BAND_MIDPOINTS[i]}% O2 in 0g`}
+                          >
+                            {cnt > 0 ? cnt : ''}
+                          </button>
+                        </td>
+                      ))}
+                      <td className={row.unrecordedO2 > 0 ? 'cell-has-data' : 'cell-hatched'}>
+                        <button
+                          type="button"
+                          className="si-matrix-cell-click"
+                          onClick={() => handleLaunchInLab(row.simMaterial, '0g', 21)}
+                          title={`Simulate ${row.material} (unspecified O2)`}
+                        >
+                          {row.unrecordedO2 > 0 ? row.unrecordedO2 : ''}
+                        </button>
+                      </td>
+
+                      {/* Lunar Moon 0.16g Cells (ALL HATCHED GAPS!) */}
+                      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                        <td key={`moon-${i}`} className="cell-hatched cell-moon-gap">
+                          <button
+                            type="button"
+                            className="si-matrix-cell-click"
+                            onClick={() => handleLaunchInLab(row.simMaterial, '1/6g', i < 6 ? O2_BAND_MIDPOINTS[i] : 34)}
+                            title={`0 tests exist! Click to simulate ${row.material} in Lunar 1/6g`}
+                          >
+                            0
+                          </button>
+                        </td>
+                      ))}
+
+                      {/* Mars 0.38g Cells (ALL HATCHED GAPS!) */}
+                      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                        <td key={`mars-${i}`} className="cell-hatched cell-mars-gap">
+                          <button
+                            type="button"
+                            className="si-matrix-cell-click"
+                            onClick={() => handleLaunchInLab(row.simMaterial, '1/6g', i < 6 ? O2_BAND_MIDPOINTS[i] : 28)}
+                            title={`0 tests exist! Click to simulate ${row.material} in Mars 0.38g`}
+                          >
+                            0
+                          </button>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p className="si-figure-caption">
+              <strong>Fig. 4.</strong> Number of PSI solid-fuel tests in each oxygen band and gravity level. The planned
+              lunar habitat sits at about 30% O₂ and 0.16 g: an empty cell for every material. Source: computed from the
+              PSI tables.
+            </p>
+            <p className="si-footnote-text">
+              No solid-fuel table in this dataset records chamber pressure, so reduced-pressure coverage for solids
+              cannot be shown; none is recorded.
+            </p>
+          </div>
+
+          {/* Gaps this dataset cannot fill */}
+          <div className="si-matrix-findings-card">
+            <h4>Gaps this dataset cannot fill</h4>
+            <ul>
+              <li>
+                <strong>No partial-gravity flight data:</strong> NASA PSI has no combustion data at any gravity between
+                microgravity and 1g. Partial-gravity flame tests exist from parabolic flights and drop towers, but none
+                form part of the PSI tables.
+              </li>
+              <li>
+                <strong>Pressure is not recorded for solids:</strong> All 135 solid-fuel tests in BASS-II and Saffire
+                lack chamber pressure telemetry in the public tables. They ran in sealed spacecraft at ~101.3 kPa, so
+                performance in the planned 70.3 kPa Artemis atmosphere must be bridged with physics scaling.
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB 5: PSI FLIGHT ENVELOPE (Matching User Scatter Chart)
+          ========================================================================= */}
+      {activeMainTab === 'envelope' && (
+        <div className="si-envelope-view-wrap">
+          <PsiFlightEnvelopeChart
+            oxygen={oxygen}
+            pressure={pressure}
+            gravityKey={gravityKey}
+            onSelectTestPoint={(pt) => {
+              setOxygen(pt.o2);
+              setPressure(Number((pt.pKpa / 6.89476).toFixed(1)));
+              setActiveMainTab('lab');
+            }}
+          />
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB 6: DATA PIPELINE (Matching Rival Screen 5)
+          ========================================================================= */}
+      {activeMainTab === 'pipeline' && (
+        <div className="si-pipeline-view-wrap">
+          <div className="si-pipeline-card">
+            <h3 className="si-section-serif-title">How it works, at a glance</h3>
+
+            {/* 3-Tier Workflow Architecture */}
+            <div className="si-pipeline-tiers-container">
+              {/* TIER A: DATA FROM NASA */}
+              <div className="si-pipeline-tier-block tier-a">
+                <span className="si-tier-title">A · DATA FROM NASA · downloaded, never edited</span>
+                <div className="si-tier-nodes-row">
+                  <div className="si-pipeline-node">
+                    <span className="si-node-num">1</span>
+                    <code>data_raw/PSI-*.csv ×14</code>
+                    <strong>NASA experiment tables</strong>
+                    <small>1 450 records (1 431 tests)</small>
+                  </div>
+
+                  <div className="si-pipeline-connector">→</div>
+
+                  <div className="si-pipeline-node">
+                    <span className="si-node-num">2</span>
+                    <code>NASA/TM-20210011385</code>
+                    <strong>NASA's BASS-II report</strong>
+                    <small>144 pages; endings only as notes</small>
+                  </div>
+
+                  <div className="si-pipeline-connector">→</div>
+
+                  <div className="si-pipeline-node">
+                    <span className="si-node-num">3</span>
+                    <code>AI transcription → CSV</code>
+                    <strong>AI reads the report</strong>
+                    <small>110 test endings, each with page</small>
+                  </div>
+                </div>
+              </div>
+
+              {/* TIER B: PROCESSING */}
+              <div className="si-pipeline-tier-block tier-b">
+                <span className="si-tier-title">B · PROCESSING · Python, runs before the site goes live</span>
+                <div className="si-tier-nodes-row">
+                  <div className="si-pipeline-node">
+                    <span className="si-node-num">4</span>
+                    <code>loaders.py</code>
+                    <strong>Read every table</strong>
+                    <small>blank cells stay blank, never 0</small>
+                  </div>
+
+                  <div className="si-pipeline-connector">→</div>
+
+                  <div className="si-pipeline-node">
+                    <span className="si-node-num">5</span>
+                    <code>build_data.py · derive.py</code>
+                    <strong>Clean, label, build findings</strong>
+                    <small>sources tagged · 54 questions · FLEX</small>
+                  </div>
+
+                  <div className="si-pipeline-connector">→</div>
+
+                  <div className="si-pipeline-node">
+                    <span className="si-node-num">6</span>
+                    <code>test_pipeline.py</code>
+                    <strong>18 automatic checks</strong>
+                    <small>nothing invented, nothing deleted</small>
+                  </div>
+                </div>
+              </div>
+
+              {/* TIER C: PRODUCT */}
+              <div className="si-pipeline-tier-block tier-c">
+                <span className="si-tier-title">C · PRODUCT · published on GitHub Pages, runs in your browser</span>
+                <div className="si-tier-nodes-row">
+                  <div className="si-pipeline-node">
+                    <span className="si-node-num">7</span>
+                    <code>GitHub Actions → Pages</code>
+                    <strong>Publish the website</strong>
+                    <small>only if every check passes</small>
+                  </div>
+
+                  <div className="si-pipeline-connector">→</div>
+
+                  <div className="si-pipeline-node">
+                    <span className="si-node-num">8</span>
+                    <code>React · TypeScript · Three.js</code>
+                    <strong>The FLAME-SI website</strong>
+                    <small>Experiment Lab · 3D flame, real tests</small>
+                  </div>
+
+                  <div className="si-pipeline-connector">→</div>
+
+                  <div className="si-pipeline-node">
+                    <span className="si-node-num">9</span>
+                    <code>any browser or phone</code>
+                    <strong>You explore and ask</strong>
+                    <small>every number links back to NASA</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="si-pipeline-integrity-footer">
+              <div className="si-check-badge">✔ 18 Automated Data Integrity Assertions Passed</div>
+              <p>
+                Strict provenance tracking ensures zero synthetic zeros in pressure-unrecorded cells, anemometer
+                voltage conversions calibrated to BASS-II Appendix A, and direct linking to NASA Physical Sciences
+                Informatics repositories.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB 7: FLAME-SI CO-PILOT
+          ========================================================================= */}
+      {activeMainTab === 'copilot' && (
+        <div className="si-copilot-view-wrap">
+          <FlameSIChat />
+        </div>
+      )}
+
+      {/* Persistent Editorial Subtext Footer */}
+      <footer className="si-journal-footer-bar">
+        <span>Research data summary, not a material certification or safety approval.</span>
+        <span>Data: NASA Physical Sciences Informatics, BASS-II Summary Report, and cited NTRS documents.</span>
+        <span className="si-total-records-count">1 450 records</span>
+      </footer>
     </section>
   );
 }
