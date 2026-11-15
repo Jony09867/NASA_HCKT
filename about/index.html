@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="About Flame in Freefall Explorer: Purpose, interactive tools, team presentation, and NASA Space Apps Challenge context.">
+  <title>About the Project · Freefall Explorer</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/home.css">
+  <link rel="stylesheet" href="/explore.css">
+  <link rel="stylesheet" href="/src/pages.css">
+</head>
+<body data-page="about">
+  <div id="site-header"></div>
+
+  <main id="top" class="about-page">
+    <!-- HERO SECTION -->
+    <section class="about-hero">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">PROJECT OVERVIEW / 06</span>
+          <h2>About Freefall <span class="orange">Explorer.</span></h2>
+          <p>
+            An interactive open-science platform designed for the NASA Space Apps Challenge, transforming decades of microgravity combustion data into actionable human-spaceflight fire-safety intelligence.
+          </p>
+        </div>
+        <div class="count">
+          <strong>01</strong>
+          <span>UNIFIED RESEARCH<br>DASHBOARD</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MISSION & PROBLEM STATEMENT -->
+    <section class="about-section">
+      <div class="section-subhead">
+        <span class="section-tag">THE PROBLEM &amp; MISSION</span>
+        <h3>Why Microgravity Fire Safety Matters</h3>
+      </div>
+
+      <div class="problem-mission-grid">
+        <article class="info-card spotlight-card">
+          <div class="info-card-badge">THE CHALLENGE</div>
+          <h4>Fire Behaves Counterintuitively in Orbit</h4>
+          <p>
+            On Earth, gravity drives natural buoyant convection: hot gases rise, drawing fresh oxygen to the base of the flame and creating the familiar teardrop shape. In microgravity (freefall), buoyancy ceases. Flames become rounded, spherical, and diffusion-dominated.
+          </p>
+          <p>
+            Crucially, low-speed forced ventilation—such as spacecraft environmental control loops—can supply just enough oxygen to sustain steady smoldering and flame spread, even in regimes where Earth fires would self-extinguish.
+          </p>
+        </article>
+
+        <article class="info-card spotlight-card">
+          <div class="info-card-badge">THE MISSION</div>
+          <h4>Synthesizing Decades of Fragmented Data</h4>
+          <p>
+            NASA and international partners have conducted pioneering combustion research across drop towers, the Space Shuttle, Mir, Cygnus resupply vehicles, and the International Space Station's Combustion Integrated Rack (CIR).
+          </p>
+          <p>
+            However, these critical findings are dispersed across separate PDFs, raw data tables, and technical memorandums. Freefall Explorer unifies these investigations into an intuitive research tool to help researchers discover, compare, and understand verified combustion physics.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- SITE CAPABILITIES & ARCHITECTURE -->
+    <section class="about-section">
+      <div class="section-subhead">
+        <span class="section-tag">SITE ARCHITECTURE</span>
+        <h3>Interactive Research Tool Suite</h3>
+        <p>Explore the five core modules developed for researchers, mission planners, and aerospace students.</p>
+      </div>
+
+      <div class="tools-grid">
+        <article class="tool-card spotlight-card">
+          <span class="tool-num">01</span>
+          <h4>The Investigation Library</h4>
+          <p>Search, filter, and inspect 23 verified NASA PSI microgravity combustion investigations across oxygen concentration, chamber pressure, fuel geometry, and hardware facility.</p>
+          <a href="/explore/" class="tool-link">Open Explore Library ↗</a>
+        </article>
+
+        <article class="tool-card spotlight-card">
+          <span class="tool-num">02</span>
+          <h4>Side-by-Side Evidence Comparison</h4>
+          <p>Select any two investigations to compare experimental setups, sensor suites, flammability thresholds, and key findings side-by-side with clear comparability notices.</p>
+          <a href="/compare/" class="tool-link">Open Comparison Tool ↗</a>
+        </article>
+
+        <article class="tool-card spotlight-card">
+          <span class="tool-num">03</span>
+          <h4>3D Combustion Simulator</h4>
+          <p>Interactive WebGL laboratory exploring buoyant convection vs spherical zero-g flame envelopes, coflow ducting velocity, and oxygen consumption curves.</p>
+          <a href="/simulator/" class="tool-link">Launch 3D Simulator ↗</a>
+        </article>
+
+        <article class="tool-card spotlight-card">
+          <span class="tool-num">04</span>
+          <h4>Scenario Intelligence (SI Chat)</h4>
+          <p>Contextual research assistant mapping operational mission parameters (e.g., lunar habitat 30% O₂ at 8.2 psia) directly to documented NASA PSI experimental records.</p>
+          <a href="/chat/" class="tool-link">Launch SI Assistant ↗</a>
+        </article>
+
+        <article class="tool-card spotlight-card">
+          <span class="tool-num">05</span>
+          <h4>Verified Resources &amp; Provenance</h4>
+          <p>Audited catalog of all 23 PSI links, technical research guides, historical incident analyses (Mir 1997 fire), methodology notes, and open data provenance.</p>
+          <a href="/resources/" class="tool-link">View Resources &amp; Sources ↗</a>
+        </article>
+      </div>
+    </section>
+
+
+  </main>
+
+  <div id="site-footer"></div>
+  <script type="module" src="/src/pages/about.jsx"></script>
+</body>
+</html>
